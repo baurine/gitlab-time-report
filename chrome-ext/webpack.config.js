@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CssExtractWebpackPlugin = require('mini-css-extract-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
   entry: {
@@ -23,6 +24,7 @@ module.exports = {
     ]
   },
   plugins: [
+    new CleanWebpackPlugin('dist'),
     new HtmlWebpackPlugin({
       template: './src/html/template.html',
       filename: 'options.html',
