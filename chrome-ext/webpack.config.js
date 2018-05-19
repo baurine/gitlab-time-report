@@ -6,8 +6,7 @@ module.exports = {
   entry: {
     options: './src/js/options.js',
     dashboard: './src/js/dashboard.js',
-    timetracker: './src/js/timetracker.js',
-    tsindex: './src/js/ts-index.tsx'
+    time_logger: './src/js/time_logger.tsx',
   },
   output: {},
   resolve: {
@@ -64,8 +63,8 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/html/template.html',
-      filename: 'timetracker.html',
-      chunks: ['timetracker', 'tsindex'],
+      filename: 'time.html',
+      chunks: ['time_logger'],
       hash: true
     }),
     new CssExtractWebpackPlugin({
