@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CssExtractWebpackPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
   entry: {
@@ -11,7 +12,7 @@ module.exports = {
     rules: [
       {
         test: /\.scss$/,
-        use: ['style-loader', 'css-loader', 'sass-loader']
+        use: [CssExtractWebpackPlugin.loader, 'css-loader', 'sass-loader']
       }
     ]
   },
@@ -30,6 +31,9 @@ module.exports = {
       template: './src/html/template.html',
       filename: 'timetracker.html',
       chunks: ['timetracker']
+    }),
+    new CssExtractWebpackPlugin({
+      filename: 'css/bunle.css'
     })
   ],
   devServer: {},
