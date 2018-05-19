@@ -12,7 +12,7 @@ module.exports = {
     rules: [
       {
         test: /\.scss$/,
-        use: [CssExtractWebpackPlugin.loader, 'css-loader', 'sass-loader']
+        use: [CssExtractWebpackPlugin.loader, 'css-loader','postcss-loader', 'sass-loader']
       }
     ]
   },
