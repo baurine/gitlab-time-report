@@ -6,9 +6,13 @@ module.exports = {
   entry: {
     options: './src/js/options.js',
     dashboard: './src/js/dashboard.js',
-    timetracker: './src/js/timetracker.js'
+    timetracker: './src/js/timetracker.js',
+    tsindex: './src/js/ts-index.tsx'
   },
   output: {},
+  resolve: {
+    extensions: [ '.tsx', '.ts', '.jsx', '.js', '.json' ]
+  },
   module: {
     rules: [
       {
@@ -17,6 +21,10 @@ module.exports = {
         include: /src/,
         exclude: /node_modules/
       },
+      // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
+      { test: /\.tsx?$/, loader: "awesome-typescript-loader" },
+      // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+      { test: /\.js$/, loader: "source-map-loader", enforce: "pre" },
       {
         test: /\.scss$/,
         use: [CssExtractWebpackPlugin.loader, 'css-loader?sourceMap','postcss-loader?sourceMap', 'sass-loader?sourceMap']
@@ -57,7 +65,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/html/template.html',
       filename: 'timetracker.html',
-      chunks: ['timetracker'],
+      chunks: ['timetracker', 'tsindex'],
       hash: true
     }),
     new CssExtractWebpackPlugin({
