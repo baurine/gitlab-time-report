@@ -33,6 +33,10 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /\.(eot|ttf|woff|svg)$/,
+        use: 'file-loader'
       }
     ]
   },
