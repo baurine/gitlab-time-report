@@ -1,4 +1,5 @@
-import * as React from 'react'
+// import * as React from 'react'
+import React from 'react'
 
 export interface HelloProps { compiler: string; framework: string }
 
