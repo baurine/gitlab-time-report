@@ -1,5 +1,7 @@
 import * as React from 'react'
 
+const s = require('../../css/TimeLoggerBox.scss')
+
 export default class TimeLoggerBox extends React.Component<any, any> {
   state = {
     inputText: '',
@@ -17,7 +19,7 @@ export default class TimeLoggerBox extends React.Component<any, any> {
 
   render() {
     return (
-      <div>
+      <div className='time-logger-container'>
         <input type='text'
                value={this.state.inputText}
                placeholder='format: 1h30m'

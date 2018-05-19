@@ -68,8 +68,8 @@ module.exports = {
       hash: true
     }),
     new CssExtractWebpackPlugin({
-      filename: 'bundle.css',
-      hash: true
+      filename: "[name].css",
+      chunkFilename: "[id].css"
     })
   ],
   devServer: {},
