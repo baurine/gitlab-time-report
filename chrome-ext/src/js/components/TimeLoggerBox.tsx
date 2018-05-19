@@ -39,11 +39,22 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
     this.setState({timeLoggers: newTimeLoggers})
   }
 
+  updateItem = (timeLogger: ITimeLogger) => {
+    let newTimeLoggers = Object.assign([], this.state.timeLoggers)
+    newTimeLoggers.forEach(item => {
+      if (item.id === timeLogger.id) {
+        item.spentTime = timeLogger.spentTime
+      }
+    })
+    this.setState({timeLoggers: newTimeLoggers})
+  }
+
   renderLoggers = () => {
     return this.state.timeLoggers.map(item =>
       <TimeLoggerItem timeLogger={item}
                       key={item.id}
-                      onDelete={this.deleteItem}/>
+                      onDelete={this.deleteItem}
+                      onUpdate={this.updateItem}/>
     )
   }
 

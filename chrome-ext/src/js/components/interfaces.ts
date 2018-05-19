@@ -11,5 +11,5 @@ export interface ITimeLoggerBoxState {
 export interface ITimeLoggerItemProps {
   timeLogger: ITimeLogger,
   onDelete?: (timeLogger: ITimeLogger) => void,
-  onEdit?: (timeLogger: ITimeLogger) => void
+  onUpdate?: (timeLogger: ITimeLogger) => void
 }
