@@ -11,6 +11,12 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.js$/,
+        use: 'babel-loader',
+        include: /src/,
+        exclude: /node_modules/
+      },
+      {
         test: /\.scss$/,
         use: [CssExtractWebpackPlugin.loader, 'css-loader','postcss-loader', 'sass-loader']
       }
