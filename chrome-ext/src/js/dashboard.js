@@ -1,5 +1,8 @@
 import '../css/common.scss'
 
+import React from 'react'
+import ReactDOM from 'react-dom'
+
 const test = () => {
   console.log('dashboard');
 }
@@ -14,8 +17,17 @@ class Test {
 
 new Test().log_test()
 
-const async_test = async () => {
-  return 'async_test'
+fetch('http://api.tvmaze.com/search/shows?q=batman')
+.then(res => res.json())
+.then(data => console.log(data))
+
+class HelloComponent extends React.PureComponent {
+  render() {
+    return <h1>{this.props.name}</h1>
+  }
 }
 
-async_test().then(ret => console.log(ret))
+ReactDOM.render(
+  <HelloComponent name={'hello'}/>,
+  document.getElementById('root')
+)
