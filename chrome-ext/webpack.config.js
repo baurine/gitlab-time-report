@@ -20,6 +20,19 @@ module.exports = {
       {
         test: /\.scss$/,
         use: [CssExtractWebpackPlugin.loader, 'css-loader','postcss-loader', 'sass-loader']
+      },
+      {
+        test: /\.(jpe?g|png|gif)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192,           // 小于 8k 的图片自动转成 base64 格式，并且不会存在实体图片，否则调用 file-loader 处理
+              outputPath: 'images/', // 图片打包后存放的目录
+              name: '[name].[ext]',
+            }
+          }
+        ]
       }
     ]
   },
@@ -41,7 +54,7 @@ module.exports = {
       chunks: ['timetracker']
     }),
     new CssExtractWebpackPlugin({
-      filename: 'css/bunle.css'
+      filename: 'bundle.css',
     })
   ],
   devServer: {},
