@@ -19,7 +19,7 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        use: [CssExtractWebpackPlugin.loader, 'css-loader','postcss-loader', 'sass-loader']
+        use: [CssExtractWebpackPlugin.loader, 'css-loader?sourceMap','postcss-loader?sourceMap', 'sass-loader?sourceMap']
       },
       {
         test: /\.(jpe?g|png|gif)$/,
@@ -66,5 +66,6 @@ module.exports = {
     })
   ],
   devServer: {},
-  mode: 'development'
+  mode: 'development',
+  devtool: 'source-map'
 }
