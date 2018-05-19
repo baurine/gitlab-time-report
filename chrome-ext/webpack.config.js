@@ -45,20 +45,24 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/html/template.html',
       filename: 'options.html',
-      chunks: ['options']
+      chunks: ['options'],
+      hash: true
     }),
     new HtmlWebpackPlugin({
       template: './src/html/template.html',
       filename: 'dashboard.html',
-      chunks: ['dashboard']
+      chunks: ['dashboard'],
+      hash: true
     }),
     new HtmlWebpackPlugin({
       template: './src/html/template.html',
       filename: 'timetracker.html',
-      chunks: ['timetracker']
+      chunks: ['timetracker'],
+      hash: true
     }),
     new CssExtractWebpackPlugin({
       filename: 'bundle.css',
+      hash: true
     })
   ],
   devServer: {},
