@@ -1,9 +1,9 @@
 import * as React from 'react'
 
 import TimeLoggerItem from './TimeLoggerItem'
+import { firebase, firebaseDb } from '../utils/firebase'
 import { ITimeLogger, ITimeLoggerBoxState } from './interfaces'
-
-const s = require('../../css/TimeLoggerBox.scss')
+require('../../css/TimeLoggerBox.scss')
 
 let idCounter = 1
 
@@ -29,7 +29,8 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
     if (time === '') {
       return
     }
-    const newTimeLoggers = timeLoggers.concat({id: idCounter++, spentTime: time})
+    const timeLogger = {id: idCounter++, spentTime: time}
+    const newTimeLoggers = timeLoggers.concat(timeLogger)
     this.setState({timeLoggers: newTimeLoggers, spentTime: ''})
   }
 
