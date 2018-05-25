@@ -24,7 +24,8 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
             let timeLogs:Array<ITimeLogDoc> = []
             snapshot.forEach((doc: any) => timeLogs.push({
               docId: doc.id,
-              ...doc.data()
+              spentTime: doc.data().spentTime,
+              createdAt: doc.data().createdAt.toDate()
             }))
             this.setState({timeLogs})
           },
@@ -52,7 +53,7 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
     }
 
     const timeInt = parseInt(timeStr)
-    const timeLog = {spentTime: timeInt, createdAt: new Date()}
+    const timeLog: ITimeLog = {spentTime: timeInt, createdAt: new Date()}
     this.setState({spentTime: ''})
 
     firebaseDb.collection('time-logs')
