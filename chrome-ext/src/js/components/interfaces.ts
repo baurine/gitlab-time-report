@@ -8,12 +8,12 @@ export interface ITimeLogDoc extends ITimeLog {
 }
 
 export interface ITimeLogItemProps {
-  timeLog: ITimeLog,
-  onDelete?: (timeLog: ITimeLog) => void,
-  onUpdate?: (timeLog: ITimeLog) => void
+  timeLog: ITimeLogDoc,
+  onDelete?: (timeLog: ITimeLogDoc) => void,
+  onUpdate?: (timeLog: ITimeLogDoc) => void
 }
 
 export interface ITimeLoggerBoxState {
   spentTime: string,
-  timeLogs: Array<ITimeLog>
+  timeLogs: Array<ITimeLogDoc>
 }

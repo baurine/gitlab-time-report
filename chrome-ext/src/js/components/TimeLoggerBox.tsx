@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { firebase, firebaseDb } from '../utils/firebase'
+import { firebaseDb } from '../utils/firebase'
 import { ITimeLog, ITimeLogDoc, ITimeLoggerBoxState } from './interfaces'
 import TimeLogItem from './TimeLogItem'
 require('../../css/TimeLoggerBox.scss')
@@ -46,7 +46,6 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
     event.preventDefault()
 
     const { spentTime, timeLogs } = this.state
-
     const timeStr = spentTime.trim()
     if (timeStr === '') {
       return
@@ -54,34 +53,37 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
 
     const timeInt = parseInt(timeStr)
     const timeLog = {spentTime: timeInt, createdAt: new Date()}
-    const newTimeLogs = timeLogs.concat(timeLog)
-    this.setState({timeLogs: newTimeLogs, spentTime: ''})
+    this.setState({spentTime: ''})
 
     firebaseDb.collection('time-logs')
       .add(timeLog)
-      .then((docRef:any) => console.log(docRef.id))
-      .catch((err:Error) => console.log(err.message))
+      .then((docRef: any) => console.log(docRef.id))
+      .catch((err: Error) => console.log(err.message))
   }
 
-  deleteItem = (timeLog: ITimeLog) => {
+  deleteItem = (timeLog: ITimeLogDoc) => {
     const { timeLogs } = this.state
-    const newTimeLogs = timeLogs.filter(item => item.createdAt !== timeLog.createdAt)
+    const newTimeLogs = timeLogs.filter(item => item.docId !== timeLog.docId)
     this.setState({timeLogs: newTimeLogs})
+
+    firebaseDb.collection('time-logs')
+              .doc(timeLog.docId)
+              .delete()
+              .then(() => console.log('delete ok'))
+              .catch((err: Error) => console.log(err.message))
   }
 
-  updateItem = (timeLog: ITimeLog) => {
-    let newTimeLogs = Object.assign([], this.state.timeLogs)
-    newTimeLogs.forEach(item => {
-      if (item.createdAt === timeLog.createdAt) {
-        item.spentTime = timeLog.spentTime
-      }
-    })
-    this.setState({timeLogs: newTimeLogs})
+  updateItem = (timeLog: ITimeLogDoc) => {
+    firebaseDb.collection('time-logs')
+              .doc(timeLog.docId)
+              .set({spentTime: timeLog.spentTime}, {merge: true})
+              .then(() => console.log('update ok'))
+              .catch((err: Error) => console.log(err.message))
   }
 
   renderTimeLogs = () => {
     return this.state.timeLogs.map(item =>
-      <TimeLogItem key={item.createdAt.valueOf()}
+      <TimeLogItem key={item.docId}
                    timeLog={item}
                    onDelete={this.deleteItem}
                    onUpdate={this.updateItem}/>

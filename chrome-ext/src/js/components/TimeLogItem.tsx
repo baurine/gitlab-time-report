@@ -45,8 +45,8 @@ export default class TimeLogItem extends React.Component<ITimeLogItemProps, any>
     const { onUpdate, timeLog } = this.props
     const newTime = parseInt(time)
     const newTimeLog = {
-      spentTime: newTime,
-      ...timeLog
+      ...timeLog,
+      spentTime: newTime
     }
     onUpdate && onUpdate(newTimeLog)
 
