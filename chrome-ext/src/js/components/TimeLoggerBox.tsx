@@ -1,18 +1,16 @@
 import * as React from 'react'
 
-import TimeLoggerItem from './TimeLoggerItem'
 import { firebase, firebaseDb } from '../utils/firebase'
-import { ITimeLogger, ITimeLoggerBoxState } from './interfaces'
+import { ITimeLog, ITimeLoggerBoxState } from './interfaces'
+import TimeLogItem from './TimeLogItem'
 require('../../css/TimeLoggerBox.scss')
-
-let idCounter = 1
 
 export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxState> {
   constructor(props: {}) {
     super(props)
     this.state = {
       spentTime: '',
-      timeLoggers: []
+      timeLogs: []
     }
   }
 
@@ -23,45 +21,46 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
   submitForm = (event: any) => {
     event.preventDefault()
 
-    const { spentTime, timeLoggers } = this.state
+    const { spentTime, timeLogs } = this.state
 
-    const time = spentTime.trim()
-    if (time === '') {
+    const timeStr = spentTime.trim()
+    if (timeStr === '') {
       return
     }
-    const timeLogger = {id: idCounter++, spentTime: time}
-    const newTimeLoggers = timeLoggers.concat(timeLogger)
-    this.setState({timeLoggers: newTimeLoggers, spentTime: ''})
 
-    console.log(timeLogger)
+    const timeInt = parseInt(timeStr)
+    const timeLog = {spentTime: timeInt, createdAt: new Date()}
+    const newTimeLogs = timeLogs.concat(timeLog)
+    this.setState({timeLogs: newTimeLogs, spentTime: ''})
+
     firebaseDb.collection('time-logs')
-      .add(timeLogger)
-      .then( (docRef:any) => console.log(docRef.id) )
-      .catch( (err:Error) => console.log(err.message))
+      .add(timeLog)
+      .then((docRef:any) => console.log(docRef.id))
+      .catch((err:Error) => console.log(err.message))
   }
 
-  deleteItem = (timeLogger: ITimeLogger) => {
-    const { timeLoggers } = this.state
-    const newTimeLoggers = timeLoggers.filter(item => item.id !== timeLogger.id)
-    this.setState({timeLoggers: newTimeLoggers})
+  deleteItem = (timeLog: ITimeLog) => {
+    const { timeLogs } = this.state
+    const newTimeLogs = timeLogs.filter(item => item.createdAt !== timeLog.createdAt)
+    this.setState({timeLogs: newTimeLogs})
   }
 
-  updateItem = (timeLogger: ITimeLogger) => {
-    let newTimeLoggers = Object.assign([], this.state.timeLoggers)
-    newTimeLoggers.forEach(item => {
-      if (item.id === timeLogger.id) {
-        item.spentTime = timeLogger.spentTime
+  updateItem = (timeLog: ITimeLog) => {
+    let newTimeLogs = Object.assign([], this.state.timeLogs)
+    newTimeLogs.forEach(item => {
+      if (item.createdAt === timeLog.createdAt) {
+        item.spentTime = timeLog.spentTime
       }
     })
-    this.setState({timeLoggers: newTimeLoggers})
+    this.setState({timeLogs: newTimeLogs})
   }
 
-  renderLoggers = () => {
-    return this.state.timeLoggers.map(item =>
-      <TimeLoggerItem timeLogger={item}
-                      key={item.id}
-                      onDelete={this.deleteItem}
-                      onUpdate={this.updateItem}/>
+  renderTimeLogs = () => {
+    return this.state.timeLogs.map(item =>
+      <TimeLogItem key={item.createdAt.valueOf()}
+                   timeLog={item}
+                   onDelete={this.deleteItem}
+                   onUpdate={this.updateItem}/>
     )
   }
 
@@ -75,7 +74,7 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
                  onChange={this.textChange}/>
           <button>Add</button>
         </form>
-        { this.renderLoggers() }
+        { this.renderTimeLogs() }
       </div>
     )
   }

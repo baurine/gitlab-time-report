@@ -1,9 +1,9 @@
 import * as React from 'react'
 
-import { ITimeLoggerItemProps } from './interfaces'
+import { ITimeLogItemProps } from './interfaces'
 
-export default class TimeLoggerItem extends React.Component<ITimeLoggerItemProps, any> {
-  constructor(props: ITimeLoggerItemProps) {
+export default class TimeLogItem extends React.Component<ITimeLogItemProps, any> {
+  constructor(props: ITimeLogItemProps) {
     super(props)
     this.state = {
       inEdit: false,
@@ -12,33 +12,15 @@ export default class TimeLoggerItem extends React.Component<ITimeLoggerItemProps
   }
 
   clickDelte = () => {
-    const { onDelete } = this.props
-    onDelete && onDelete(this.props.timeLogger)
+    const { onDelete, timeLog } = this.props
+    onDelete && onDelete(timeLog)
   }
 
   clickEdit = () => {
+    const { timeLog } = this.props
     this.setState({
       inEdit: true,
-      spentTime: this.props.timeLogger.spentTime
-    })
-  }
-
-  submitUpdate = (event: any) => {
-    event.preventDefault()
-
-    const time = this.state.spentTime.trim()
-    if (time === '') {
-      return
-    }
-
-    let newTimeLogger = Object.assign({}, this.props.timeLogger)
-    newTimeLogger.spentTime = time
-
-    const { onUpdate } = this.props
-    onUpdate && onUpdate(newTimeLogger)
-
-    this.setState({
-      inEdit: false
+      spentTime: timeLog.spentTime
     })
   }
 
@@ -51,12 +33,34 @@ export default class TimeLoggerItem extends React.Component<ITimeLoggerItemProps
     })
   }
 
+  submitUpdate = (event: any) => {
+    event.preventDefault()
+
+    const { spentTime } = this.state
+    const time = spentTime.trim()
+    if (time === '') {
+      return
+    }
+
+    const { onUpdate, timeLog } = this.props
+    const newTime = parseInt(time)
+    const newTimeLog = {
+      spentTime: newTime,
+      ...timeLog
+    }
+    onUpdate && onUpdate(newTimeLog)
+
+    this.setState({
+      inEdit: false
+    })
+  }
+
   textChange = (event: any) => {
     this.setState({spentTime: event.target.value})
   }
 
   renderEditStaus() {
-    const { timeLogger } = this.props
+    const { timeLog } = this.props
     const { spentTime } = this.state
 
     return (
@@ -71,11 +75,11 @@ export default class TimeLoggerItem extends React.Component<ITimeLoggerItemProps
   }
 
   renderDisplayStatus() {
-    const { timeLogger } = this.props
+    const { timeLog } = this.props
 
     return (
       <div>
-        <span>{timeLogger.spentTime}</span>
+        <span>{timeLog.spentTime}</span>
         <button onClick={this.clickEdit}>Edit</button>
         <button onClick={this.clickDelte}>x</button>
       </div>
@@ -87,5 +91,4 @@ export default class TimeLoggerItem extends React.Component<ITimeLoggerItemProps
            this.renderEditStaus() :
            this.renderDisplayStatus()
   }
-
 }

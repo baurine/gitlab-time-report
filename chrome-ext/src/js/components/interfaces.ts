@@ -1,15 +1,15 @@
-export interface ITimeLogger {
-  id: number,
-  spentTime: string
+export interface ITimeLog {
+  spentTime: number,
+  createdAt: Date
+}
+
+export interface ITimeLogItemProps {
+  timeLog: ITimeLog,
+  onDelete?: (timeLog: ITimeLog) => void,
+  onUpdate?: (timeLog: ITimeLog) => void
 }
 
 export interface ITimeLoggerBoxState {
   spentTime: string,
-  timeLoggers: Array<ITimeLogger>
-}
-
-export interface ITimeLoggerItemProps {
-  timeLogger: ITimeLogger,
-  onDelete?: (timeLogger: ITimeLogger) => void,
-  onUpdate?: (timeLogger: ITimeLogger) => void
+  timeLogs: Array<ITimeLog>
 }
