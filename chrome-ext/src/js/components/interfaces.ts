@@ -3,6 +3,10 @@ export interface ITimeLog {
   createdAt: Date
 }
 
+export interface ITimeLogDoc extends ITimeLog {
+  docId: string
+}
+
 export interface ITimeLogItemProps {
   timeLog: ITimeLog,
   onDelete?: (timeLog: ITimeLog) => void,

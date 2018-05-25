@@ -1,17 +1,41 @@
 import * as React from 'react'
 
 import { firebase, firebaseDb } from '../utils/firebase'
-import { ITimeLog, ITimeLoggerBoxState } from './interfaces'
+import { ITimeLog, ITimeLogDoc, ITimeLoggerBoxState } from './interfaces'
 import TimeLogItem from './TimeLogItem'
 require('../../css/TimeLoggerBox.scss')
 
 export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxState> {
+  private unsubscribe: () => void
+
   constructor(props: {}) {
     super(props)
     this.state = {
       spentTime: '',
       timeLogs: []
     }
+  }
+
+  componentDidMount() {
+    this.unsubscribe =
+      firebaseDb.collection('time-logs')
+        .onSnapshot(
+          (snapshot: any) => {
+            let timeLogs:Array<ITimeLogDoc> = []
+            snapshot.forEach((doc: any) => timeLogs.push({
+              docId: doc.id,
+              ...doc.data()
+            }))
+            this.setState({timeLogs})
+          },
+          (err: Error) => {
+            console.log(err.message)
+          }
+        )
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe()
   }
 
   textChange = (event: any) => {
