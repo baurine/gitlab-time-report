@@ -1,6 +1,9 @@
 export interface ITimeLog {
   spentTime: number,
-  createdAt: Date
+  createdAt: Date,
+  user: string,
+  issueDocId: string,
+  projectDocId: string,
 }
 
 export interface ITimeLogDoc extends ITimeLog {

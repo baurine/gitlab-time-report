@@ -19,13 +19,15 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
   componentDidMount() {
     this.unsubscribe =
       firebaseDb.collection('time-logs')
+        .where('issueDocId', '==', 'aaaa')
+        .orderBy('createdAt')
         .onSnapshot(
           (snapshot: any) => {
             let timeLogs:Array<ITimeLogDoc> = []
             snapshot.forEach((doc: any) => timeLogs.push({
+              ...doc.data(),
+              createdAt: doc.data().createdAt.toDate(),
               docId: doc.id,
-              spentTime: doc.data().spentTime,
-              createdAt: doc.data().createdAt.toDate()
             }))
             this.setState({timeLogs})
           },
@@ -53,7 +55,13 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
     }
 
     const timeInt = parseInt(timeStr)
-    const timeLog: ITimeLog = {spentTime: timeInt, createdAt: new Date()}
+    const timeLog: ITimeLog = {
+      spentTime: timeInt,
+      createdAt: new Date(),
+      user: 'baurine',
+      issueDocId: 'aaaa',
+      projectDocId: 'bbbb'
+    }
     this.setState({spentTime: ''})
 
     firebaseDb.collection('time-logs')
@@ -94,6 +102,7 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
   render() {
     return (
       <div className='time-logger-container'>
+        { this.renderTimeLogs() }
         <form onSubmit={this.submitForm}>
           <input type='text'
                  value={this.state.spentTime}
@@ -101,7 +110,6 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
                  onChange={this.textChange}/>
           <button>Add</button>
         </form>
-        { this.renderTimeLogs() }
       </div>
     )
   }
