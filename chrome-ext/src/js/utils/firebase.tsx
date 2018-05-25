@@ -1,5 +1,5 @@
-const firebase = require('firebase/app')
-require('firebase/database')
+const firebase = require('firebase')
+require('firebase/firestore')
 
 const firebaseConfig = require('./firebase_config')
 // console.log('firebaseConfig:', firebaseConfig)
@@ -14,6 +14,8 @@ const firebaseConfig = require('./firebase_config')
 // }
 
 firebase.initializeApp(firebaseConfig)
-const firebaseDb = firebase.database()
+const firebaseDb = firebase.firestore()
+const settings = { timestampsInSnapshots: true }
+firebaseDb.settings(settings)
 
 export { firebase, firebaseDb }

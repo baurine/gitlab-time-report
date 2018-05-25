@@ -32,6 +32,12 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
     const timeLogger = {id: idCounter++, spentTime: time}
     const newTimeLoggers = timeLoggers.concat(timeLogger)
     this.setState({timeLoggers: newTimeLoggers, spentTime: ''})
+
+    console.log(timeLogger)
+    firebaseDb.collection('time-logs')
+      .add(timeLogger)
+      .then( (docRef:any) => console.log(docRef.id) )
+      .catch( (err:Error) => console.log(err.message))
   }
 
   deleteItem = (timeLogger: ITimeLogger) => {
