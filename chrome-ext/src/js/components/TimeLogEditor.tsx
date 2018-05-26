@@ -1,7 +1,10 @@
 import * as React from 'react'
 
 import DateUtil from '../utils/date-util'
-import { ITimeLog, ITimeLogDoc, ITimeLogEditorProps, ITimeLogEditorState } from './interfaces'
+import { ITimeLog,
+         ITimeLogDoc,
+         ITimeLogEditorProps,
+         ITimeLogEditorState } from '../types/interfaces'
 
 export default class TimeLogEditor extends React.Component<ITimeLogEditorProps, ITimeLogEditorState> {
   private todayDay: string
@@ -9,7 +12,7 @@ export default class TimeLogEditor extends React.Component<ITimeLogEditorProps, 
   constructor(props: ITimeLogEditorProps) {
     super(props)
     this.todayDay = DateUtil.getDayFormat(new Date())
-    let spentTime, spentAt
+    let spentTime: string, spentAt: string
     if (props.timeLog) {
       spentTime = props.timeLog.spentTime + ''
       spentAt = DateUtil.getDayFormat(props.timeLog.spentAt)

@@ -1,13 +1,13 @@
 import * as React from 'react'
 
-import { firebaseDb } from '../utils/firebase'
+import { firebaseDb } from '../firebase/firebase'
 import DateUtil from '../utils/date-util'
+import TimeLogItem from './TimeLogItem'
+import TimeLogEditor from './TimeLogEditor'
 import { ITimeLog,
          ITimeLogDetail,
          ITimeLogDoc,
-         ITimeLoggerBoxState } from './interfaces'
-import TimeLogItem from './TimeLogItem'
-import TimeLogEditor from './TimeLogEditor'
+         ITimeLoggerBoxState } from '../types/interfaces'
 require('../../css/TimeLoggerBox.scss')
 
 export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxState> {

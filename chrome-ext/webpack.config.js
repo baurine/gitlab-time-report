@@ -6,8 +6,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 module.exports = {
   entry: {
     report: './src/js/report.jsx',
-    dashboard: './src/js/dashboard.js',
-    time_logger: './src/js/time_logger.tsx',
+    'time-logger': './src/js/time-logger.tsx',
   },
   output: {},
   resolve: {
@@ -54,18 +53,6 @@ module.exports = {
       template: './src/html/template.html',
       filename: 'report.html',
       chunks: ['report'],
-      hash: true
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/html/template.html',
-      filename: 'dashboard.html',
-      chunks: ['dashboard'],
-      hash: true
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/html/template.html',
-      filename: 'time.html',
-      chunks: ['time_logger'],
       hash: true
     }),
     new CssExtractWebpackPlugin({

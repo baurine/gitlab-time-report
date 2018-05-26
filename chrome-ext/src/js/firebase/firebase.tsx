@@ -1,9 +1,9 @@
 const firebase = require('firebase/app')
 require('firebase/firestore')
 
-const firebaseConfig = require('./firebase_config')
+const firebaseConfig = require('./firebase-config')
 // console.log('firebaseConfig:', firebaseConfig)
-// firebase_config.json
+// firebase-config.json
 // {
 //   "apiKey": "***",
 //   "authDomain": "***",
