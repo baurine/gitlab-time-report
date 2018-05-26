@@ -79,7 +79,7 @@ export default class TimeLogItem extends React.Component<ITimeLogItemProps, any>
 
     return (
       <div>
-        <span>{timeLog.spentTime}</span>
+        <span>{timeLog.user} spent {timeLog.spentTime} mins at {timeLog.spentAt.toISOString()}</span>
         <button onClick={this.clickEdit}>Edit</button>
         <button onClick={this.clickDelte}>x</button>
       </div>

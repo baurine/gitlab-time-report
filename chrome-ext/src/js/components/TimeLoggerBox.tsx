@@ -7,12 +7,15 @@ require('../../css/TimeLoggerBox.scss')
 
 export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxState> {
   private unsubscribe: () => void
+  private todayDate: string
 
   constructor(props: {}) {
     super(props)
+    this.todayDate = new Date().toISOString().substring(0, 10)
     this.state = {
       spentTime: '',
-      timeLogs: []
+      spentAt: this.todayDate,
+      timeLogs: [],
     }
   }
 
@@ -27,6 +30,7 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
             snapshot.forEach((doc: any) => timeLogs.push({
               ...doc.data(),
               createdAt: doc.data().createdAt.toDate(),
+              spentAt: doc.data().spentAt.toDate(),
               docId: doc.id,
             }))
             this.setState({timeLogs})
@@ -45,10 +49,14 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
     this.setState({spentTime: event.target.value})
   }
 
+  dateChange = (event: any) => {
+    this.setState({spentAt: event.target.value})
+  }
+
   submitForm = (event: any) => {
     event.preventDefault()
 
-    const { spentTime, timeLogs } = this.state
+    const { spentTime, spentAt, timeLogs } = this.state
     const timeStr = spentTime.trim()
     if (timeStr === '') {
       return
@@ -57,6 +65,7 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
     const timeInt = parseInt(timeStr)
     const timeLog: ITimeLog = {
       spentTime: timeInt,
+      spentAt: new Date(spentAt),
       createdAt: new Date(),
       user: 'baurine',
       issueDocId: 'aaaa',
@@ -108,6 +117,10 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
                  value={this.state.spentTime}
                  placeholder='format: 1h 30m'
                  onChange={this.textChange}/>
+          <input type='date'
+                 value={this.state.spentAt}
+                 max={this.todayDate}
+                 onChange={this.dateChange}/>
           <button>Add</button>
         </form>
       </div>

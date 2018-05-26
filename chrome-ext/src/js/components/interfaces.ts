@@ -1,5 +1,6 @@
 export interface ITimeLog {
   spentTime: number,
+  spentAt: Date,
   createdAt: Date,
   user: string,
   issueDocId: string,
@@ -18,5 +19,6 @@ export interface ITimeLogItemProps {
 
 export interface ITimeLoggerBoxState {
   spentTime: string,
+  spentAt: string,
   timeLogs: Array<ITimeLogDoc>
 }
