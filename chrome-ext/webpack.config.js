@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: {
-    options: './src/js/options.js',
+    report: './src/js/report.jsx',
     dashboard: './src/js/dashboard.js',
     time_logger: './src/js/time_logger.tsx',
   },
@@ -52,8 +52,8 @@ module.exports = {
     new CleanWebpackPlugin('dist'),
     new HtmlWebpackPlugin({
       template: './src/html/template.html',
-      filename: 'options.html',
-      chunks: ['options'],
+      filename: 'report.html',
+      chunks: ['report'],
       hash: true
     }),
     new HtmlWebpackPlugin({
