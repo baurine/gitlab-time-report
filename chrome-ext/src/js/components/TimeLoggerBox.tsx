@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import { firebaseDb } from '../utils/firebase'
+import DateUtil from '../utils/date-util'
 import { ITimeLog, ITimeLogDoc, ITimeLoggerBoxState } from './interfaces'
 import TimeLogItem from './TimeLogItem'
 require('../../css/TimeLoggerBox.scss')
@@ -11,7 +12,7 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
 
   constructor(props: {}) {
     super(props)
-    this.todayDate = new Date().toISOString().substring(0, 10)
+    this.todayDate = DateUtil.getDayFormat(new Date())
     this.state = {
       spentTime: '',
       spentAt: this.todayDate,
@@ -61,8 +62,11 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
     if (timeStr === '') {
       return
     }
-
     const timeInt = parseInt(timeStr)
+    if (isNaN(timeInt) || timeInt < 0) {
+      return
+    }
+
     const timeLog: ITimeLog = {
       spentTime: timeInt,
       spentAt: new Date(spentAt),

@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import { ITimeLogItemProps } from './interfaces'
+import DateUtil from '../utils/date-util'
 
 export default class TimeLogItem extends React.Component<ITimeLogItemProps, any> {
   constructor(props: ITimeLogItemProps) {
@@ -79,7 +80,7 @@ export default class TimeLogItem extends React.Component<ITimeLogItemProps, any>
 
     return (
       <div>
-        <span>{timeLog.user} spent {timeLog.spentTime} mins at {timeLog.spentAt.toISOString()}</span>
+        <span>{timeLog.user} spent {timeLog.spentTime} mins at {DateUtil.getDayFormat(timeLog.spentAt)}</span>
         <button onClick={this.clickEdit}>Edit</button>
         <button onClick={this.clickDelte}>x</button>
       </div>
