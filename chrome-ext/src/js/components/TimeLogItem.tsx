@@ -1,15 +1,36 @@
 import * as React from 'react'
 
-import { ITimeLogItemProps } from './interfaces'
+import { ITimeLogItemProps, ITimeLogDoc } from './interfaces'
+import TimeLogEditor from './TimeLogEditor'
 import DateUtil from '../utils/date-util'
 
-export default class TimeLogItem extends React.Component<ITimeLogItemProps, any> {
+export default class TimeLogItem extends React.Component<ITimeLogItemProps, {editing: boolean}> {
   constructor(props: ITimeLogItemProps) {
     super(props)
     this.state = {
-      inEdit: false,
-      spentTime: ''
+      editing: false,
     }
+  }
+
+  clickEdit = () => {
+    this.setState({
+      editing: true,
+    })
+  }
+
+  cancelEdit = () => {
+    this.setState({
+      editing: false,
+    })
+  }
+
+  updateItem = (timeLog: ITimeLogDoc) => {
+    const { onUpdate } = this.props
+    onUpdate && onUpdate(timeLog)
+
+    this.setState({
+      editing: false
+    })
   }
 
   clickDelte = () => {
@@ -17,61 +38,13 @@ export default class TimeLogItem extends React.Component<ITimeLogItemProps, any>
     onDelete && onDelete(timeLog)
   }
 
-  clickEdit = () => {
-    const { timeLog } = this.props
-    this.setState({
-      inEdit: true,
-      spentTime: timeLog.spentTime
-    })
-  }
-
-  clickCancel = (event: any) => {
-    event.preventDefault()
-
-    this.setState({
-      inEdit: false,
-      spentTime: ''
-    })
-  }
-
-  submitUpdate = (event: any) => {
-    event.preventDefault()
-
-    const { spentTime } = this.state
-    const time = spentTime.trim()
-    if (time === '') {
-      return
-    }
-
-    const { onUpdate, timeLog } = this.props
-    const newTime = parseInt(time)
-    const newTimeLog = {
-      ...timeLog,
-      spentTime: newTime
-    }
-    onUpdate && onUpdate(newTimeLog)
-
-    this.setState({
-      inEdit: false
-    })
-  }
-
-  textChange = (event: any) => {
-    this.setState({spentTime: event.target.value})
-  }
-
   renderEditStaus() {
     const { timeLog } = this.props
-    const { spentTime } = this.state
 
     return (
-      <form onSubmit={this.submitUpdate}>
-        <input type='text'
-               value={spentTime}
-               onChange={this.textChange}/>
-        <button>Update</button>
-        <button onClick={this.clickCancel}>Cancel</button>
-      </form>
+      <TimeLogEditor timeLog={timeLog}
+                     onUpdate={this.updateItem}
+                     onCancel={this.cancelEdit}/>
     )
   }
 
@@ -88,7 +61,7 @@ export default class TimeLogItem extends React.Component<ITimeLogItemProps, any>
   }
 
   render() {
-    return this.state.inEdit ?
+    return this.state.editing ?
            this.renderEditStaus() :
            this.renderDisplayStatus()
   }

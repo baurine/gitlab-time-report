@@ -1,13 +1,13 @@
 export interface ITimeLog {
   spentTime: number,
   spentAt: Date,
-  createdAt: Date,
 }
 
 export interface ITimeLogDetail extends ITimeLog {
   user: string,
   issueDocId: string,
   projectDocId: string,
+  createdAt: Date,
 }
 
 export interface ITimeLogDoc extends ITimeLogDetail {
@@ -32,5 +32,8 @@ export interface ITimeLogEditorState {
 }
 
 export interface ITimeLogEditorProps {
-  onAdd?: (timeLog: ITimeLog) => void
+  timeLog?: ITimeLogDoc
+  onAdd?: (timeLog: ITimeLog) => void,
+  onUpdate?: (timeLog: ITimeLogDoc) => void
+  onCancel?: () => void
 }

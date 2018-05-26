@@ -51,13 +51,12 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
   }
 
   addTimeLog = (timeLog: ITimeLog) => {
-    event.preventDefault()
-
     const timeLogDetail: ITimeLogDetail = {
       ...timeLog,
       user: 'baurine',
       issueDocId: 'aaaa',
-      projectDocId: 'bbbb'
+      projectDocId: 'bbbb',
+      createdAt: new Date(),
     }
     firebaseDb.collection('time-logs')
       .add(timeLogDetail)
@@ -76,7 +75,10 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
   updateTimeLog = (timeLog: ITimeLogDoc) => {
     firebaseDb.collection('time-logs')
               .doc(timeLog.docId)
-              .set({spentTime: timeLog.spentTime}, {merge: true})
+              .set({
+                spentTime: timeLog.spentTime,
+                spentAt: timeLog.spentAt
+              }, {merge: true})
               .then(() => console.log('update ok'))
               .catch((err: Error) => console.log(err.message))
   }

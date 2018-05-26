@@ -1,17 +1,25 @@
 import * as React from 'react'
 
 import DateUtil from '../utils/date-util'
-import { ITimeLog, ITimeLogEditorProps, ITimeLogEditorState } from './interfaces'
+import { ITimeLog, ITimeLogDoc, ITimeLogEditorProps, ITimeLogEditorState } from './interfaces'
 
 export default class TimeLogEditor extends React.Component<ITimeLogEditorProps, ITimeLogEditorState> {
-  private todayDate: string
+  private todayDay: string
 
-  constructor(props: {}) {
+  constructor(props: ITimeLogEditorProps) {
     super(props)
-    this.todayDate = DateUtil.getDayFormat(new Date())
+    this.todayDay = DateUtil.getDayFormat(new Date())
+    let spentTime, spentAt
+    if (props.timeLog) {
+      spentTime = props.timeLog.spentTime + ''
+      spentAt = DateUtil.getDayFormat(props.timeLog.spentAt)
+    } else {
+      spentTime = ''
+      spentAt = this.todayDay
+    }
     this.state = {
-      spentTime: '',
-      spentAt: this.todayDate,
+      spentTime,
+      spentAt
     }
   }
 
@@ -36,29 +44,49 @@ export default class TimeLogEditor extends React.Component<ITimeLogEditorProps, 
       return
     }
 
-    const timeLog: ITimeLog = {
+    const { timeLog, onUpdate, onAdd } = this.props
+    const newTimeLog: ITimeLog = {
       spentTime: timeInt,
       spentAt: new Date(spentAt),
-      createdAt: new Date(),
     }
-    const { onAdd } = this.props
-    onAdd && onAdd(timeLog)
+    if (timeLog) {
+      onUpdate && onUpdate({
+        ...timeLog,
+        ...newTimeLog
+      })
+    } else {
+      onAdd && onAdd(newTimeLog)
+    }
 
     this.setState({spentTime: ''})
   }
 
+  clickCancel = (event: any) => {
+    const { onCancel } = this.props
+    onCancel && onCancel()
+  }
+
   render() {
+    const { spentTime, spentAt } = this.state
+    const { timeLog } = this.props
     return (
       <form onSubmit={this.submitForm}>
         <input type='text'
-               value={this.state.spentTime}
+               value={spentTime}
                placeholder='format: 1h 30m'
                onChange={this.textChange}/>
         <input type='date'
-               value={this.state.spentAt}
-               max={this.todayDate}
+               value={spentAt}
+               max={this.todayDay}
                onChange={this.dateChange}/>
-        <button>Add</button>
+        {
+          timeLog ?
+          <div>
+            <button>Update</button>
+            <button onClick={this.clickCancel}>Cancel</button>
+          </div> :
+          <button>Add</button>
+        }
       </form>
     )
   }
