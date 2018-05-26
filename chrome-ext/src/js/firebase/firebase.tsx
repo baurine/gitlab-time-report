@@ -1,5 +1,6 @@
 const firebase = require('firebase/app')
 require('firebase/firestore')
+require('firebase/auth')
 
 const firebaseConfig = require('./firebase-config')
 // console.log('firebaseConfig:', firebaseConfig)
