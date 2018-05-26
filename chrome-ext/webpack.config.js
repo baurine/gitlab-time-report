@@ -1,6 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CssExtractWebpackPlugin = require('mini-css-extract-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: {
@@ -70,7 +71,10 @@ module.exports = {
     new CssExtractWebpackPlugin({
       filename: "[name].css",
       chunkFilename: "[id].css"
-    })
+    }),
+    new CopyWebpackPlugin([
+      { from: './public', to: '' }
+    ])
   ],
   devServer: {},
   mode: 'development',
