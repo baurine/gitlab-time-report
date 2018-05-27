@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { firebaseDb, firebaseAuth } from '../firebase/firebase'
-import { IAuthBoxProps, IAuthBoxState } from '../types/interfaces'
+import { IAuthBoxProps, IAuthBoxState } from '../types'
 require('../../css/AuthBox.scss')
 
 export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxState> {

@@ -3,7 +3,7 @@ import * as React from 'react'
 import DateUtil from '../utils/date-util'
 import TimeLogEditor from './TimeLogEditor'
 import { ITimeLogItemProps,
-         ITimeLogDoc } from '../types/interfaces'
+         ITimeLogDoc } from '../types'
 
 export default class TimeLogItem extends React.Component<ITimeLogItemProps, {editing: boolean}> {
   constructor(props: ITimeLogItemProps) {

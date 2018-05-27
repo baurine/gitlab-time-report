@@ -1,4 +1,5 @@
 import CommonUtil from '../utils/common-util'
+import { } from '../types/interfaces'
 import { resolve } from 'dns';
 
 export default class IssuePageParser {

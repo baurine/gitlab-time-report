@@ -4,7 +4,7 @@ import DateUtil from '../utils/date-util'
 import { ITimeLog,
          ITimeLogDoc,
          ITimeLogEditorProps,
-         ITimeLogEditorState } from '../types/interfaces'
+         ITimeLogEditorState } from '../types'
 
 export default class TimeLogEditor extends React.Component<ITimeLogEditorProps, ITimeLogEditorState> {
   private todayDay: string

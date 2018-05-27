@@ -7,7 +7,7 @@ import TimeLogEditor from './TimeLogEditor'
 import { ITimeLog,
          ITimeLogDetail,
          ITimeLogDoc,
-         ITimeLoggerBoxState } from '../types/interfaces'
+         ITimeLoggerBoxState } from '../types'
 require('../../css/TimeLoggerBox.scss')
 
 export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxState> {
