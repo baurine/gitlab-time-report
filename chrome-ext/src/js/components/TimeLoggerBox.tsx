@@ -22,6 +22,10 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
 
   componentDidMount() {
     this.loadTimeLogs()
+    // fetch('/ekohe/podknife/edit', {credentials: 'include'})
+    //   .then(res => res.text())
+    //   .then(data => console.log(data))
+    //   .catch(err=>console.log(err))
   }
 
   componentWillUnmount() {
@@ -53,7 +57,7 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
   addTimeLog = (timeLog: ITimeLog) => {
     const timeLogDetail: ITimeLogDetail = {
       ...timeLog,
-      user: 'baurine',
+      gitlabUser: 'baurine',
       issueDocId: 'aaaa',
       projectDocId: 'bbbb',
       createdAt: new Date(),

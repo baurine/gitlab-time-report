@@ -3,24 +3,30 @@ import * as ReactDOM from 'react-dom'
 
 import TimeLoggerPage from './pages/TimeLoggerPage'
 import CommonUtil from './utils/common-util'
+import IssuePageParser from './utils/issue-page-parser'
+
+import { IssuePageContext } from './contexts'
 
 function main() {
   CommonUtil.log('load')
-  let pathname = document.location.pathname
-  if (!/\/issues\/\d+/.test(pathname)) {
-    CommonUtil.log('this is not a issue page')
-    return
-  }
+
+  const pageParser = new IssuePageParser()
+  pageParser.parse()
+    .then((curPageInfo: object) => {
+      renderTimeLoggerPage(curPageInfo)
+    })
+    .catch((err: Error) => CommonUtil.log(err.message))
+}
+
+function renderTimeLoggerPage(curPageInfo: object) {
   const notesContainer = document.getElementById('notes')
-  if (!notesContainer) {
-    CommonUtil.log('there is no notes container')
-    return
-  }
   const timeLoggerContainer = document.createElement('div')
   timeLoggerContainer.id = 'time-logger-box'
   notesContainer.insertBefore(timeLoggerContainer, notesContainer.lastChild)
   ReactDOM.render(
-    <TimeLoggerPage/>,
+    <IssuePageContext.Provider value={curPageInfo}>
+      <TimeLoggerPage/>
+    </IssuePageContext.Provider>,
     timeLoggerContainer
   )
 }

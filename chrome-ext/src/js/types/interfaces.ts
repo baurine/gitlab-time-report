@@ -4,7 +4,7 @@ export interface ITimeLog {
 }
 
 export interface ITimeLogDetail extends ITimeLog {
-  user: string,
+  gitlabUser: string,
   issueDocId: string,
   projectDocId: string,
   createdAt: Date,
@@ -36,6 +36,10 @@ export interface ITimeLogEditorProps {
 export interface ITimeLogEditorState {
   spentTime: string,
   spentAt: string,
+}
+
+export interface IAuthBoxProps {
+  curGitlabUser?: string
 }
 
 export interface IAuthBoxState {

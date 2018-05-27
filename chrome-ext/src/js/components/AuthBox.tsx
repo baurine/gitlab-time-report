@@ -1,10 +1,11 @@
 import * as React from 'react'
-import { firebaseAuth } from '../firebase/firebase'
-import { IAuthBoxState } from '../types/interfaces'
+
+import { firebaseDb, firebaseAuth } from '../firebase/firebase'
+import { IAuthBoxProps, IAuthBoxState } from '../types/interfaces'
 require('../../css/AuthBox.scss')
 
-export default class AuthBox extends React.Component<{}, IAuthBoxState> {
-  constructor(props: {}) {
+export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxState> {
+  constructor(props: IAuthBoxProps) {
     super(props)
     this.state = {
       user: null,
@@ -22,6 +23,22 @@ export default class AuthBox extends React.Component<{}, IAuthBoxState> {
   loadAuthState() {
     firebaseAuth.onAuthStateChanged((user: any) => {
       this.setState({user, loading: false, message: ''})
+
+      const { curGitlabUser } = this.props
+      if (user && curGitlabUser) {
+        // update displayName as curGitlabUser
+        if (user.displayName !== curGitlabUser) {
+          user.updateProfile({displayName: curGitlabUser})
+            .then(()=>console.log('update ok'))
+            .catch((err: Error)=>console.log(err.message))
+        }
+        // store curGitlabUser to users collection
+        firebaseDb.collection('users')
+          .doc(curGitlabUser)
+          .set({gitlabName: curGitlabUser})
+          .then(()=>console.log('save user ok'))
+          .catch((err: Error)=>console.log(err.message))
+      }
     })
   }
 
