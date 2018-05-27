@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { firebaseAuth } from '../firebase/firebase'
 import { IAuthBoxState } from '../types/interfaces'
-import TimeLoggerBox from './TimeLoggerBox'
 require('../../css/AuthBox.scss')
 
 export default class AuthBox extends React.Component<{}, IAuthBoxState> {
@@ -65,7 +64,7 @@ export default class AuthBox extends React.Component<{}, IAuthBoxState> {
       <div>
         <span>{user.displayName || user.email} has logged in.</span>
         <button onClick={this.signOut}>Sign Out</button>
-        <TimeLoggerBox/>
+        { this.props.children }
       </div>
     )
   }

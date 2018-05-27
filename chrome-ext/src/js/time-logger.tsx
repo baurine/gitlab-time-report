@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
-import AuthBox from './components/AuthBox'
+import TimeLoggerPage from './pages/TimeLoggerPage'
 import CommonUtil from './utils/common-util'
 
 function main() {
@@ -20,7 +20,7 @@ function main() {
   timeLoggerContainer.id = 'time-logger-box'
   notesContainer.insertBefore(timeLoggerContainer, notesContainer.lastChild)
   ReactDOM.render(
-    <AuthBox/>,
+    <TimeLoggerPage/>,
     timeLoggerContainer
   )
 }
