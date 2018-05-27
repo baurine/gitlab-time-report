@@ -7,13 +7,14 @@ import TimeLogEditor from './TimeLogEditor'
 import { ITimeLog,
          ITimeLogDetail,
          ITimeLogDoc,
+         ITimeLoggerBoxProps,
          ITimeLoggerBoxState } from '../types'
 require('../../css/TimeLoggerBox.scss')
 
-export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxState> {
+class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxState> {
   private unsubscribe: () => void
 
-  constructor(props: {}) {
+  constructor(props: ITimeLoggerBoxProps) {
     super(props)
     this.state = {
       timeLogs: [],
@@ -22,10 +23,6 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
 
   componentDidMount() {
     this.loadTimeLogs()
-    // fetch('/ekohe/podknife/edit', {credentials: 'include'})
-    //   .then(res => res.text())
-    //   .then(data => console.log(data))
-    //   .catch(err=>console.log(err))
   }
 
   componentWillUnmount() {
@@ -55,11 +52,12 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
   }
 
   addTimeLog = (timeLog: ITimeLog) => {
+    const { issuePageInfo } = this.props
     const timeLogDetail: ITimeLogDetail = {
       ...timeLog,
-      gitlabUser: 'baurine',
+      gitlabUser: issuePageInfo.curGitlabUser,
       issueDocId: 'aaaa',
-      projectDocId: 'bbbb',
+      project: issuePageInfo.curIssue.project,
       createdAt: new Date(),
     }
     firebaseDb.collection('time-logs')
@@ -106,3 +104,20 @@ export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxSta
     )
   }
 }
+
+////////////////////////////////
+
+import { IssuePageContext } from '../contexts'
+import { IIssuePageInfo } from '../types'
+
+const TimeLoggerBoxWrapper = (props: {}) =>
+  <IssuePageContext.Consumer>
+    {
+      (issuePageInfo: IIssuePageInfo) =>
+      <TimeLoggerBox 
+        issuePageInfo={issuePageInfo}
+        {...props}/>
+    }
+  </IssuePageContext.Consumer>
+
+export default TimeLoggerBoxWrapper

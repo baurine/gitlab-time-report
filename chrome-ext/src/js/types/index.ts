@@ -6,7 +6,7 @@ export interface ITimeLog {
 export interface ITimeLogDetail extends ITimeLog {
   gitlabUser: string,
   issueDocId: string,
-  projectDocId: string,
+  project: string,
   createdAt: Date,
 }
 
@@ -29,6 +29,10 @@ export interface IIssuePageInfo {
 }
 
 ///////////////////////////////////////////////////
+
+export interface ITimeLoggerBoxProps {
+  issuePageInfo: IIssuePageInfo
+}
 
 export interface ITimeLoggerBoxState {
   timeLogs: Array<ITimeLogDoc>

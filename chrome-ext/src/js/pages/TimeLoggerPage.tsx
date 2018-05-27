@@ -9,8 +9,8 @@ export default class TimeLoggerPage extends React.Component {
   render() {
     return (
       <IssuePageContext.Consumer>
-        { (curPageInfo: IIssuePageInfo) => 
-          <AuthBox curGitlabUser={curPageInfo.curGitlabUser}>
+        { (issuePageInfo: IIssuePageInfo) => 
+          <AuthBox curGitlabUser={issuePageInfo.curGitlabUser}>
             <TimeLoggerBox/>
           </AuthBox>
         }
