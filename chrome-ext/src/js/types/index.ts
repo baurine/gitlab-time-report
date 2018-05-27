@@ -14,6 +14,20 @@ export interface ITimeLogDoc extends ITimeLogDetail {
   docId: string
 }
 
+export interface IIssueInfo {
+  type: string,
+  project: string,
+  num: number,
+  createdBy: string,
+  issueCreatedAt: Date,
+  title: string
+}
+
+export interface IIssuePageInfo {
+  curGitlabUser: string,
+  curIssue: IIssueInfo
+}
+
 ///////////////////////////////////////////////////
 
 export interface ITimeLoggerBoxState {

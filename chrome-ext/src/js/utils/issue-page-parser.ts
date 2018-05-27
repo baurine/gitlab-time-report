@@ -1,5 +1,5 @@
 import CommonUtil from '../utils/common-util'
-import { } from '../types/interfaces'
+import { IIssueInfo, IIssuePageInfo } from '../types'
 import { resolve } from 'dns';
 
 export default class IssuePageParser {
@@ -11,7 +11,9 @@ export default class IssuePageParser {
 
         const curIssue = this.parseIssue()
         CommonUtil.log('curIssue: ' + JSON.stringify(curIssue))
-        resolve({curGitlabUser, curIssue})
+
+        const pageInfo: IIssuePageInfo = {curGitlabUser, curIssue}
+        resolve(pageInfo)
       } else {
         reject(new Error('invalid issue page'))
       }
@@ -64,7 +66,7 @@ export default class IssuePageParser {
     const issueCreatedAt = this.parseCreatedAt()
     const title = this.parseTitle(type)
 
-    return {
+    const issueInfo: IIssueInfo = {
       type,
       project,
       num,
@@ -72,6 +74,7 @@ export default class IssuePageParser {
       issueCreatedAt,
       title
     }
+    return issueInfo 
   }
 
   parseIssueAuthor() {
