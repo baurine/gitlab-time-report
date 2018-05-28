@@ -57,10 +57,10 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
         } else {
           // add
           return issueDocRef.set(curIssue)
-            .then((docRef: any) => {
+            .then(() => {
               console.log('add issue ok')
               return {
-                docId: docRef.id,
+                docId: issueMD5,
                 ...curIssue
               }
             })
