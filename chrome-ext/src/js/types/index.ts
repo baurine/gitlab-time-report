@@ -25,6 +25,10 @@ export interface IIssueInfo {
   title: string
 }
 
+export interface IIssueDoc extends IIssueInfo {
+  docId: string
+}
+
 export interface IIssuePageInfo {
   curGitlabUser: string,
   curIssue: IIssueInfo
@@ -38,7 +42,7 @@ export interface ITimeLoggerBoxProps {
 
 export interface ITimeLoggerBoxState {
   timeLogs: Array<ITimeLogDoc>,
-  issueDocRef: any
+  issueDoc: IIssueDoc
 }
 
 export interface ITimeLogItemProps {

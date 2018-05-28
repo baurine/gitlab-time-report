@@ -7,6 +7,7 @@ import TimeLogEditor from './TimeLogEditor'
 import { ITimeLog,
          ITimeLogDetail,
          ITimeLogDoc,
+         IIssueDoc,
          ITimeLoggerBoxProps,
          ITimeLoggerBoxState } from '../types'
 require('../../css/TimeLoggerBox.scss')
@@ -18,14 +19,14 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
     super(props)
     this.state = {
       timeLogs: [],
-      issueDocRef: null
+      issueDoc: null
     }
   }
 
   componentDidMount() {
     this.findOrCreateIssue()
-      .then((issueDocRef: any)=>{
-        this.setState({issueDocRef}, ()=>{
+      .then((issueDoc: any)=>{
+        this.setState({issueDoc}, ()=>{
           this.loadTimeLogs()
           this.updateIssueDoc()
           this.findOrCreateProject()
@@ -47,30 +48,40 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
       .limit(1)
       .get()
       .then((snapshot: any) => {
-        let issueDocRef
-        snapshot.forEach((ref: any)=>issueDocRef=ref)
-        if (issueDocRef) {
-          return issueDocRef
-        } else {
-          return firebaseDb.collection('issues')
-            .add(curIssue)
-        }
+          let issueSnapshot: any
+          snapshot.forEach((s: any)=>issueSnapshot=s)
+          if (issueSnapshot) {
+            return {
+              ...issueSnapshot.data(),
+              issueCreatedAt: issueSnapshot.data().issueCreatedAt.toDate(),
+              docId: issueSnapshot.id,
+            }
+          } else {
+            // add
+            return firebaseDb.collection('issues')
+              .add(curIssue)
+              .then((docRef: any) => ({
+                docId: docRef.id,
+                ...curIssue
+              }))
+          }
       })
       .catch((err: Error)=>console.log(err.message))
   }
 
   updateIssueDoc() {
     const { curIssue } = this.props.issuePageInfo
-    const { issueDocRef } = this.state
-    const issueDoc = issueDocRef.data()
+    const { issueDoc } = this.state
     if (issueDoc.title !== curIssue.title ||
         issueDoc.project !== curIssue.project) {
-      issueDocRef.update({
-        title: curIssue.title,
-        proect: curIssue.project
-      })
-      .then(()=>console.log('update issue ok'))
-      .catch((err: Error)=>console.log(err.message))
+      firebaseDb.collection('issues')
+        .doc(issueDoc.docId)
+        .update({
+          title: curIssue.title,
+          proect: curIssue.project
+        })
+        .then(()=>console.log('update issue ok'))
+        .catch((err: Error)=>console.log(err.message))
     }
   }
 
@@ -93,10 +104,10 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
   }
 
   loadTimeLogs() {
-    const { issueDocRef } = this.state
+    const { issueDoc } = this.state
     this.unsubscribe =
       firebaseDb.collection('time-logs')
-        .where('issueDocId', '==', issueDocRef.id)
+        .where('issueDocId', '==', issueDoc.docId)
         .orderBy('createdAt')
         .onSnapshot(
           (snapshot: any) => {
@@ -117,11 +128,11 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
 
   addTimeLog = (timeLog: ITimeLog) => {
     const { issuePageInfo } = this.props
-    const { issueDocRef } = this.state
+    const { issueDoc } = this.state
     const timeLogDetail: ITimeLogDetail = {
       ...timeLog,
       gitlabUser: issuePageInfo.curGitlabUser,
-      issueDocId: issueDocRef.id,
+      issueDocId: issueDoc.docId,
       project: issuePageInfo.curIssue.project,
       createdAt: new Date(),
     }
@@ -165,7 +176,7 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
         { this.renderTimeLogs() }
         <br/>
         {
-          this.state.issueDocRef &&
+          this.state.issueDoc &&
           <TimeLogEditor onAdd={this.addTimeLog}/>
         }
       </div>
