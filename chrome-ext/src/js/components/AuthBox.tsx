@@ -23,23 +23,33 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
   loadAuthState() {
     firebaseAuth.onAuthStateChanged((user: any) => {
       this.setState({user, loading: false, message: ''})
+      this.updateAndSaveUser(user, this.props.curGitlabUser)
+    })
+  }
 
-      const { curGitlabUser } = this.props
-      if (user && curGitlabUser) {
-        // update displayName as curGitlabUser
-        if (user.displayName !== curGitlabUser) {
-          user.updateProfile({displayName: curGitlabUser})
-            .then(()=>console.log('update ok'))
-            .catch((err: Error)=>console.log(err.message))
-        }
-        // store curGitlabUser to users collection
-        firebaseDb.collection('users')
-          .doc(curGitlabUser)
-          .set({gitlabName: curGitlabUser})
-          .then(()=>console.log('save user ok'))
+  updateAndSaveUser(user:any, curGitlabUser:string) {
+    if (user && curGitlabUser) {
+      // update displayName as curGitlabUser
+      if (user.displayName !== curGitlabUser) {
+        user.updateProfile({displayName: curGitlabUser})
+          .then(()=>console.log('update ok'))
           .catch((err: Error)=>console.log(err.message))
       }
-    })
+      // store curGitlabUser to users collection
+      firebaseDb.collection('users')
+        .where('gitlabName', '==', curGitlabUser)
+        .get()
+        .then((snapshot: any) => {
+          if (snapshot.empty) {
+            return firebaseDb.collection('users')
+              .add({gitlabName: curGitlabUser})
+          } else {
+            throw new Error('user existed')
+          }
+        })
+        .then(()=>console.log('save user ok'))
+        .catch((err: Error)=>console.log(err.message))
+    }
   }
 
   signOut = () => {
