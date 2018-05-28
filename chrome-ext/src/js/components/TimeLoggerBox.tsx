@@ -18,21 +18,48 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
     super(props)
     this.state = {
       timeLogs: [],
+      issueDocRef: null
     }
   }
 
   componentDidMount() {
-    this.loadTimeLogs()
+    this.findOrCreateIssue()
+      .then((issueDocRef: any)=>{
+        this.setState({issueDocRef}, ()=>this.loadTimeLogs())
+      })
   }
 
   componentWillUnmount() {
-    this.unsubscribe()
+    this.unsubscribe && this.unsubscribe()
+  }
+
+  findOrCreateIssue() {
+    const { curIssue } = this.props.issuePageInfo
+    return firebaseDb.collection('issues')
+      .where('type', '==', curIssue.type)
+      .where('num', '==', curIssue.num)
+      .where('createdBy', '==', curIssue.createdBy)
+      .where('issueCreatedAt', '==', curIssue.issueCreatedAt)
+      .limit(1)
+      .get()
+      .then((snapshot: any) => {
+        let issueDocRef
+        snapshot.forEach((ref: any)=>issueDocRef=ref)
+        if (issueDocRef) {
+          return issueDocRef
+        } else {
+          return firebaseDb.collection('issues')
+            .add(curIssue)
+        }
+      })
+      .catch((err: Error)=>console.log(err.message))
   }
 
   loadTimeLogs() {
+    const { issueDocRef } = this.state
     this.unsubscribe =
       firebaseDb.collection('time-logs')
-        .where('issueDocId', '==', 'aaaa')
+        .where('issueDocId', '==', issueDocRef.id)
         .orderBy('createdAt')
         .onSnapshot(
           (snapshot: any) => {
@@ -53,10 +80,11 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
 
   addTimeLog = (timeLog: ITimeLog) => {
     const { issuePageInfo } = this.props
+    const { issueDocRef } = this.state
     const timeLogDetail: ITimeLogDetail = {
       ...timeLog,
       gitlabUser: issuePageInfo.curGitlabUser,
-      issueDocId: 'aaaa',
+      issueDocId: issueDocRef.id,
       project: issuePageInfo.curIssue.project,
       createdAt: new Date(),
     }
@@ -99,7 +127,10 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
       <div className='time-logger-container'>
         { this.renderTimeLogs() }
         <br/>
-        <TimeLogEditor onAdd={this.addTimeLog}/>
+        {
+          this.state.issueDocRef &&
+          <TimeLogEditor onAdd={this.addTimeLog}/>
+        }
       </div>
     )
   }

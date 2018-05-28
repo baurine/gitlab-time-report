@@ -15,11 +15,13 @@ export interface ITimeLogDoc extends ITimeLogDetail {
 }
 
 export interface IIssueInfo {
+  // won't change forever
   type: string,
-  project: string,
   num: number,
   createdBy: string,
   issueCreatedAt: Date,
+  // maybe change
+  project: string,
   title: string
 }
 
@@ -31,11 +33,12 @@ export interface IIssuePageInfo {
 ///////////////////////////////////////////////////
 
 export interface ITimeLoggerBoxProps {
-  issuePageInfo: IIssuePageInfo
+  issuePageInfo: IIssuePageInfo,
 }
 
 export interface ITimeLoggerBoxState {
-  timeLogs: Array<ITimeLogDoc>
+  timeLogs: Array<ITimeLogDoc>,
+  issueDocRef: any
 }
 
 export interface ITimeLogItemProps {
