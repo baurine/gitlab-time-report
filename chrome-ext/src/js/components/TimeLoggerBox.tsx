@@ -51,6 +51,7 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
           let issueSnapshot: any
           snapshot.forEach((s: any)=>issueSnapshot=s)
           if (issueSnapshot) {
+            console.log('issue existed')
             return {
               ...issueSnapshot.data(),
               issueCreatedAt: issueSnapshot.data().issueCreatedAt.toDate(),
@@ -60,10 +61,13 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
             // add
             return firebaseDb.collection('issues')
               .add(curIssue)
-              .then((docRef: any) => ({
-                docId: docRef.id,
-                ...curIssue
-              }))
+              .then((docRef: any) => {
+                console.log('add issue ok')
+                return {
+                  docId: docRef.id,
+                  ...curIssue
+                }
+              })
           }
       })
       .catch((err: Error)=>console.log(err.message))
@@ -99,7 +103,7 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
           throw new Error('project existed')
         }
       })
-      .then(()=>console.log('save project ok'))
+      .then(()=>console.log('add project ok'))
       .catch((err: Error)=>console.log(err.message))
   }
 
@@ -146,7 +150,7 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
     firebaseDb.collection('time-logs')
               .doc(timeLog.docId)
               .delete()
-              .then(() => console.log('delete ok'))
+              .then(() => console.log('delete time-log ok'))
               .catch((err: Error) => console.log(err.message))
   }
 
@@ -157,7 +161,7 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
                 spentTime: timeLog.spentTime,
                 spentAt: timeLog.spentAt
               })
-              .then(() => console.log('update ok'))
+              .then(() => console.log('update time-log ok'))
               .catch((err: Error) => console.log(err.message))
   }
 

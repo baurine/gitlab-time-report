@@ -32,7 +32,7 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
       // update displayName as curGitlabUser
       if (user.displayName !== curGitlabUser) {
         user.updateProfile({displayName: curGitlabUser})
-          .then(()=>console.log('update ok'))
+          .then(()=>console.log('update user ok'))
           .catch((err: Error)=>console.log(err.message))
       }
       // store curGitlabUser to users collection
@@ -48,7 +48,7 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
             throw new Error('user existed')
           }
         })
-        .then(()=>console.log('save user ok'))
+        .then(()=>console.log('add user ok'))
         .catch((err: Error)=>console.log(err.message))
     }
   }
