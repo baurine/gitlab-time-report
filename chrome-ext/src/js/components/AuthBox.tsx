@@ -38,6 +38,7 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
       // store curGitlabUser to users collection
       firebaseDb.collection('users')
         .where('gitlabName', '==', curGitlabUser)
+        .limit(1)
         .get()
         .then((snapshot: any) => {
           if (snapshot.empty) {

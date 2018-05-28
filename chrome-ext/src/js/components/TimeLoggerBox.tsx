@@ -25,7 +25,11 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
   componentDidMount() {
     this.findOrCreateIssue()
       .then((issueDocRef: any)=>{
-        this.setState({issueDocRef}, ()=>this.loadTimeLogs())
+        this.setState({issueDocRef}, ()=>{
+          this.loadTimeLogs()
+          this.updateIssueDoc()
+          this.findOrCreateProject()
+        })
       })
   }
 
@@ -52,6 +56,39 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
             .add(curIssue)
         }
       })
+      .catch((err: Error)=>console.log(err.message))
+  }
+
+  updateIssueDoc() {
+    const { curIssue } = this.props.issuePageInfo
+    const { issueDocRef } = this.state
+    const issueDoc = issueDocRef.data()
+    if (issueDoc.title !== curIssue.title ||
+        issueDoc.project !== curIssue.project) {
+      issueDocRef.update({
+        title: curIssue.title,
+        proect: curIssue.project
+      })
+      .then(()=>console.log('update issue ok'))
+      .catch((err: Error)=>console.log(err.message))
+    }
+  }
+
+  findOrCreateProject() {
+    const { curIssue } = this.props.issuePageInfo
+    firebaseDb.collection('projects')
+      .where('name', '==', curIssue.project)
+      .limit(1)
+      .get()
+      .then((snapshot: any) => {
+        if (snapshot.empty) {
+          return firebaseDb.collection('projects')
+            .add({name: curIssue.project})
+        } else {
+          throw new Error('project existed')
+        }
+      })
+      .then(()=>console.log('save project ok'))
       .catch((err: Error)=>console.log(err.message))
   }
 
@@ -105,10 +142,10 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
   updateTimeLog = (timeLog: ITimeLogDoc) => {
     firebaseDb.collection('time-logs')
               .doc(timeLog.docId)
-              .set({
+              .update({
                 spentTime: timeLog.spentTime,
                 spentAt: timeLog.spentAt
-              }, {merge: true})
+              })
               .then(() => console.log('update ok'))
               .catch((err: Error) => console.log(err.message))
   }
