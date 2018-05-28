@@ -1,5 +1,6 @@
 import * as React from 'react'
 
+const md5 = require('blueimp-md5')
 import { firebaseDb, firebaseAuth } from '../firebase/firebase'
 import { IAuthBoxProps, IAuthBoxState } from '../types'
 require('../../css/AuthBox.scss')
@@ -36,16 +37,14 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
           .catch((err: Error)=>console.log(err.message))
       }
       // store curGitlabUser to users collection
-      firebaseDb.collection('users')
-        .where('gitlabName', '==', curGitlabUser)
-        .limit(1)
-        .get()
-        .then((snapshot: any) => {
-          if (snapshot.empty) {
-            return firebaseDb.collection('users')
-              .add({gitlabName: curGitlabUser})
-          } else {
+      const userMD5 = md5(curGitlabUser)
+      const userRef = firebaseDb.collection('users').doc(userMD5)
+      userRef.get()
+        .then((snapshot: any)=>{
+          if (snapshot.exists) {
             throw new Error('user existed')
+          } else {
+            return userRef.set({gitlabName: curGitlabUser})
           }
         })
         .then(()=>console.log('add user ok'))

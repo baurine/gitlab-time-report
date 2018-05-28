@@ -1,5 +1,6 @@
 import * as React from 'react'
 
+const md5 = require('blueimp-md5')
 import { firebaseDb } from '../firebase/firebase'
 import DateUtil from '../utils/date-util'
 import TimeLogItem from './TimeLogItem'
@@ -40,35 +41,30 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
 
   findOrCreateIssue() {
     const { curIssue } = this.props.issuePageInfo
-    return firebaseDb.collection('issues')
-      .where('type', '==', curIssue.type)
-      .where('num', '==', curIssue.num)
-      .where('createdBy', '==', curIssue.createdBy)
-      .where('issueCreatedAt', '==', curIssue.issueCreatedAt)
-      .limit(1)
-      .get()
-      .then((snapshot: any) => {
-          let issueSnapshot: any
-          snapshot.forEach((s: any)=>issueSnapshot=s)
-          if (issueSnapshot) {
-            console.log('issue existed')
-            return {
-              ...issueSnapshot.data(),
-              issueCreatedAt: issueSnapshot.data().issueCreatedAt.toDate(),
-              docId: issueSnapshot.id,
-            }
-          } else {
-            // add
-            return firebaseDb.collection('issues')
-              .add(curIssue)
-              .then((docRef: any) => {
-                console.log('add issue ok')
-                return {
-                  docId: docRef.id,
-                  ...curIssue
-                }
-              })
+    const issueSignature =
+      `${curIssue.type}-${curIssue.num}-${curIssue.createdBy}-${curIssue.issueCreatedAt}`
+    const issueMD5 = md5(issueSignature)
+    const issueDocRef = firebaseDb.collection('issues').doc(issueMD5)
+    return issueDocRef.get()
+      .then((snapshot: any)=>{
+        if(snapshot.exists) {
+          console.log('issue existed')
+          return {
+            ...snapshot.data(),
+            issueCreatedAt: snapshot.data().issueCreatedAt.toDate(),
+            docId: snapshot.id,
           }
+        } else {
+          // add
+          return issueDocRef.set(curIssue)
+            .then((docRef: any) => {
+              console.log('add issue ok')
+              return {
+                docId: docRef.id,
+                ...curIssue
+              }
+            })
+        }
       })
       .catch((err: Error)=>console.log(err.message))
   }
@@ -91,16 +87,14 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
 
   findOrCreateProject() {
     const { curIssue } = this.props.issuePageInfo
-    firebaseDb.collection('projects')
-      .where('name', '==', curIssue.project)
-      .limit(1)
-      .get()
-      .then((snapshot: any) => {
-        if (snapshot.empty) {
-          return firebaseDb.collection('projects')
-            .add({name: curIssue.project})
-        } else {
+    const projectSignMD5 = md5(curIssue.project)
+    const projectDocRef = firebaseDb.collection('projects').doc(projectSignMD5)
+    projectDocRef.get()
+      .then((snapshot: any)=>{
+        if (snapshot.exists) {
           throw new Error('project existed')
+        } else {
+          return projectDocRef.set({name: curIssue.project})
         }
       })
       .then(()=>console.log('add project ok'))
