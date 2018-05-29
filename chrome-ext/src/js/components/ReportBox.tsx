@@ -107,7 +107,7 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
           <tr>
             <th>{projectName}</th>
             {
-              dates.map(date=><th key={date}>{date}</th>)
+              dates.map(date=><th key={date}>{date.slice(0, 10)}</th>)
             }
           </tr>
         </thead>
