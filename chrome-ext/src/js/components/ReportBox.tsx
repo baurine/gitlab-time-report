@@ -151,8 +151,32 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
       aggreResult[project][user] = aggreResult[project][user] || {}
       aggreResult[project][user][spentAt] = aggreResult[project][user][spentAt] || 0
       aggreResult[project][user][spentAt] += spentTime
+
+      // a virtual 'total' date for every user
+      aggreResult[project][user]['total'] = aggreResult[project][user]['total'] || 0
+      aggreResult[project][user]['total'] += spentTime
+
+      // a virtual 'total' user for every project
+      aggreResult[project]['total'] = aggreResult[project]['total'] || {}
+      aggreResult[project]['total'][spentAt] = aggreResult[project]['total'][spentAt] || 0
+      aggreResult[project]['total'][spentAt] += spentTime
+
+      // a virtual 'total' date for every project's 'total' user
+      aggreResult[project]['total']['total'] = aggreResult[project]['total']['total'] || 0
+      aggreResult[project]['total']['total'] += spentTime
+
+      // aggregate users
+      aggreResult[project]['users'] = aggreResult[project]['users'] || []
+      if (!aggreResult[project]['users'].includes(user)) {
+        aggreResult[project]['users'].push(user)
+      }
+
+      // aggregate dates
+      aggreResult[project]['dates'] = aggreResult[project]['dates'] || []
+      if (!aggreResult[project]['dates'].includes(spentAt)) {
+        aggreResult[project]['dates'].push(spentAt)
+      }
     })
-    console.log(aggreResult)
     this.setState({aggreResult})
   }
 
