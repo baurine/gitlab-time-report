@@ -14,7 +14,7 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
       selectedProject: 'all',
       dateFrom: '',
       dateTo: '',
-      aggreResult: ''
+      aggreResult: {}
     }
   }
 
@@ -85,9 +85,48 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
     )
   }
 
-  renderReport() {
+  renderReports() {
     const { aggreResult } = this.state
-    return <pre>{JSON.stringify(aggreResult)}</pre>
+    if (typeof aggreResult === 'string') {
+      return <p>{aggreResult}</p>
+    }
+    const projects = Object.keys(aggreResult)
+    return projects.map(project=>{
+      const projectAggreResult = (aggreResult as any)[project]
+      return this.renderProjectReportTable(project, projectAggreResult)
+    })
+  }
+
+  // TODO: extract to a component
+  renderProjectReportTable(projectName:string, projectAggreResult: any) {
+    const dates: string[] = projectAggreResult['dates'].concat('total')
+    const users: string[] = projectAggreResult['users'].concat('total')
+    return (
+      <table key={projectName}>
+        <thead>
+          <tr>
+            <th>{projectName}</th>
+            {
+              dates.map(date=><th key={date}>{date}</th>)
+            }
+          </tr>
+        </thead>
+        <tbody>
+          {
+            users.map(user=>
+              <tr key={user}>
+                <td>{user}</td>
+                {
+                  dates.map(date=>
+                    <td key={date}>{projectAggreResult[user][date]}</td>
+                  )
+                }
+              </tr>
+            )
+          }
+        </tbody>
+      </table>
+    )
   }
 
   inputChange = (event: any) => {
@@ -105,25 +144,27 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
 
     let query = firebaseDb.collection('time-logs')
 
+    if (dateFrom !== '') {
+      query = query.where('spentAt', '>=', new Date(dateFrom))
+    }
+    if (dateTo !== '') {
+      query = query.where('spentAt', '<=', new Date(dateTo))
+    }
     if (selectedProject !== 'all') {
       query = query.where('project', '==', selectedProject)
     }
     if (selectedUser !== 'all') {
       query = query.where('gitlabUser', '==', selectedUser)
     }
-    if (dateFrom !== '') {
-      query = query.where('spentAt', '>=', new Date(dateFrom))
-    }
-    if (dateTo !== '') {
-      query = query.where('spentAt', '<', new Date(dateTo))
-    }
+
+    query = query.orderBy('spentAt')
     if (selectedProject === 'all') {
       query = query.orderBy('project')
     }
     if (selectedUser === 'all') {
       query = query.orderBy('gitlabUser')
     }
-    query = query.orderBy('spentAt')
+
     query.get()
       .then((snapshot: any) => {
         let timeLogs: Array<ITimeLogDetail> = []
@@ -188,7 +229,7 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
         <input type='date' name='dateFrom' onChange={this.inputChange}/>
         <input type='date' name='dateTo' onChange={this.inputChange}/>
         <button onClick={this.queryTimeLogs}>Report</button>
-        { this.renderReport() }
+        { this.renderReports() }
       </div>
     )
   }
