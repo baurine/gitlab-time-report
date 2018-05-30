@@ -104,7 +104,7 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
   loadTimeLogs() {
     const { issueDoc } = this.state
     this.unsubscribe =
-      firebaseDb.collection('time-logs')
+      firebaseDb.collection('timelogs')
         .where('issueDocId', '==', issueDoc.docId)
         .orderBy('createdAt')
         .onSnapshot(
@@ -134,14 +134,14 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
       project: issuePageInfo.curIssue.project,
       createdAt: new Date(),
     }
-    firebaseDb.collection('time-logs')
+    firebaseDb.collection('timelogs')
       .add(timeLogDetail)
       .then((docRef: any) => console.log(docRef.id))
       .catch((err: Error) => console.log(err.message))
   }
 
   deleteTimeLog = (timeLog: ITimeLogDoc) => {
-    firebaseDb.collection('time-logs')
+    firebaseDb.collection('timelogs')
               .doc(timeLog.docId)
               .delete()
               .then(() => console.log('delete time-log ok'))
@@ -149,7 +149,7 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
   }
 
   updateTimeLog = (timeLog: ITimeLogDoc) => {
-    firebaseDb.collection('time-logs')
+    firebaseDb.collection('timelogs')
               .doc(timeLog.docId)
               .update({
                 spentTime: timeLog.spentTime,

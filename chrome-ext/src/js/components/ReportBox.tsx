@@ -145,7 +145,7 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
 
     const { selectedProject, selectedUser, dateFrom, dateTo } = this.state
 
-    let query = firebaseDb.collection('time-logs')
+    let query = firebaseDb.collection('timelogs')
 
     if (dateFrom !== '') {
       query = query.where('spentAt', '>=', new Date(dateFrom))
