@@ -149,6 +149,8 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
 
     if (dateFrom !== '') {
       query = query.where('spentAt', '>=', new Date(dateFrom))
+    } else {
+      query = query.limit(1000)
     }
     if (dateTo !== '') {
       query = query.where('spentAt', '<=', new Date(dateTo))
