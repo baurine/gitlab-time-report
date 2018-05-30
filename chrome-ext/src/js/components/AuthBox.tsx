@@ -12,6 +12,7 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
       user: null,
       email: '',
       password: '',
+
       loading: true,
       message: 'loading...'
     }
@@ -28,8 +29,8 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
     })
   }
 
-  updateAndSaveUser(user:any, curGitlabUser:string) {
-    if (user && curGitlabUser) {
+  updateAndSaveUser(user: any, curGitlabUser: string) {
+    if (user && user.emailVerified && curGitlabUser) {
       // update displayName as curGitlabUser
       if (user.displayName !== curGitlabUser) {
         user.updateProfile({displayName: curGitlabUser})
@@ -57,28 +58,55 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
   }
 
   logIn = () => {
-    this.setState({loading: true, message: 'logging in...'})
-
     const { email, password } = this.state
+    if (email.length === 0 || password.length === 0) {
+      this.setState({message: 'please fill the email and password.'})
+      return
+    }
+
+    this.setState({loading: true, message: 'logging in...'})
     firebaseAuth.signInWithEmailAndPassword(email, password)
-      .catch((err: Error) => this.setState({loading:false, message: err.message}))
+      .catch((err: Error)=>this.setState({loading: false, message: err.message}))
   }
 
   register = () => {
-    this.setState({loading: true, message: 'registering...'})
-
     const { email, password } = this.state
+    if (email.length === 0 || password.length === 0) {
+      this.setState({message: 'please fill the email and password.'})
+      return
+    }
+
+    this.setState({loading: true, message: 'registering...'})
     firebaseAuth.createUserWithEmailAndPassword(email, password)
-      .catch((err: Error) => this.setState({loading:false, message: err.message}))
+      .catch((err: Error)=>this.setState({loading: false, message: err.message}))
   }
 
   resetPwd = () => {
-    this.setState({loading: true, message: 'sending email...'})
-
     const { email } = this.state
+    if (email.length === 0) {
+      this.setState({message: 'please fill the email.'})
+      return
+    }
+
+    this.setState({loading: true, message: 'sending email...'})
     firebaseAuth.sendPasswordResetEmail(email)
-      .then(() => this.setState({loading:false, message: 'email sent!'}))
-      .catch((err: Error) => this.setState({loading:false, message: err.message}))
+      .then(()=>this.setState({
+        loading: false,
+        message: 'reset password email sent! please go to your inbox to check the email.'
+      }))
+      .catch((err: Error)=>this.setState({loading: false, message: err.message}))
+  }
+
+  verifyEmail = () => {
+    const { user } = this.state
+
+    this.setState({loading: true, message: 'sending verification email...'})
+    user.sendEmailVerification()
+      .then(()=>this.setState({
+        loading: false,
+        message: 'verification email sent! please go to your inbox to check the email.'
+      }))
+      .catch((err: Error)=>this.setState({loading: false, message: err.message}))
   }
 
   inputChange = (event: any) => {
@@ -106,10 +134,12 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
     const { email, password } = this.state
     return (
       <div>
-        <input type='text'
+        Email:
+        <input type='email'
                name='email'
                value={email}
                onChange={this.inputChange}/>
+        Password:
         <input type='password'
                name='password'
                value={password}
@@ -121,19 +151,36 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
     )
   }
 
+  renderVerifyEmailStatus() {
+    return (
+      <div>
+        <button onClick={this.signOut}>Sign Out</button>
+        <button onClick={this.verifyEmail}>Verify Email</button>
+        <span>Your email isn't verified yet, click the button to send verification email.</span>
+      </div>
+    )
+  }
+
+  renderAuthInputs() {
+    const { loading, user } = this.state
+    if (loading) {
+      return null
+    }
+    if (!user) {
+      return this.renderSignedOutStatus()
+    }
+    if (user.emailVerified) {
+      return this.renderLoggedInStatus()
+    }
+    return this.renderVerifyEmailStatus()
+  }
+
   render() {
     const { user, loading, message } = this.state
     return (
       <div className='auth-box-container'>
         <p className='msg'>{message}</p>
-        {
-          !loading && user &&
-          this.renderLoggedInStatus()
-        }
-        {
-          !loading && !user &&
-          this.renderSignedOutStatus()
-        }
+        { this.renderAuthInputs() }
       </div>
     )
   }
