@@ -2,6 +2,8 @@ import * as React from 'react'
 
 import { firebaseDb } from '../firebase/firebase'
 import { IReportBoxState, ITimeLogDetail } from '../types'
+import CommonUtil from '../utils/common-util'
+import MessageBox from './MessageBox'
 require('../../css/ReportBox.scss')
 
 export default class ReportBox extends React.Component<{}, IReportBoxState> {
@@ -15,7 +17,9 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
       dateFrom: '',
       dateTo: '',
 
-      aggreResult: {}
+      aggreResult: {},
+
+      message: ''
     }
   }
 
@@ -28,26 +32,30 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
     firebaseDb.collection('projects')
       .orderBy('name')
       .get()
-      .then((querySnapshot: any)=>{
+      .then((querySnapshot: any) => {
         let projects: string[] = []
-        querySnapshot.forEach((snapshot: any)=>projects.push(snapshot.data().name))
+        querySnapshot.forEach((snapshot: any) => projects.push(snapshot.data().name))
         projects = ['all'].concat(projects)
         this.setState({projects})
       })
-      .catch((err: Error)=>console.log(err.message))
+      .catch((err: any) => {
+        this.setState({message: CommonUtil.formatFirebaseError(err)})
+      })
   }
 
   loadUsers() {
     firebaseDb.collection('users')
       .orderBy('gitlabName')
       .get()
-      .then((querySnapshot: any)=>{
+      .then((querySnapshot: any) => {
         let users: string[] = []
         querySnapshot.forEach((snapshot: any)=>users.push(snapshot.data().gitlabName))
         users = ['all'].concat(users)
         this.setState({users})
       })
-      .catch((err: Error)=>console.log(err.message))
+      .catch((err: any) => {
+        this.setState({message: CommonUtil.formatFirebaseError(err)})
+      })
   }
 
   renderProjectSelector() {
@@ -175,8 +183,8 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
         }))
         this.aggregateTimeLogs(timeLogs)
       })
-      .catch((err: Error)=>{
-        this.setState({aggreResult: err.message})
+      .catch((err: any)=>{
+        this.setState({aggreResult: CommonUtil.formatFirebaseError(err)})
       })
   }
 
@@ -224,6 +232,8 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
   render() {
     return (
       <div className='report-box-container'>
+        <MessageBox message={this.state.message}
+                    onClose={()=>this.setState({message: ''})}/>
         { this.renderProjectSelector() }
         { this.renderUserSelector() }
         <input type='date' name='dateFrom' onChange={this.inputChange}/>

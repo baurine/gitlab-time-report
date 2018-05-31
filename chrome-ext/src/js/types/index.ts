@@ -84,5 +84,6 @@ export interface IReportBoxState {
   selectedProject: string,
   dateFrom: string,
   dateTo: string,
-  aggreResult: object | string
+  aggreResult: object | string,
+  message: string
 }
