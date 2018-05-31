@@ -4,6 +4,7 @@ const md5 = require('blueimp-md5')
 import { firebaseAuth, firebaseDb } from '../firebase/firebase'
 import { IAuthBoxProps, IAuthBoxState } from '../types'
 import CommonUtil from '../utils/common-util'
+import MessageBox from './MessageBox'
 require('../../css/AuthBox.scss')
 
 export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxState> {
@@ -183,7 +184,7 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
     const { user, loading, message } = this.state
     return (
       <div className='auth-box-container'>
-        <p className='msg'>{message}</p>
+        <MessageBox message={message}/>
         { this.renderAuthInputs() }
       </div>
     )
