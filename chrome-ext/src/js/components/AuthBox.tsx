@@ -1,8 +1,9 @@
 import * as React from 'react'
-
 const md5 = require('blueimp-md5')
-import { firebaseDb, firebaseAuth } from '../firebase/firebase'
+
+import { firebaseAuth, firebaseDb } from '../firebase/firebase'
 import { IAuthBoxProps, IAuthBoxState } from '../types'
+import CommonUtil from '../utils/common-util'
 require('../../css/AuthBox.scss')
 
 export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxState> {
@@ -34,22 +35,25 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
       // update displayName as curGitlabUser
       if (user.displayName !== curGitlabUser) {
         user.updateProfile({displayName: curGitlabUser})
-          .then(()=>console.log('update user ok'))
-          .catch((err: Error)=>console.log(err.message))
+          .then(() => {
+            CommonUtil.log('udpate user ok')
+            this.setState({user})
+          })
+          .catch(CommonUtil.handleError)
       }
       // store curGitlabUser to users collection
       const userMD5 = md5(curGitlabUser)
       const userRef = firebaseDb.collection('users').doc(userMD5)
       userRef.get()
-        .then((snapshot: any)=>{
+        .then((snapshot: any) => {
           if (snapshot.exists) {
             throw new Error('user existed')
           } else {
             return userRef.set({gitlabName: curGitlabUser})
           }
         })
-        .then(()=>console.log('add user ok'))
-        .catch((err: Error)=>console.log(err.message))
+        .then(() => CommonUtil.log('add user ok'))
+        .catch(CommonUtil.handleError)
     }
   }
 
@@ -60,41 +64,41 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
   logIn = () => {
     const { email, password } = this.state
     if (email.length === 0 || password.length === 0) {
-      this.setState({message: 'please fill the email and password.'})
+      this.setState({message: 'Please fill the email and password.'})
       return
     }
 
     this.setState({loading: true, message: 'logging in...'})
     firebaseAuth.signInWithEmailAndPassword(email, password)
-      .catch((err: Error)=>this.setState({loading: false, message: err.message}))
+      .catch((err: Error) => this.setState({loading: false, message: CommonUtil.formatFirebaseError(err)}))
   }
 
   register = () => {
     const { email, password } = this.state
     if (email.length === 0 || password.length === 0) {
-      this.setState({message: 'please fill the email and password.'})
+      this.setState({message: 'Please fill the email and password.'})
       return
     }
 
     this.setState({loading: true, message: 'registering...'})
     firebaseAuth.createUserWithEmailAndPassword(email, password)
-      .catch((err: Error)=>this.setState({loading: false, message: err.message}))
+      .catch((err: Error) => this.setState({loading: false, message: CommonUtil.formatFirebaseError(err)}))
   }
 
   resetPwd = () => {
     const { email } = this.state
     if (email.length === 0) {
-      this.setState({message: 'please fill the email.'})
+      this.setState({message: 'Please fill the email.'})
       return
     }
 
     this.setState({loading: true, message: 'sending email...'})
     firebaseAuth.sendPasswordResetEmail(email)
-      .then(()=>this.setState({
+      .then(() => this.setState({
         loading: false,
-        message: 'reset password email sent! please go to your inbox to check the email.'
+        message: 'Reset password email sent! Please go to your inbox to check the email.'
       }))
-      .catch((err: Error)=>this.setState({loading: false, message: err.message}))
+      .catch((err: Error) => this.setState({loading: false, message: CommonUtil.formatFirebaseError(err)}))
   }
 
   verifyEmail = () => {
@@ -104,9 +108,9 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
     user.sendEmailVerification()
       .then(()=>this.setState({
         loading: false,
-        message: 'verification email sent! please go to your inbox to check the email.'
+        message: 'Verification email sent! please go to your inbox to check the email.'
       }))
-      .catch((err: Error)=>this.setState({loading: false, message: err.message}))
+      .catch((err: Error) => this.setState({loading: false, message: CommonUtil.formatFirebaseError(err)}))
   }
 
   inputChange = (event: any) => {
