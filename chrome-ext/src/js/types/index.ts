@@ -48,6 +48,7 @@ export interface ITimeLoggerBoxState {
 
 export interface ITimeLogItemProps {
   timeLog: ITimeLogDoc,
+  enableEdit: boolean,
   onDelete?: (timeLog: ITimeLogDoc) => void,
   onUpdate?: (timeLog: ITimeLogDoc) => void
 }

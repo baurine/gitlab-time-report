@@ -173,9 +173,11 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
   }
 
   renderTimeLogs = () => {
+    const { curGitlabUser } = this.props.issuePageInfo
     return this.state.timeLogs.map(item =>
       <TimeLogItem key={item.docId}
                    timeLog={item}
+                   enableEdit={item.gitlabUser===curGitlabUser}
                    onDelete={this.deleteTimeLog}
                    onUpdate={this.updateTimeLog}/>
     )
