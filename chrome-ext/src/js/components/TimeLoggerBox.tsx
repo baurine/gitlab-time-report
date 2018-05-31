@@ -1,10 +1,12 @@
 import * as React from 'react'
-
 const md5 = require('blueimp-md5')
-import { firebaseDb } from '../firebase/firebase'
+
+import CommonUtil from '../utils/common-util'
 import DateUtil from '../utils/date-util'
+import { firebaseDb, dbCollections } from '../firebase/firebase'
 import TimeLogItem from './TimeLogItem'
 import TimeLogEditor from './TimeLogEditor'
+import MessageBox from './MessageBox'
 import { ITimeLog,
          ITimeLogDetail,
          ITimeLogDoc,
@@ -20,18 +22,22 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
     super(props)
     this.state = {
       timeLogs: [],
-      issueDoc: null
+      issueDoc: null,
+      message: ''
     }
   }
 
   componentDidMount() {
     this.findOrCreateIssue()
-      .then((issueDoc: any)=>{
-        this.setState({issueDoc}, ()=>{
+      .then((issueDoc: any) => {
+        this.setState({issueDoc}, () => {
           this.loadTimeLogs()
           this.updateIssueDoc()
           this.findOrCreateProject()
         })
+      })
+      .catch((err: any) => {
+        this.setState({message: CommonUtil.formatFirebaseError(err)})
       })
   }
 
@@ -44,11 +50,11 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
     const issueSignature =
       `${curIssue.type}-${curIssue.num}-${curIssue.createdBy}-${curIssue.issueCreatedAt}`
     const issueMD5 = md5(issueSignature)
-    const issueDocRef = firebaseDb.collection('issues').doc(issueMD5)
+    const issueDocRef = firebaseDb.collection(dbCollections.ISSUES).doc(issueMD5)
     return issueDocRef.get()
       .then((snapshot: any)=>{
         if(snapshot.exists) {
-          console.log('issue existed')
+          CommonUtil.log('issue existed')
           return {
             ...snapshot.data(),
             issueCreatedAt: snapshot.data().issueCreatedAt.toDate(),
@@ -58,7 +64,7 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
           // add
           return issueDocRef.set(curIssue)
             .then(() => {
-              console.log('add issue ok')
+              CommonUtil.log('add issue ok')
               return {
                 docId: issueMD5,
                 ...curIssue
@@ -66,7 +72,6 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
             })
         }
       })
-      .catch((err: Error)=>console.log(err.message))
   }
 
   updateIssueDoc() {
@@ -74,21 +79,21 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
     const { issueDoc } = this.state
     if (issueDoc.title !== curIssue.title ||
         issueDoc.project !== curIssue.project) {
-      firebaseDb.collection('issues')
+      firebaseDb.collection(dbCollections.ISSUES)
         .doc(issueDoc.docId)
         .update({
           title: curIssue.title,
           proect: curIssue.project
         })
-        .then(()=>console.log('update issue ok'))
-        .catch((err: Error)=>console.log(err.message))
+        .then(() => CommonUtil.log('update issue ok'))
+        .catch(CommonUtil.handleError)
     }
   }
 
   findOrCreateProject() {
     const { curIssue } = this.props.issuePageInfo
     const projectSignMD5 = md5(curIssue.project)
-    const projectDocRef = firebaseDb.collection('projects').doc(projectSignMD5)
+    const projectDocRef = firebaseDb.collection(dbCollections.PROJECTS).doc(projectSignMD5)
     projectDocRef.get()
       .then((snapshot: any)=>{
         if (snapshot.exists) {
@@ -97,14 +102,14 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
           return projectDocRef.set({name: curIssue.project})
         }
       })
-      .then(()=>console.log('add project ok'))
-      .catch((err: Error)=>console.log(err.message))
+      .then(() => CommonUtil.log('add project ok'))
+      .catch(CommonUtil.handleError)
   }
 
   loadTimeLogs() {
     const { issueDoc } = this.state
     this.unsubscribe =
-      firebaseDb.collection('timelogs')
+      firebaseDb.collection(dbCollections.TIME_LOGS)
         .where('issueDocId', '==', issueDoc.docId)
         .orderBy('createdAt')
         .onSnapshot(
@@ -118,8 +123,8 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
             }))
             this.setState({timeLogs})
           },
-          (err: Error) => {
-            console.log(err.message)
+          (err: any) => {
+            this.setState({message: CommonUtil.formatFirebaseError(err)})
           }
         )
   }
@@ -134,29 +139,35 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
       project: issuePageInfo.curIssue.project,
       createdAt: new Date(),
     }
-    firebaseDb.collection('timelogs')
+    firebaseDb.collection(dbCollections.TIME_LOGS)
       .add(timeLogDetail)
-      .then((docRef: any) => console.log(docRef.id))
-      .catch((err: Error) => console.log(err.message))
+      .then((docRef: any) => CommonUtil.log(docRef.id))
+      .catch((err: any) => {
+        this.setState({message: CommonUtil.formatFirebaseError(err)})
+      })
   }
 
   deleteTimeLog = (timeLog: ITimeLogDoc) => {
-    firebaseDb.collection('timelogs')
+    firebaseDb.collection(dbCollections.TIME_LOGS)
               .doc(timeLog.docId)
               .delete()
-              .then(() => console.log('delete time-log ok'))
-              .catch((err: Error) => console.log(err.message))
+              .then(() => CommonUtil.log('delete timelog ok'))
+              .catch((err: any) => {
+                this.setState({message: CommonUtil.formatFirebaseError(err)})
+              })
   }
 
   updateTimeLog = (timeLog: ITimeLogDoc) => {
-    firebaseDb.collection('timelogs')
+    firebaseDb.collection(dbCollections.TIME_LOGS)
               .doc(timeLog.docId)
               .update({
                 spentTime: timeLog.spentTime,
                 spentAt: timeLog.spentAt
               })
-              .then(() => console.log('update time-log ok'))
-              .catch((err: Error) => console.log(err.message))
+              .then(() => CommonUtil.log('update timelog ok'))
+              .catch((err: any) => {
+                this.setState({message: CommonUtil.formatFirebaseError(err)})
+              })
   }
 
   renderTimeLogs = () => {
@@ -169,10 +180,13 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
   }
 
   render() {
+    const { message } = this.state
     return (
       <div className='time-logger-container'>
         { this.renderTimeLogs() }
         <br/>
+        <MessageBox message={message}
+                    onClose={()=>this.setState({message: ''})}/>
         {
           this.state.issueDoc &&
           <TimeLogEditor onAdd={this.addTimeLog}/>

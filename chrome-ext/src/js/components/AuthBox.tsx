@@ -1,7 +1,7 @@
 import * as React from 'react'
 const md5 = require('blueimp-md5')
 
-import { firebaseAuth, firebaseDb } from '../firebase/firebase'
+import { firebaseAuth, firebaseDb, dbCollections } from '../firebase/firebase'
 import { IAuthBoxProps, IAuthBoxState } from '../types'
 import CommonUtil from '../utils/common-util'
 import MessageBox from './MessageBox'
@@ -44,7 +44,7 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
       }
       // store curGitlabUser to users collection
       const userMD5 = md5(curGitlabUser)
-      const userRef = firebaseDb.collection('users').doc(userMD5)
+      const userRef = firebaseDb.collection(dbCollections.USERS).doc(userMD5)
       userRef.get()
         .then((snapshot: any) => {
           if (snapshot.exists) {

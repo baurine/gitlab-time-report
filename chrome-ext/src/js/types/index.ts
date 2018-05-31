@@ -42,7 +42,8 @@ export interface ITimeLoggerBoxProps {
 
 export interface ITimeLoggerBoxState {
   timeLogs: Array<ITimeLogDoc>,
-  issueDoc: IIssueDoc
+  issueDoc: IIssueDoc,
+  message: string
 }
 
 export interface ITimeLogItemProps {

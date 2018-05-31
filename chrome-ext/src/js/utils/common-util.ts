@@ -8,10 +8,10 @@ export default class CommonUtil {
       errCode: err.code,
       errMsg: err.message
     }
-    this.log(JSON.stringify(errObj))
+    CommonUtil.log(JSON.stringify(errObj))
   }
 
   static formatFirebaseError(err: any) {
-    return `errCode: ${err.Code}, errMessage: ${err.message}`
+    return `errCode: ${err.code}, errMessage: ${err.message}`
   }
 }

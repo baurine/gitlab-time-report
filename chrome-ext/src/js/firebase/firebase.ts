@@ -22,4 +22,11 @@ const firebaseDb = firebase.firestore()
 const settings = { timestampsInSnapshots: true }
 firebaseDb.settings(settings)
 
-export { firebaseAuth, firebaseDb }
+const dbCollections = {
+  PROJECTS: 'projects',
+  USERS: 'users',
+  ISSUES: 'issues',
+  TIME_LOGS: 'timelogs',
+}
+
+export { firebaseAuth, firebaseDb, dbCollections }
