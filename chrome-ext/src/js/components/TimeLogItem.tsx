@@ -54,7 +54,7 @@ export default class TimeLogItem extends React.Component<ITimeLogItemProps, {edi
 
     return (
       <div>
-        <span>{timeLog.gitlabUser} spent {timeLog.spentTime} mins at {DateUtil.getDayFormat(timeLog.spentAt)}</span>
+        <span>{timeLog.gitlabUser} spent {DateUtil.formatSpentTime(timeLog.spentTime)} mins at {DateUtil.getDayFormat(timeLog.spentAt)}</span>
         {
           enableEdit &&
           <span>
