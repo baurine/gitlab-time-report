@@ -141,20 +141,22 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
     }
     firebaseDb.collection(dbCollections.TIME_LOGS)
       .add(timeLogDetail)
-      .then((docRef: any) => CommonUtil.log(docRef.id))
+      .then(() => this.setState({message: 'add timelog ok'}))
       .catch((err: any) => {
         this.setState({message: CommonUtil.formatFirebaseError(err)})
       })
   }
 
   deleteTimeLog = (timeLog: ITimeLogDoc) => {
-    firebaseDb.collection(dbCollections.TIME_LOGS)
-              .doc(timeLog.docId)
-              .delete()
-              .then(() => CommonUtil.log('delete timelog ok'))
-              .catch((err: any) => {
-                this.setState({message: CommonUtil.formatFirebaseError(err)})
-              })
+    if (confirm('Are you sure to delete this timelog?')) {
+      firebaseDb.collection(dbCollections.TIME_LOGS)
+                .doc(timeLog.docId)
+                .delete()
+                .then(() => this.setState({message: 'delete timelog ok'}))
+                .catch((err: any) => {
+                  this.setState({message: CommonUtil.formatFirebaseError(err)})
+                })
+    }
   }
 
   updateTimeLog = (timeLog: ITimeLogDoc) => {
@@ -164,7 +166,7 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
                 spentTime: timeLog.spentTime,
                 spentAt: timeLog.spentAt
               })
-              .then(() => CommonUtil.log('update timelog ok'))
+              .then(() => this.setState({message: 'update timelog ok'}))
               .catch((err: any) => {
                 this.setState({message: CommonUtil.formatFirebaseError(err)})
               })
