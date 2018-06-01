@@ -87,10 +87,10 @@ export default class TimeLogEditor extends React.Component<ITimeLogEditorProps, 
                onChange={this.dateChange}/>
         {
           timeLog ?
-          <div>
+          <span>
             <button>Update</button>
             <button onClick={this.clickCancel}>Cancel</button>
-          </div> :
+          </span> :
           <button>Add</button>
         }
       </form>
