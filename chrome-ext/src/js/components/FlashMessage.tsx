@@ -1,13 +1,10 @@
 import * as React from 'react'
 
-require('../../css/MessageBox.scss')
+require('../../css/FlashMessage.scss')
 
-const MessageBox = (props: {message?: string, onClose?: ()=>void}) => {
+const FlashMessage = (props: {message?: string, onClose?: ()=>void}) => {
   const { message, onClose } = props
 
-  if (message && onClose) {
-    setTimeout(onClose, 5000)
-  }
   if (message) {
     return (
       <div className='message-box-container'>
@@ -22,4 +19,4 @@ const MessageBox = (props: {message?: string, onClose?: ()=>void}) => {
   return null
 }
 
-export default MessageBox
+export default FlashMessage

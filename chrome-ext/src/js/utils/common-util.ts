@@ -12,6 +12,13 @@ export default class CommonUtil {
   }
 
   static formatFirebaseError(err: any) {
-    return `errCode: ${err.code}, errMessage: ${err.message}`
+    let message
+    if (err.code === 'permission-denied') {
+      message = 'You have no permission to access any data, please contact your admin.'
+    } else {
+      // message = `errCode: ${err.code}, errMessage: ${err.message}`
+      message = err.message
+    }
+    return message
   }
 }

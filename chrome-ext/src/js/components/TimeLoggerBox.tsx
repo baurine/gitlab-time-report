@@ -6,7 +6,7 @@ import DateUtil from '../utils/date-util'
 import { firebaseDb, dbCollections } from '../firebase/firebase'
 import TimeLogItem from './TimeLogItem'
 import TimeLogEditor from './TimeLogEditor'
-import MessageBox from './MessageBox'
+import FlashMessage from './FlashMessage'
 import { ITimeLog,
          ITimeLogDetail,
          ITimeLogDoc,
@@ -23,6 +23,8 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
     this.state = {
       timeLogs: [],
       issueDoc: null,
+
+      loading: true,
       message: ''
     }
   }
@@ -37,7 +39,7 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
         })
       })
       .catch((err: any) => {
-        this.setState({message: CommonUtil.formatFirebaseError(err)})
+        this.setState({loading: false, message: CommonUtil.formatFirebaseError(err)})
       })
   }
 
@@ -121,10 +123,10 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
               spentAt: doc.data().spentAt.toDate(),
               docId: doc.id,
             }))
-            this.setState({timeLogs})
+            this.setState({loading: false, timeLogs})
           },
           (err: any) => {
-            this.setState({message: CommonUtil.formatFirebaseError(err)})
+            throw err
           }
         )
   }
@@ -184,13 +186,14 @@ class TimeLoggerBox extends React.Component<ITimeLoggerBoxProps, ITimeLoggerBoxS
   }
 
   render() {
-    const { message } = this.state
+    const { loading, message } = this.state
     return (
       <div className='time-logger-container'>
+        { loading && <p>loading...</p>}
         { this.renderTimeLogs() }
         <br/>
-        <MessageBox message={message}
-                    onClose={()=>this.setState({message: ''})}/>
+        <FlashMessage message={message}
+                      onClose={()=>this.setState({message: ''})}/>
         {
           this.state.issueDoc &&
           <TimeLogEditor onAdd={this.addTimeLog}/>
