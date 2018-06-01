@@ -231,13 +231,17 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
   render() {
     return (
       <div className='report-box-container'>
-        { this.renderProjectSelector() }
-        { this.renderUserSelector() }
-        <input type='date' name='dateFrom' onChange={this.inputChange}/>
-        <input type='date' name='dateTo' onChange={this.inputChange}/>
-        <button onClick={this.queryTimeLogs}>Apply</button>
-        { this.renderReports() }
-        <FlashMessage message={this.state.message}/>
+        <div className='report-filters'>
+          { this.renderProjectSelector() }
+          { this.renderUserSelector() }
+          <input type='date' name='dateFrom' onChange={this.inputChange}/>
+          <input type='date' name='dateTo' onChange={this.inputChange}/>
+          <button onClick={this.queryTimeLogs}>Apply</button>
+        </div>
+        <div className='report-result'>
+          { this.renderReports() }
+          <FlashMessage message={this.state.message}/>
+        </div>
       </div>
     )
   }
