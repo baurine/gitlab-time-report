@@ -3,6 +3,7 @@ import * as React from 'react'
 import { firebaseDb } from '../firebase/firebase'
 import { IReportBoxState, ITimeLogDetail } from '../types'
 import CommonUtil from '../utils/common-util'
+import DateUtil from '../utils/date-util'
 import MessageBox from './MessageBox'
 require('../../css/ReportBox.scss')
 
@@ -127,7 +128,7 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
                 <td>{user}</td>
                 {
                   dates.map(date=>
-                    <td key={date}>{projectAggreResult[user][date]}</td>
+                    <td key={date}>{DateUtil.formatSpentTime(projectAggreResult[user][date])}</td>
                   )
                 }
               </tr>
