@@ -128,8 +128,8 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
     const { user } = this.state
     return (
       <div>
-        <span>{user.displayName || user.email} has logged in.</span>
-        <button onClick={this.signOut}>Sign Out</button>
+        <button className='btn btn-default' onClick={this.signOut}>Sign Out</button>
+        <span className='login-status'>{user.displayName || user.email} has logged in.</span>
         { this.props.children }
       </div>
     )
@@ -138,20 +138,26 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
   renderSignedOutStatus() {
     const { email, password } = this.state
     return (
-      <div>
-        Email:
-        <input type='email'
-               name='email'
-               value={email}
-               onChange={this.inputChange}/>
-        Password:
-        <input type='password'
-               name='password'
-               value={password}
-               onChange={this.inputChange}/>
-        <button onClick={this.logIn}>Log In</button>
-        <button onClick={this.register}>Register</button>
-        <button onClick={this.resetPwd}>Reset Password</button>
+      <div className='login-form'>
+        <div className='form-group'>
+          <label>Email:</label>
+          <input type='email'
+                name='email'
+                value={email}
+                onChange={this.inputChange}/>
+        </div>
+        <div className='form-group'>
+          <label>Password:</label>
+          <input type='password'
+                name='password'
+                value={password}
+                onChange={this.inputChange}/>
+        </div>
+        <div>
+          <button className='btn btn-default' onClick={this.logIn}>Log In</button>
+          <button className='btn btn-default' onClick={this.register}>Register</button>
+          <button className='btn btn-default' onClick={this.resetPwd}>Reset Password</button>
+        </div>
       </div>
     )
   }
@@ -159,9 +165,9 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
   renderVerifyEmailStatus() {
     return (
       <div>
-        <button onClick={this.signOut}>Sign Out</button>
-        <button onClick={this.verifyEmail}>Verify Email</button>
-        <span>Your email isn't verified yet, click the button to send verification email.</span>
+        <button className='btn btn-default' onClick={this.signOut}>Sign Out</button>
+        <button className='btn btn-default' onClick={this.verifyEmail}>Verify Email</button>
+        <span className='login-status'>Your email isn't verified yet, click the button to send verification email.</span>
       </div>
     )
   }

@@ -1,6 +1,26 @@
 
-.message-box-container {
-  .message {
-    color: red;
+.flash-message-container {
+  color: #31708f;
+  background-color: #d9edf7;
+
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid #bce8f1;
+  border-radius: 4px;
+
+  .close {
+    float: right;
+    top: -2px;
+    right: -21px;
+    opacity: 0.6;
+  }
+
+  a.close {
+    text-decoration: none;
+    font-size: 18px;
+    line-height: 1.2;
+
+    padding-left: 10px;
+    padding-right: 10px;
   }
 }
