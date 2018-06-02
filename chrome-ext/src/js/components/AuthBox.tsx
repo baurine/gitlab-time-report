@@ -1,11 +1,11 @@
 import * as React from 'react'
-import { firebaseAuth } from '../firebase/firebase'
-import { IAuthBoxState } from '../types/interfaces'
-import TimeLoggerBox from './TimeLoggerBox'
+
+import { firebaseDb, firebaseAuth } from '../firebase/firebase'
+import { IAuthBoxProps, IAuthBoxState } from '../types'
 require('../../css/AuthBox.scss')
 
-export default class AuthBox extends React.Component<{}, IAuthBoxState> {
-  constructor(props: {}) {
+export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxState> {
+  constructor(props: IAuthBoxProps) {
     super(props)
     this.state = {
       user: null,
@@ -23,7 +23,34 @@ export default class AuthBox extends React.Component<{}, IAuthBoxState> {
   loadAuthState() {
     firebaseAuth.onAuthStateChanged((user: any) => {
       this.setState({user, loading: false, message: ''})
+      this.updateAndSaveUser(user, this.props.curGitlabUser)
     })
+  }
+
+  updateAndSaveUser(user:any, curGitlabUser:string) {
+    if (user && curGitlabUser) {
+      // update displayName as curGitlabUser
+      if (user.displayName !== curGitlabUser) {
+        user.updateProfile({displayName: curGitlabUser})
+          .then(()=>console.log('update user ok'))
+          .catch((err: Error)=>console.log(err.message))
+      }
+      // store curGitlabUser to users collection
+      firebaseDb.collection('users')
+        .where('gitlabName', '==', curGitlabUser)
+        .limit(1)
+        .get()
+        .then((snapshot: any) => {
+          if (snapshot.empty) {
+            return firebaseDb.collection('users')
+              .add({gitlabName: curGitlabUser})
+          } else {
+            throw new Error('user existed')
+          }
+        })
+        .then(()=>console.log('add user ok'))
+        .catch((err: Error)=>console.log(err.message))
+    }
   }
 
   signOut = () => {
@@ -65,7 +92,7 @@ export default class AuthBox extends React.Component<{}, IAuthBoxState> {
       <div>
         <span>{user.displayName || user.email} has logged in.</span>
         <button onClick={this.signOut}>Sign Out</button>
-        <TimeLoggerBox/>
+        { this.props.children }
       </div>
     )
   }

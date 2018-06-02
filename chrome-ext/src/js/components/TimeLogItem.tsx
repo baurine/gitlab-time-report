@@ -3,7 +3,7 @@ import * as React from 'react'
 import DateUtil from '../utils/date-util'
 import TimeLogEditor from './TimeLogEditor'
 import { ITimeLogItemProps,
-         ITimeLogDoc } from '../types/interfaces'
+         ITimeLogDoc } from '../types'
 
 export default class TimeLogItem extends React.Component<ITimeLogItemProps, {editing: boolean}> {
   constructor(props: ITimeLogItemProps) {
@@ -54,7 +54,7 @@ export default class TimeLogItem extends React.Component<ITimeLogItemProps, {edi
 
     return (
       <div>
-        <span>{timeLog.user} spent {timeLog.spentTime} mins at {DateUtil.getDayFormat(timeLog.spentAt)}</span>
+        <span>{timeLog.gitlabUser} spent {timeLog.spentTime} mins at {DateUtil.getDayFormat(timeLog.spentAt)}</span>
         <button onClick={this.clickEdit}>Edit</button>
         <button onClick={this.clickDelte}>x</button>
       </div>

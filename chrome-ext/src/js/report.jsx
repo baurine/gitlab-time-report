@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
-import AuthBox from './components/AuthBox'
+import ReportPage from './pages/ReportPage'
 
 ReactDOM.render(
-  <AuthBox/>,
+  <ReportPage/>,
   document.getElementById('root')
 )
