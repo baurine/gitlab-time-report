@@ -1,74 +1,103 @@
 import * as React from 'react'
 
-import TimeLoggerItem from './TimeLoggerItem'
-import { ITimeLogger, ITimeLoggerBoxState } from './interfaces'
-
-const s = require('../../css/TimeLoggerBox.scss')
-
-let idCounter = 1
+import { firebaseDb } from '../utils/firebase'
+import DateUtil from '../utils/date-util'
+import { ITimeLog,
+         ITimeLogDetail,
+         ITimeLogDoc,
+         ITimeLoggerBoxState } from './interfaces'
+import TimeLogItem from './TimeLogItem'
+import TimeLogEditor from './TimeLogEditor'
+require('../../css/TimeLoggerBox.scss')
 
 export default class TimeLoggerBox extends React.Component<{}, ITimeLoggerBoxState> {
+  private unsubscribe: () => void
+
   constructor(props: {}) {
     super(props)
     this.state = {
-      spentTime: '',
-      timeLoggers: []
+      timeLogs: [],
     }
   }
 
-  textChange = (event: any) => {
-    this.setState({spentTime: event.target.value})
+  componentDidMount() {
+    this.loadTimeLogs()
   }
 
-  submitForm = (event: any) => {
-    event.preventDefault()
+  componentWillUnmount() {
+    this.unsubscribe()
+  }
 
-    const { spentTime, timeLoggers } = this.state
+  loadTimeLogs() {
+    this.unsubscribe =
+      firebaseDb.collection('time-logs')
+        .where('issueDocId', '==', 'aaaa')
+        .orderBy('createdAt')
+        .onSnapshot(
+          (snapshot: any) => {
+            let timeLogs:Array<ITimeLogDoc> = []
+            snapshot.forEach((doc: any) => timeLogs.push({
+              ...doc.data(),
+              createdAt: doc.data().createdAt.toDate(),
+              spentAt: doc.data().spentAt.toDate(),
+              docId: doc.id,
+            }))
+            this.setState({timeLogs})
+          },
+          (err: Error) => {
+            console.log(err.message)
+          }
+        )
+  }
 
-    const time = spentTime.trim()
-    if (time === '') {
-      return
+  addTimeLog = (timeLog: ITimeLog) => {
+    const timeLogDetail: ITimeLogDetail = {
+      ...timeLog,
+      user: 'baurine',
+      issueDocId: 'aaaa',
+      projectDocId: 'bbbb',
+      createdAt: new Date(),
     }
-    const newTimeLoggers = timeLoggers.concat({id: idCounter++, spentTime: time})
-    this.setState({timeLoggers: newTimeLoggers, spentTime: ''})
+    firebaseDb.collection('time-logs')
+      .add(timeLogDetail)
+      .then((docRef: any) => console.log(docRef.id))
+      .catch((err: Error) => console.log(err.message))
   }
 
-  deleteItem = (timeLogger: ITimeLogger) => {
-    const { timeLoggers } = this.state
-    const newTimeLoggers = timeLoggers.filter(item => item.id !== timeLogger.id)
-    this.setState({timeLoggers: newTimeLoggers})
+  deleteTimeLog = (timeLog: ITimeLogDoc) => {
+    firebaseDb.collection('time-logs')
+              .doc(timeLog.docId)
+              .delete()
+              .then(() => console.log('delete ok'))
+              .catch((err: Error) => console.log(err.message))
   }
 
-  updateItem = (timeLogger: ITimeLogger) => {
-    let newTimeLoggers = Object.assign([], this.state.timeLoggers)
-    newTimeLoggers.forEach(item => {
-      if (item.id === timeLogger.id) {
-        item.spentTime = timeLogger.spentTime
-      }
-    })
-    this.setState({timeLoggers: newTimeLoggers})
+  updateTimeLog = (timeLog: ITimeLogDoc) => {
+    firebaseDb.collection('time-logs')
+              .doc(timeLog.docId)
+              .set({
+                spentTime: timeLog.spentTime,
+                spentAt: timeLog.spentAt
+              }, {merge: true})
+              .then(() => console.log('update ok'))
+              .catch((err: Error) => console.log(err.message))
   }
 
-  renderLoggers = () => {
-    return this.state.timeLoggers.map(item =>
-      <TimeLoggerItem timeLogger={item}
-                      key={item.id}
-                      onDelete={this.deleteItem}
-                      onUpdate={this.updateItem}/>
+  renderTimeLogs = () => {
+    return this.state.timeLogs.map(item =>
+      <TimeLogItem key={item.docId}
+                   timeLog={item}
+                   onDelete={this.deleteTimeLog}
+                   onUpdate={this.updateTimeLog}/>
     )
   }
 
   render() {
     return (
       <div className='time-logger-container'>
-        <form onSubmit={this.submitForm}>
-          <input type='text'
-                 value={this.state.spentTime}
-                 placeholder='format: 1h 30m'
-                 onChange={this.textChange}/>
-          <button>Add</button>
-        </form>
-        { this.renderLoggers() }
+        { this.renderTimeLogs() }
+        <br/>
+        <TimeLogEditor onAdd={this.addTimeLog}/>
       </div>
     )
   }

@@ -1,15 +1,39 @@
-export interface ITimeLogger {
-  id: number,
-  spentTime: string
+export interface ITimeLog {
+  spentTime: number,
+  spentAt: Date,
+}
+
+export interface ITimeLogDetail extends ITimeLog {
+  user: string,
+  issueDocId: string,
+  projectDocId: string,
+  createdAt: Date,
+}
+
+export interface ITimeLogDoc extends ITimeLogDetail {
+  docId: string
+}
+
+///////////////////////////////////////////////////
+
+export interface ITimeLogItemProps {
+  timeLog: ITimeLogDoc,
+  onDelete?: (timeLog: ITimeLogDoc) => void,
+  onUpdate?: (timeLog: ITimeLogDoc) => void
 }
 
 export interface ITimeLoggerBoxState {
-  spentTime: string,
-  timeLoggers: Array<ITimeLogger>
+  timeLogs: Array<ITimeLogDoc>
 }
 
-export interface ITimeLoggerItemProps {
-  timeLogger: ITimeLogger,
-  onDelete?: (timeLogger: ITimeLogger) => void,
-  onUpdate?: (timeLogger: ITimeLogger) => void
+export interface ITimeLogEditorState {
+  spentTime: string,
+  spentAt: string,
+}
+
+export interface ITimeLogEditorProps {
+  timeLog?: ITimeLogDoc
+  onAdd?: (timeLog: ITimeLog) => void,
+  onUpdate?: (timeLog: ITimeLogDoc) => void
+  onCancel?: () => void
 }
