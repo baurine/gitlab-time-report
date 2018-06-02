@@ -42,11 +42,14 @@ export interface ITimeLoggerBoxProps {
 
 export interface ITimeLoggerBoxState {
   timeLogs: Array<ITimeLogDoc>,
-  issueDoc: IIssueDoc
+  issueDoc: IIssueDoc,
+  loading: boolean,
+  message: string
 }
 
 export interface ITimeLogItemProps {
   timeLog: ITimeLogDoc,
+  enableEdit: boolean,
   onDelete?: (timeLog: ITimeLogDoc) => void,
   onUpdate?: (timeLog: ITimeLogDoc) => void
 }
@@ -82,5 +85,6 @@ export interface IReportBoxState {
   selectedProject: string,
   dateFrom: string,
   dateTo: string,
-  aggreResult: object | string
+  aggreResult: object,
+  message: string
 }

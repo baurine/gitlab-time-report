@@ -1,6 +1,6 @@
 const firebase = require('firebase/app')
-require('firebase/firestore')
 require('firebase/auth')
+require('firebase/firestore')
 
 const firebaseConfig = require('./firebase-config')
 // console.log('firebaseConfig:', firebaseConfig)
@@ -16,10 +16,17 @@ const firebaseConfig = require('./firebase-config')
 
 firebase.initializeApp(firebaseConfig)
 
+const firebaseAuth = firebase.auth()
+
 const firebaseDb = firebase.firestore()
 const settings = { timestampsInSnapshots: true }
 firebaseDb.settings(settings)
 
-const firebaseAuth = firebase.auth()
+const dbCollections = {
+  PROJECTS: 'projects',
+  USERS: 'users',
+  ISSUES: 'issues',
+  TIME_LOGS: 'timelogs',
+}
 
-export { firebaseDb, firebaseAuth }
+export { firebaseAuth, firebaseDb, dbCollections }

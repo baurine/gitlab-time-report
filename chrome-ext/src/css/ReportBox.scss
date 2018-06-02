@@ -1,17 +1,28 @@
 
 .report-box-container {
-  padding: 20px;
-  border: 1px solid black;
-}
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #428BCA;
 
-table {
-  border: 1px solid black;
-  margin: 4px;
-  padding: 4px;
+  .report-filters {
+    margin-bottom: 10px;
+  }
 
-  td, th {
-    border: 1px solid black;
-    margin: 4px;
-    padding: 4px;
+  table {
+    margin-top: 10px;
+    padding: 2px;
+    border: 1px solid #ccc;
+    tr {
+      padding: 8px 0px;
+      border-bottom: 1px solid #707070;
+    }
+    tbody {
+      tr:last-child, td:last-child {
+        background: #eee
+      }
+    }
+    td, th {
+      padding: 8px;
+    }
   }
 }

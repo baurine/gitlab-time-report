@@ -1,8 +1,10 @@
 import * as React from 'react'
-
 const md5 = require('blueimp-md5')
-import { firebaseDb, firebaseAuth } from '../firebase/firebase'
+
+import { firebaseAuth, firebaseDb, dbCollections } from '../firebase/firebase'
 import { IAuthBoxProps, IAuthBoxState } from '../types'
+import CommonUtil from '../utils/common-util'
+import FlashMessage from './FlashMessage'
 require('../../css/AuthBox.scss')
 
 export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxState> {
@@ -12,8 +14,9 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
       user: null,
       email: '',
       password: '',
+
       loading: true,
-      message: 'loading...'
+      message: 'logging in...'
     }
   }
 
@@ -28,27 +31,30 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
     })
   }
 
-  updateAndSaveUser(user:any, curGitlabUser:string) {
-    if (user && curGitlabUser) {
+  updateAndSaveUser(user: any, curGitlabUser: string) {
+    if (user && user.emailVerified && curGitlabUser) {
       // update displayName as curGitlabUser
       if (user.displayName !== curGitlabUser) {
         user.updateProfile({displayName: curGitlabUser})
-          .then(()=>console.log('update user ok'))
-          .catch((err: Error)=>console.log(err.message))
+          .then(() => {
+            CommonUtil.log('udpate user ok')
+            this.setState({user})
+          })
+          .catch(CommonUtil.handleError)
       }
       // store curGitlabUser to users collection
       const userMD5 = md5(curGitlabUser)
-      const userRef = firebaseDb.collection('users').doc(userMD5)
+      const userRef = firebaseDb.collection(dbCollections.USERS).doc(userMD5)
       userRef.get()
-        .then((snapshot: any)=>{
+        .then((snapshot: any) => {
           if (snapshot.exists) {
             throw new Error('user existed')
           } else {
             return userRef.set({gitlabName: curGitlabUser})
           }
         })
-        .then(()=>console.log('add user ok'))
-        .catch((err: Error)=>console.log(err.message))
+        .then(() => CommonUtil.log('add user ok'))
+        .catch(CommonUtil.handleError)
     }
   }
 
@@ -57,28 +63,55 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
   }
 
   logIn = () => {
-    this.setState({loading: true, message: 'logging in...'})
-
     const { email, password } = this.state
+    if (email.length === 0 || password.length === 0) {
+      this.setState({message: 'Please fill the email and password.'})
+      return
+    }
+
+    this.setState({loading: true, message: 'logging in...'})
     firebaseAuth.signInWithEmailAndPassword(email, password)
-      .catch((err: Error) => this.setState({loading:false, message: err.message}))
+      .catch((err: Error) => this.setState({loading: false, message: CommonUtil.formatFirebaseError(err)}))
   }
 
   register = () => {
-    this.setState({loading: true, message: 'registering...'})
-
     const { email, password } = this.state
+    if (email.length === 0 || password.length === 0) {
+      this.setState({message: 'Please fill the email and password.'})
+      return
+    }
+
+    this.setState({loading: true, message: 'registering...'})
     firebaseAuth.createUserWithEmailAndPassword(email, password)
-      .catch((err: Error) => this.setState({loading:false, message: err.message}))
+      .catch((err: Error) => this.setState({loading: false, message: CommonUtil.formatFirebaseError(err)}))
   }
 
   resetPwd = () => {
-    this.setState({loading: true, message: 'sending email...'})
-
     const { email } = this.state
+    if (email.length === 0) {
+      this.setState({message: 'Please fill the email.'})
+      return
+    }
+
+    this.setState({loading: true, message: 'sending email...'})
     firebaseAuth.sendPasswordResetEmail(email)
-      .then(() => this.setState({loading:false, message: 'email sent!'}))
-      .catch((err: Error) => this.setState({loading:false, message: err.message}))
+      .then(() => this.setState({
+        loading: false,
+        message: 'Reset password email sent! Please go to your inbox to check the email.'
+      }))
+      .catch((err: Error) => this.setState({loading: false, message: CommonUtil.formatFirebaseError(err)}))
+  }
+
+  verifyEmail = () => {
+    const { user } = this.state
+
+    this.setState({loading: true, message: 'sending verification email...'})
+    user.sendEmailVerification()
+      .then(()=>this.setState({
+        loading: false,
+        message: 'Verification email sent! please go to your inbox to check the email.'
+      }))
+      .catch((err: Error) => this.setState({loading: false, message: CommonUtil.formatFirebaseError(err)}))
   }
 
   inputChange = (event: any) => {
@@ -95,8 +128,8 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
     const { user } = this.state
     return (
       <div>
-        <span>{user.displayName || user.email} has logged in.</span>
-        <button onClick={this.signOut}>Sign Out</button>
+        <button className='btn btn-default' onClick={this.signOut}>Sign Out</button>
+        <span className='login-status'>{user.displayName || user.email} has logged in.</span>
         { this.props.children }
       </div>
     )
@@ -105,35 +138,60 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
   renderSignedOutStatus() {
     const { email, password } = this.state
     return (
-      <div>
-        <input type='text'
-               name='email'
-               value={email}
-               onChange={this.inputChange}/>
-        <input type='password'
-               name='password'
-               value={password}
-               onChange={this.inputChange}/>
-        <button onClick={this.logIn}>Log In</button>
-        <button onClick={this.register}>Register</button>
-        <button onClick={this.resetPwd}>Reset Password</button>
+      <div className='login-form'>
+        <div className='form-group'>
+          <label>Email:</label>
+          <input type='email'
+                name='email'
+                value={email}
+                onChange={this.inputChange}/>
+        </div>
+        <div className='form-group'>
+          <label>Password:</label>
+          <input type='password'
+                name='password'
+                value={password}
+                onChange={this.inputChange}/>
+        </div>
+        <div>
+          <button className='btn btn-default' onClick={this.logIn}>Log In</button>
+          <button className='btn btn-default' onClick={this.register}>Register</button>
+          <button className='btn btn-default' onClick={this.resetPwd}>Reset Password</button>
+        </div>
       </div>
     )
+  }
+
+  renderVerifyEmailStatus() {
+    return (
+      <div>
+        <button className='btn btn-default' onClick={this.signOut}>Sign Out</button>
+        <button className='btn btn-default' onClick={this.verifyEmail}>Verify Email</button>
+        <span className='login-status'>Your email isn't verified yet, click the button to send verification email.</span>
+      </div>
+    )
+  }
+
+  renderAuthInputs() {
+    const { loading, user } = this.state
+    if (loading) {
+      return null
+    }
+    if (!user) {
+      return this.renderSignedOutStatus()
+    }
+    if (user.emailVerified) {
+      return this.renderLoggedInStatus()
+    }
+    return this.renderVerifyEmailStatus()
   }
 
   render() {
     const { user, loading, message } = this.state
     return (
       <div className='auth-box-container'>
-        <p className='msg'>{message}</p>
-        {
-          !loading && user &&
-          this.renderLoggedInStatus()
-        }
-        {
-          !loading && !user &&
-          this.renderSignedOutStatus()
-        }
+        <FlashMessage message={message}/>
+        { this.renderAuthInputs() }
       </div>
     )
   }

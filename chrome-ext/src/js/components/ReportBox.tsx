@@ -1,7 +1,10 @@
 import * as React from 'react'
 
-import { firebaseDb } from '../firebase/firebase'
+import { firebaseDb, dbCollections } from '../firebase/firebase'
 import { IReportBoxState, ITimeLogDetail } from '../types'
+import CommonUtil from '../utils/common-util'
+import DateUtil from '../utils/date-util'
+import FlashMessage from './FlashMessage'
 require('../../css/ReportBox.scss')
 
 export default class ReportBox extends React.Component<{}, IReportBoxState> {
@@ -14,39 +17,47 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
       selectedProject: 'all',
       dateFrom: '',
       dateTo: '',
-      aggreResult: {}
+
+      aggreResult: {},
+
+      message: ''
     }
   }
 
   componentDidMount() {
-    this.loadProjects()
-    this.loadUsers()
+    this.initData()
   }
 
-  loadProjects() {
-    firebaseDb.collection('projects')
+  initData = () => {
+    this.loadProjects()
+      .then(this.loadUsers)
+      .catch((err: any) => {
+        this.setState({message: CommonUtil.formatFirebaseError(err)})
+      })
+  }
+
+  loadProjects = () => {
+    return firebaseDb.collection(dbCollections.PROJECTS)
       .orderBy('name')
       .get()
-      .then((querySnapshot: any)=>{
+      .then((querySnapshot: any) => {
         let projects: string[] = []
-        querySnapshot.forEach((snapshot: any)=>projects.push(snapshot.data().name))
+        querySnapshot.forEach((snapshot: any) => projects.push(snapshot.data().name))
         projects = ['all'].concat(projects)
         this.setState({projects})
       })
-      .catch((err: Error)=>console.log(err.message))
   }
 
-  loadUsers() {
-    firebaseDb.collection('users')
+  loadUsers = () => {
+    return firebaseDb.collection(dbCollections.USERS)
       .orderBy('gitlabName')
       .get()
-      .then((querySnapshot: any)=>{
+      .then((querySnapshot: any) => {
         let users: string[] = []
         querySnapshot.forEach((snapshot: any)=>users.push(snapshot.data().gitlabName))
         users = ['all'].concat(users)
         this.setState({users})
       })
-      .catch((err: Error)=>console.log(err.message))
   }
 
   renderProjectSelector() {
@@ -87,10 +98,7 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
 
   renderReports() {
     const { aggreResult } = this.state
-    if (typeof aggreResult === 'string') {
-      return <p>{aggreResult}</p>
-    }
-    const projects = Object.keys(aggreResult)
+    const projects = Object.keys(aggreResult).sort()
     return projects.map(project=>{
       const projectAggreResult = (aggreResult as any)[project]
       return this.renderProjectReportTable(project, projectAggreResult)
@@ -99,15 +107,15 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
 
   // TODO: extract to a component
   renderProjectReportTable(projectName:string, projectAggreResult: any) {
-    const dates: string[] = projectAggreResult['dates'].concat('total')
-    const users: string[] = projectAggreResult['users'].concat('total')
+    const dates: string[] = projectAggreResult['dates'].sort().concat('total')
+    const users: string[] = projectAggreResult['users'].sort().concat('total')
     return (
       <table key={projectName}>
         <thead>
           <tr>
             <th>{projectName}</th>
             {
-              dates.map(date=><th key={date}>{date.slice(0, 10)}</th>)
+              dates.map(date=><th key={date}>{date.substr(0, 10)}</th>)
             }
           </tr>
         </thead>
@@ -118,7 +126,7 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
                 <td>{user}</td>
                 {
                   dates.map(date=>
-                    <td key={date}>{projectAggreResult[user][date]}</td>
+                    <td key={date}>{DateUtil.formatSpentTime(projectAggreResult[user][date])}</td>
                   )
                 }
               </tr>
@@ -140,15 +148,21 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
   }
 
   queryTimeLogs = () => {
+    this.setState({message: 'applying...', aggreResult: {}})
+
     const { selectedProject, selectedUser, dateFrom, dateTo } = this.state
 
-    let query = firebaseDb.collection('time-logs')
+    let query = firebaseDb.collection('timelogs')
 
     if (dateFrom !== '') {
       query = query.where('spentAt', '>=', new Date(dateFrom))
+    } else {
+      query = query.limit(1000)
     }
     if (dateTo !== '') {
       query = query.where('spentAt', '<=', new Date(dateTo))
+    } else {
+      query = query.where('spentAt', '<=', new Date())
     }
     if (selectedProject !== 'all') {
       query = query.where('project', '==', selectedProject)
@@ -157,14 +171,7 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
       query = query.where('gitlabUser', '==', selectedUser)
     }
 
-    query = query.orderBy('spentAt')
-    if (selectedProject === 'all') {
-      query = query.orderBy('project')
-    }
-    if (selectedUser === 'all') {
-      query = query.orderBy('gitlabUser')
-    }
-
+    query = query.orderBy('spentAt', 'desc')
     query.get()
       .then((snapshot: any) => {
         let timeLogs: Array<ITimeLogDetail> = []
@@ -175,8 +182,8 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
         }))
         this.aggregateTimeLogs(timeLogs)
       })
-      .catch((err: Error)=>{
-        this.setState({aggreResult: err.message})
+      .catch((err: any)=>{
+        this.setState({message: CommonUtil.formatFirebaseError(err)})
       })
   }
 
@@ -218,18 +225,23 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
         aggreResult[project]['dates'].push(spentAt)
       }
     })
-    this.setState({aggreResult})
+    this.setState({message: '', aggreResult})
   }
 
   render() {
     return (
       <div className='report-box-container'>
-        { this.renderProjectSelector() }
-        { this.renderUserSelector() }
-        <input type='date' name='dateFrom' onChange={this.inputChange}/>
-        <input type='date' name='dateTo' onChange={this.inputChange}/>
-        <button onClick={this.queryTimeLogs}>Report</button>
-        { this.renderReports() }
+        <div className='report-filters'>
+          { this.renderProjectSelector() }
+          { this.renderUserSelector() }
+          <input type='date' name='dateFrom' onChange={this.inputChange}/>
+          <input type='date' name='dateTo' onChange={this.inputChange}/>
+          <button onClick={this.queryTimeLogs}>Apply</button>
+        </div>
+        <div className='report-result'>
+          { this.renderReports() }
+          <FlashMessage message={this.state.message}/>
+        </div>
       </div>
     )
   }

@@ -14,7 +14,7 @@ export default class TimeLogEditor extends React.Component<ITimeLogEditorProps, 
     this.todayDay = DateUtil.getDayFormat(new Date())
     let spentTime: string, spentAt: string
     if (props.timeLog) {
-      spentTime = props.timeLog.spentTime + ''
+      spentTime = DateUtil.formatSpentTime(props.timeLog.spentTime)
       spentAt = DateUtil.getDayFormat(props.timeLog.spentAt)
     } else {
       spentTime = ''
@@ -42,14 +42,17 @@ export default class TimeLogEditor extends React.Component<ITimeLogEditorProps, 
     if (timeStr === '') {
       return
     }
-    const timeInt = parseInt(timeStr)
-    if (isNaN(timeInt) || timeInt <= 0) {
+    const regArr = /((\d+)h)?\s*((\d+)m)?/.exec(timeStr)
+    const hours = parseInt(regArr[2]) || 0
+    const minutes = parseInt(regArr[4]) || 0
+    const totalMins = hours*60 + minutes
+    if (totalMins <= 0) {
       return
     }
 
     const { timeLog, onUpdate, onAdd } = this.props
     const newTimeLog: ITimeLog = {
-      spentTime: timeInt,
+      spentTime: totalMins,
       spentAt: new Date(spentAt),
     }
     if (timeLog) {
@@ -84,10 +87,10 @@ export default class TimeLogEditor extends React.Component<ITimeLogEditorProps, 
                onChange={this.dateChange}/>
         {
           timeLog ?
-          <div>
+          <span>
             <button>Update</button>
             <button onClick={this.clickCancel}>Cancel</button>
-          </div> :
+          </span> :
           <button>Add</button>
         }
       </form>

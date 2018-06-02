@@ -1,5 +1,23 @@
 
 .time-logger-container {
-  padding: 20px;
-  border: 1px solid black;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #428BCA;
+
+  .time-log-item {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+
+    .time-log-desc {
+      width: 360px;
+      color: #707077;
+      display: inline-block;
+    }
+    .time-log-btns {
+      a {
+        padding-right: 4px;
+      }
+    }
+  }
 }

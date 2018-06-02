@@ -50,13 +50,18 @@ export default class TimeLogItem extends React.Component<ITimeLogItemProps, {edi
   }
 
   renderDisplayStatus() {
-    const { timeLog } = this.props
+    const { timeLog, enableEdit } = this.props
 
     return (
-      <div>
-        <span>{timeLog.gitlabUser} spent {timeLog.spentTime} mins at {DateUtil.getDayFormat(timeLog.spentAt)}</span>
-        <button onClick={this.clickEdit}>Edit</button>
-        <button onClick={this.clickDelte}>x</button>
+      <div className='time-log-item'>
+        <span className='time-log-desc'><a href={`/${timeLog.gitlabUser}`}>@{timeLog.gitlabUser}</a> spent {DateUtil.formatSpentTime(timeLog.spentTime)} of time at {DateUtil.getDayFormat(timeLog.spentAt)}</span>
+        {
+          enableEdit &&
+          <span className='time-log-btns'>
+            <a onClick={this.clickEdit}>Edit</a>
+            <a onClick={this.clickDelte}>Delete</a>
+          </span>
+        }
       </div>
     )
   }
