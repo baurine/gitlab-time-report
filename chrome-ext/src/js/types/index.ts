@@ -14,61 +14,39 @@ export interface ITimeLogDoc extends ITimeLogDetail {
   docId: string
 }
 
-export interface IIssueInfo {
-  // won't change forever
-  type: string,
-  num: number,
-  createdBy: string,
-  issueCreatedAt: Date,
-  // maybe change
-  project: string,
-  title: string
-}
+// https://gitlab.ekohe.com/api/v4/projects/ekohe%2Finternal%2Fekohe-time-reporting-tool/issues/3
+// https://gitlab.ekohe.com/api/v4/projects/ekohe%2Fpodknife/merge_requests/554
+export interface IIssue {
+  // come from api response
+  // won't change
+  id: number,
+  iid: number,
+  project_id: number,
 
-export interface IIssueDoc extends IIssueInfo {
-  docId: string
+  sha: string, // for judge whether this is a issue or merge request
+
+  // maybe change
+  title: string,
+  web_url: string,
+  time_stats: {
+    total_time_spent: number,
+  },
+  _links: {
+    project: string,
+  },
+
+  // fields added by ourselves
+  type: string, // 'issue' or 'merge_request'
+  last_note_id: number,
+  doc_id: string,  // id-iid-project_id
 }
 
 export interface IIssuePageInfo {
-  curGitlabUser: string,
-  curIssue: IIssueInfo
+  curDomainDocId: string,
+  curIssue: IIssue
 }
 
 ///////////////////////////////////////////////////
-
-export interface ITimeLoggerBoxProps {
-  issuePageInfo: IIssuePageInfo,
-}
-
-export interface ITimeLoggerBoxState {
-  timeLogs: Array<ITimeLogDoc>,
-  issueDoc: IIssueDoc,
-  loading: boolean,
-  message: string
-}
-
-export interface ITimeLogItemProps {
-  timeLog: ITimeLogDoc,
-  enableEdit: boolean,
-  onDelete?: (timeLog: ITimeLogDoc) => void,
-  onUpdate?: (timeLog: ITimeLogDoc) => void
-}
-
-export interface ITimeLogEditorProps {
-  timeLog?: ITimeLogDoc
-  onAdd?: (timeLog: ITimeLog) => void,
-  onUpdate?: (timeLog: ITimeLogDoc) => void
-  onCancel?: () => void
-}
-
-export interface ITimeLogEditorState {
-  spentTime: string,
-  spentAt: string,
-}
-
-export interface IAuthBoxProps {
-  curGitlabUser?: string
-}
 
 export interface IAuthBoxState {
   user: any,

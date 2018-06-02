@@ -16,7 +16,6 @@ export default class CommonUtil {
     if (err.code === 'permission-denied') {
       message = 'You have no permission to access any data, please contact your admin.'
     } else {
-      // message = `errCode: ${err.code}, errMessage: ${err.message}`
       message = err.message
     }
     return message

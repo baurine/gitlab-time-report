@@ -2,13 +2,13 @@ import * as React from 'react'
 const md5 = require('blueimp-md5')
 
 import { firebaseAuth, firebaseDb, dbCollections } from '../firebase'
-import { IAuthBoxProps, IAuthBoxState } from '../types'
+import { IAuthBoxState } from '../types'
 import CommonUtil from '../utils/common-util'
 import FlashMessage from './FlashMessage'
 require('../../css/AuthBox.scss')
 
-export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxState> {
-  constructor(props: IAuthBoxProps) {
+export default class AuthBox extends React.Component<{}, IAuthBoxState> {
+  constructor(props: {}) {
     super(props)
     this.state = {
       user: null,
@@ -27,35 +27,7 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
   loadAuthState() {
     firebaseAuth.onAuthStateChanged((user: any) => {
       this.setState({user, loading: false, message: ''})
-      this.updateAndSaveUser(user, this.props.curGitlabUser)
     })
-  }
-
-  updateAndSaveUser(user: any, curGitlabUser: string) {
-    if (user && user.emailVerified && curGitlabUser) {
-      // update displayName as curGitlabUser
-      if (user.displayName !== curGitlabUser) {
-        user.updateProfile({displayName: curGitlabUser})
-          .then(() => {
-            CommonUtil.log('udpate user ok')
-            this.setState({user})
-          })
-          .catch(CommonUtil.handleError)
-      }
-      // store curGitlabUser to users collection
-      const userMD5 = md5(curGitlabUser)
-      const userRef = firebaseDb.collection(dbCollections.USERS).doc(userMD5)
-      userRef.get()
-        .then((snapshot: any) => {
-          if (snapshot.exists) {
-            throw new Error('user existed')
-          } else {
-            return userRef.set({gitlabName: curGitlabUser})
-          }
-        })
-        .then(() => CommonUtil.log('add user ok'))
-        .catch(CommonUtil.handleError)
-    }
   }
 
   signOut = () => {

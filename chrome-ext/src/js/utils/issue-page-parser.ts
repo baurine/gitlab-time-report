@@ -1,103 +1,94 @@
-import CommonUtil from '../utils/common-util'
-import { IIssueInfo, IIssuePageInfo } from '../types'
-import { resolve } from 'dns';
+import { firebaseDb, dbCollections } from '../firebase'
+import { IIssue, IIssuePageInfo } from '../types'
+import { CommonUtil, ApiUtil } from '../utils'
 
 export default class IssuePageParser {
-  parse() {
+  private projectPath: string
+  private issueType: string
+  private issueNum: string
+
+  private domainDocId: string
+
+  parse = () => {
     return new Promise((resolve, reject) => {
       if (this.checkAvailabeIssuePage()) {
-        const curGitlabUser = this.parseGitlabUser()
-        CommonUtil.log('curGitlabUser: ' + curGitlabUser)
-
-        const curIssue = this.parseIssue()
-        CommonUtil.log('curIssue: ' + JSON.stringify(curIssue))
-
-        const pageInfo: IIssuePageInfo = {curGitlabUser, curIssue}
-        resolve(pageInfo)
+        this.checkDomainEnabled()
+          .then((domainDocId: string) => this.domainDocId = domainDocId)
+          .then(this.fetchIssueDetail)
+          .then((issue: IIssue) => {
+            const pageInfo: IIssuePageInfo = {
+              curDomainDocId: this.domainDocId,
+              curIssue: issue
+            }
+            console.log(pageInfo)
+            resolve(pageInfo)
+          })
+          .catch((err: Error) => reject(err))
       } else {
         reject(new Error('invalid issue page'))
       }
     })
   }
 
-  checkAvailabeIssuePage() {
-    const regPattern = /^\/(\S+)\/(issues|merge_requests)\/(\d+)$/
-    const pathname = document.location.pathname
-    if (!regPattern.test(pathname)) {
-      CommonUtil.log(`${document.location.href} is not a gitlab issue url`)
-      return false
-    }
-    const notesContainer = document.getElementById('notes')
-    if (!notesContainer) {
-      CommonUtil.log('this page has no notes container')
-      return false
-    }
-    return true
-  }
-
-  parseGitlabUser() {
-    const el = document.querySelector('a.profile-link')
-    return el.getAttribute('data-user')
-  }
-
-  parseIssue() {
-    // type, project, num, createdBy, issueCreatedAt, title
-
+  checkAvailabeIssuePage = () => {
     // path = "/ekohe/podknife/issues/547"
     // reg = /^\/(\S+)\/(issues|merge_requests)\/(\d+)$/
     // arr = reg.exec(path)
     // ["/ekohe/podknife/merge_requests/547", "ekohe/podknife", "issues", "547" ...]
     const regPattern = /^\/(\S+)\/(issues|merge_requests)\/(\d+)$/
     const pathname = document.location.pathname
+
     const arr = regPattern.exec(pathname)
     if (arr === null) {
-      return
+      CommonUtil.log(`${document.location.href} is not a gitlab issue url`)
+      return false
     }
-    const project = arr[1]
-    let type = arr[2]
-    if (type === 'issues') {
-      type = 'issue'
-    } else {
-      type = 'merge_request'
-    }
-    const num = parseInt(arr[3])
+    this.projectPath = arr[1]
+    this.issueType = arr[2]
+    this.issueNum = arr[3]
 
-    const createdBy = this.parseIssueAuthor()
-    const issueCreatedAt = this.parseCreatedAt()
-    const title = this.parseTitle(type)
-
-    const issueInfo: IIssueInfo = {
-      type,
-      project,
-      num,
-      createdBy,
-      issueCreatedAt,
-      title
+    const notesContainer = document.getElementById('notes')
+    if (!notesContainer) {
+      CommonUtil.log('this page has no notes container')
+      return false
     }
-    return issueInfo 
+
+    return true
   }
 
-  parseIssueAuthor() {
-    const authorEl = document.querySelector('a.author_link.hidden-xs')
-    // authorEl.href: http://..../baurine
-    // author.getAttribute('href'): /baurine
-    const authorLink = authorEl.getAttribute('href')
-    return authorLink.replace('/', '')
+  checkDomainEnabled = () => {
+    // host and hostname
+    // host includes port number while hostname doesn't if the location has port number
+    // https://stackoverflow.com/a/11379802/2998877
+    const host = document.location.host
+    return firebaseDb.collection(dbCollections.DOMAINS)
+      .doc('enables')
+      .get()
+      .then((snapshot: any) => {
+        if (snapshot.exists) {
+          const domainDocId = snapshot.data()[host]
+          if (!domainDocId) {
+            throw new Error('this domain is not enabled')
+          }
+          return domainDocId
+        } else {
+          throw new Error('there is no domains/enables doc in your database')
+        }
+      })
   }
 
-  parseCreatedAt() {
-    const timeEl = document.querySelector('time.js-timeago')
-    const datetime = timeEl.getAttribute('datetime')
-    return new Date(datetime)
-  }
-
-  parseTitle(type: string) {
-    let titleEl: HTMLElement
-    if (type === 'issue') {
-      titleEl = document.querySelector('div.title-container h2.title')
-    } else {
-      titleEl = document.querySelector('div.merge-request-details h2.title')
-    }
-    return titleEl.innerText
+  fetchIssueDetail = () => {
+    const apiUrl = ['projects', encodeURIComponent(this.projectPath), this.issueType, this.issueNum].join('/')
+    return ApiUtil.request(apiUrl)
+             .then((issue: IIssue) => {
+               if (issue.sha) {
+                 issue.type = 'merge_request'
+               } else {
+                 issue.type = 'issue'
+               }
+               issue.doc_id = [issue.id, issue.iid, issue.project_id].join('-')
+               issue.last_note_id = 0
+               return issue
+             })
   }
 }

@@ -23,6 +23,7 @@ const settings = { timestampsInSnapshots: true }
 firebaseDb.settings(settings)
 
 const dbCollections = {
+  DOMAINS: 'domains',
   PROJECTS: 'projects',
   USERS: 'users',
   ISSUES: 'issues',
