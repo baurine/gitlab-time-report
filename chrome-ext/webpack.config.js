@@ -1,12 +1,12 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CssExtractWebpackPlugin = require('mini-css-extract-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: {
-    options: './src/js/options.js',
-    dashboard: './src/js/dashboard.js',
-    time_logger: './src/js/time_logger.tsx',
+    report: './src/js/report.jsx',
+    'time-logger': './src/js/time-logger.tsx',
   },
   output: {},
   resolve: {
@@ -51,26 +51,17 @@ module.exports = {
     new CleanWebpackPlugin('dist'),
     new HtmlWebpackPlugin({
       template: './src/html/template.html',
-      filename: 'options.html',
-      chunks: ['options'],
-      hash: true
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/html/template.html',
-      filename: 'dashboard.html',
-      chunks: ['dashboard'],
-      hash: true
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/html/template.html',
-      filename: 'time.html',
-      chunks: ['time_logger'],
+      filename: 'report.html',
+      chunks: ['report'],
       hash: true
     }),
     new CssExtractWebpackPlugin({
       filename: "[name].css",
       chunkFilename: "[id].css"
-    })
+    }),
+    new CopyWebpackPlugin([
+      { from: './public', to: '' }
+    ])
   ],
   devServer: {},
   mode: 'development',

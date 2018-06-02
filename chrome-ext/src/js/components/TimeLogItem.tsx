@@ -1,8 +1,9 @@
 import * as React from 'react'
 
-import { ITimeLogItemProps, ITimeLogDoc } from './interfaces'
-import TimeLogEditor from './TimeLogEditor'
 import DateUtil from '../utils/date-util'
+import TimeLogEditor from './TimeLogEditor'
+import { ITimeLogItemProps,
+         ITimeLogDoc } from '../types/interfaces'
 
 export default class TimeLogItem extends React.Component<ITimeLogItemProps, {editing: boolean}> {
   constructor(props: ITimeLogItemProps) {
