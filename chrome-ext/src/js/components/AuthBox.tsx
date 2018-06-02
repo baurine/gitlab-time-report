@@ -1,7 +1,7 @@
 import * as React from 'react'
 const md5 = require('blueimp-md5')
 
-import { firebaseAuth, firebaseDb, dbCollections } from '../firebase/firebase'
+import { firebaseAuth, firebaseDb, dbCollections } from '../firebase'
 import { IAuthBoxProps, IAuthBoxState } from '../types'
 import CommonUtil from '../utils/common-util'
 import FlashMessage from './FlashMessage'

@@ -3,7 +3,7 @@ const md5 = require('blueimp-md5')
 
 import CommonUtil from '../utils/common-util'
 import DateUtil from '../utils/date-util'
-import { firebaseDb, dbCollections } from '../firebase/firebase'
+import { firebaseDb, dbCollections } from '../firebase'
 import TimeLogItem from './TimeLogItem'
 import TimeLogEditor from './TimeLogEditor'
 import FlashMessage from './FlashMessage'

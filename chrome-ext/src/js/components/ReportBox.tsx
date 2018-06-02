@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { firebaseDb, dbCollections } from '../firebase/firebase'
+import { firebaseDb, dbCollections } from '../firebase'
 import { IReportBoxState, ITimeLogDetail } from '../types'
 import CommonUtil from '../utils/common-util'
 import DateUtil from '../utils/date-util'
