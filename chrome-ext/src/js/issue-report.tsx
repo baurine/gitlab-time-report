@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
-import TimeLoggerPage from './pages/TimeLoggerPage'
 import CommonUtil from './utils/common-util'
 import IssuePageParser from './utils/issue-page-parser'
+import IssuePage from './pages/IssuePage'
 
 import { IssuePageContext } from './contexts'
 import { IIssuePageInfo } from './types'
@@ -14,21 +14,21 @@ function main() {
   const pageParser = new IssuePageParser()
   pageParser.parse()
     .then((curPageInfo: IIssuePageInfo) => {
-      renderTimeLoggerPage(curPageInfo)
+      renderIssuePage(curPageInfo)
     })
-    .catch((err: Error) => CommonUtil.log(err.message))
+    .catch(CommonUtil.handleError)
 }
 
-function renderTimeLoggerPage(curPageInfo: IIssuePageInfo) {
+function renderIssuePage(curPageInfo: IIssuePageInfo) {
   const notesContainer = document.getElementById('notes')
-  const timeLoggerContainer = document.createElement('div')
-  timeLoggerContainer.id = 'time-logger-box'
-  notesContainer.insertBefore(timeLoggerContainer, notesContainer.lastChild)
+  const issueReportContainer = document.createElement('div')
+  issueReportContainer.id = 'issue-report-box'
+  notesContainer.insertBefore(issueReportContainer, notesContainer.lastChild)
   ReactDOM.render(
     <IssuePageContext.Provider value={curPageInfo}>
-      <TimeLoggerPage/>
+      <IssuePage/>
     </IssuePageContext.Provider>,
-    timeLoggerContainer
+    issueReportContainer
   )
 }
 

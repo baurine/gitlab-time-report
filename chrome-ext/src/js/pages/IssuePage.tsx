@@ -5,7 +5,7 @@ import IssueReport from '../components/IssueReport'
 import { IssuePageContext } from '../contexts'
 import { IIssuePageInfo } from '../types'
 
-export default class TimeLoggerPage extends React.Component {
+export default class IssuePage extends React.Component {
   render() {
     return (
       <IssuePageContext.Consumer>

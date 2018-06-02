@@ -6,7 +6,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 module.exports = {
   entry: {
     report: './src/js/report.jsx',
-    'time-logger': './src/js/time-logger.tsx',
+    'issue-report': './src/js/issue-report.tsx',
   },
   output: {},
   resolve: {
