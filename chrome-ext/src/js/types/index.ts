@@ -74,3 +74,13 @@ export interface IAuthBoxState {
   loading: boolean,
   message: string
 }
+
+export interface IReportBoxState {
+  users: string[],
+  projects: string[],
+  selectedUser: string,
+  selectedProject: string,
+  dateFrom: string,
+  dateTo: string,
+  aggreResult: object | string
+}

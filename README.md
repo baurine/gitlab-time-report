@@ -1,1 +1,1 @@
-# GitLab Time Tracker
+# GitLab Time Logger
