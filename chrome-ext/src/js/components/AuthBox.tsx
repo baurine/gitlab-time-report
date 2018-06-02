@@ -57,22 +57,28 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
   }
 
   logIn = () => {
+    this.setState({loading: true, message: 'logging in...'})
+
     const { email, password } = this.state
     firebaseAuth.signInWithEmailAndPassword(email, password)
-      .catch((err: Error) => this.setState({message: err.message}))
+      .catch((err: Error) => this.setState({loading:false, message: err.message}))
   }
 
   register = () => {
+    this.setState({loading: true, message: 'registering...'})
+
     const { email, password } = this.state
     firebaseAuth.createUserWithEmailAndPassword(email, password)
-      .catch((err: Error) => this.setState({message: err.message}))
+      .catch((err: Error) => this.setState({loading:false, message: err.message}))
   }
 
   resetPwd = () => {
+    this.setState({loading: true, message: 'sending email...'})
+
     const { email } = this.state
     firebaseAuth.sendPasswordResetEmail(email)
-      .then(() => this.setState({message: 'email sent!'}))
-      .catch((err: Error) => this.setState({message: err.message}))
+      .then(() => this.setState({loading:false, message: 'email sent!'}))
+      .catch((err: Error) => this.setState({loading:false, message: err.message}))
   }
 
   inputChange = (event: any) => {
@@ -97,10 +103,17 @@ export default class AuthBox extends React.Component<IAuthBoxProps, IAuthBoxStat
   }
 
   renderSignedOutStatus() {
+    const { email, password } = this.state
     return (
       <div>
-        <input type='text' name='email' onChange={this.inputChange}/>
-        <input type='password' name='password' onChange={this.inputChange}/>
+        <input type='text'
+               name='email'
+               value={email}
+               onChange={this.inputChange}/>
+        <input type='password'
+               name='password'
+               value={password}
+               onChange={this.inputChange}/>
         <button onClick={this.logIn}>Log In</button>
         <button onClick={this.register}>Register</button>
         <button onClick={this.resetPwd}>Reset Password</button>
