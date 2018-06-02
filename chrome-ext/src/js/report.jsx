@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
-import TimeLoggerBox from './components/TimeLoggerBox'
+import AuthBox from './components/AuthBox'
 
 ReactDOM.render(
-  <TimeLoggerBox/>,
+  <AuthBox/>,
   document.getElementById('root')
 )

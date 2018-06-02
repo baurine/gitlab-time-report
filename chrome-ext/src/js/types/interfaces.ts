@@ -37,3 +37,11 @@ export interface ITimeLogEditorState {
   spentTime: string,
   spentAt: string,
 }
+
+export interface IAuthBoxState {
+  user: any,
+  email: string,
+  password: string,
+  loading: boolean,
+  message: string
+}
