@@ -68,10 +68,16 @@ export interface IProject {
   name: string,
 }
 
+export interface IProfile {
+  id: number,
+  username: string,
+}
+
 export interface IIssuePageInfo {
   curDomainDocId: string,
   curIssue: IIssue,
-  curProject: IProject
+  curProject: IProject,
+  curUser: IProfile
 }
 
 ///////////////////////////////////////////////////

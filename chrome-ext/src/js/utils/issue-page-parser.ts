@@ -1,5 +1,5 @@
 import { firebaseDb, dbCollections } from '../firebase'
-import { IIssueRes, IIssue, IProject, IIssuePageInfo } from '../types'
+import { IIssueRes, IIssue, IProject, IProfile, IIssuePageInfo } from '../types'
 import { CommonUtil, ApiUtil } from '../utils'
 
 export default class IssuePageParser {
@@ -7,15 +7,22 @@ export default class IssuePageParser {
   private issueType: string
   private issueNum: string
 
-  private domainDocId: string
+  private curDomainDocId: string
+  private curIssue: IIssue
+  private curProject: IProject
+  private curUser: IProfile
 
   parse = () => {
     return new Promise((resolve, reject) => {
       if (this.checkAvailabeIssuePage()) {
-        this.checkDomainEnabled()
-          .then((domainDocId: string) => this.domainDocId = domainDocId)
-          .then(this.fetchIssueDetail)
-          .then((pageInfo: IIssuePageInfo) => {
+        Promise.all([this.checkDomainEnabled(), this.fetchIssueDetail(), this.fetchProfile()])
+          .then(() => {
+            const pageInfo: IIssuePageInfo = {
+              curDomainDocId: this.curDomainDocId,
+              curIssue: this.curIssue,
+              curProject: this.curProject,
+              curUser: this.curUser
+            }
             console.log(pageInfo)
             resolve(pageInfo)
           })
@@ -62,11 +69,11 @@ export default class IssuePageParser {
       .get()
       .then((snapshot: any) => {
         if (snapshot.exists) {
-          const domainDocId = snapshot.data()[host]
-          if (!domainDocId) {
+          const curDomainDocId = snapshot.data()[host]
+          if (!curDomainDocId) {
             throw new Error('this domain is not enabled')
           }
-          return domainDocId
+          this.curDomainDocId = curDomainDocId
         } else {
           throw new Error('there is no domains/enables doc in your database')
         }
@@ -77,7 +84,7 @@ export default class IssuePageParser {
     const apiUrl = ['projects', encodeURIComponent(this.projectPath), this.issueType, this.issueNum].join('/')
     return ApiUtil.request(apiUrl)
              .then((issueRes: IIssueRes) => {
-               const issue: IIssue = {
+               this.curIssue = {
                  id: issueRes.id,
                  iid: issueRes.iid,
                  project_id: issueRes.project_id,
@@ -90,17 +97,22 @@ export default class IssuePageParser {
                  last_note_id: 0,
                  doc_id: [issueRes.id, issueRes.iid, issueRes.project_id].join('-')
                }
-               const project: IProject = {
+               this.curProject = {
                  id: issueRes.project_id,
                  api_url: issueRes._links.project,
                  name: this.projectPath
                }
-               const pageInfo = {
-                 curDomainDocId: this.domainDocId,
-                 curIssue: issue,
-                 curProject: project
-               }
-               return pageInfo
              })
+  }
+
+  fetchProfile = () => {
+    const apiUrl = 'user'
+    return ApiUtil.request(apiUrl)
+      .then((userRes: IProfile) => {
+        this.curUser = {
+          id: userRes.id,
+          username: userRes.username
+        }
+      })
   }
 }
