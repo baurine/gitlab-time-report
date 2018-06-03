@@ -97,7 +97,5 @@ export interface IIssueReportProps {
 }
 
 export interface IIssueReportState {
-  issueDoc: IIssue,
-  timeNotes: IParsedTimeNote[],
   aggreResult: any,
 }

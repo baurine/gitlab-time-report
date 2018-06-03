@@ -21,6 +21,8 @@ const SUB_TIME_REG = /@(.+) subtracted (.+) of time spent at (\d{4}-\d{2}-\d{2})
 const REMOVE_TIME_REG = /@(.+) removed time spent/
 
 class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> {
+  private curIssue: IIssue
+  private issueDoc: IIssue
   private issueDocRef: any
   private mutationObserver: MutationObserver
   private originalTimeNotes: IOriginalTimeNote[]
@@ -28,18 +30,20 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
   constructor(props: IIssueReportProps) {
     super(props)
 
+    // state stores variables present UI
     this.state = {
-      issueDoc: null,
-      timeNotes: [],
       aggreResult: null
     }
 
     const { issuePageInfo } = props
+    // the variables has no business with UI should store in Component directly
     this.issueDocRef =
       firebaseDb.collection(dbCollections.DOMAINS)
                 .doc(issuePageInfo.curDomainDocId)
                 .collection(dbCollections.ISSUES)
                 .doc(issuePageInfo.curIssue.doc_id)
+    this.curIssue = props.issuePageInfo.curIssue
+    this.issueDoc = null
     this.originalTimeNotes = []
   }
 
@@ -54,17 +58,14 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
   initData = () => {
     this.findIssue()
       .then((issueDoc: IIssue) => {
-        this.setState({issueDoc}, () => {
-          this.updateIssue()
-          this.parseNotesNode()
-          this.observeNotesMutation()
-        })
+        this.issueDoc = issueDoc
+        this.parseNotesNode()
+        this.observeNotesMutation()
       })
       .catch(CommonUtil.handleError)
   }
 
   findIssue = () => {
-    const { issuePageInfo } = this.props
     return this.issueDocRef.get()
       .then((snapshot: any) => {
         if (snapshot.exists) {
@@ -77,28 +78,26 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
   }
 
   createIssue = () => {
-    const { issuePageInfo } = this.props
-    return this.issueDocRef.set(issuePageInfo.curIssue)
+    return this.issueDocRef.set(this.curIssue)
       .then(() => {
         console.log('issue added')
-        return issuePageInfo.curIssue
-      }) 
+        return this.curIssue
+      })
   }
 
   updateIssue = () => {
-    const { issueDoc } = this.state
-    const { curIssue } = this.props.issuePageInfo
+    let issueDoc = this.issueDoc
+    const curIssue = this.curIssue
     if (issueDoc.title !== curIssue.title ||
         issueDoc.web_url !== curIssue.web_url ||
         issueDoc.project_api_url !== curIssue.project_api_url ||
         issueDoc.total_time_spent !== curIssue.total_time_spent) {
+      issueDoc.title = curIssue.title
+      issueDoc.web_url = curIssue.web_url
+      issueDoc.project_api_url = curIssue.project_api_url
+      issueDoc.total_time_spent = curIssue.total_time_spent
       this.issueDocRef
-        .update({
-          title: curIssue.title,
-          web_url: curIssue.web_url,
-          project_api_url: curIssue.project_api_url,
-          total_time_spent: curIssue.total_time_spent
-        })
+        .set(issueDoc)
         .then(() => console.log('issue updated'))
         .catch(CommonUtil.handleError)
     }
@@ -174,10 +173,13 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
 
   aggregateIssueTime = (timeNotes: IParsedTimeNote[]) => {
     let aggreResult: any = {}
+    let totalSpentTime = 0
     timeNotes.forEach(timeNote => {
       const user = timeNote.author
       const spentDate = timeNote.spentDate
       const spentTime = timeNote.spentTime
+
+      totalSpentTime += spentTime
 
       aggreResult = aggreResult || {}
       aggreResult[user] = aggreResult[user] || {}
@@ -210,6 +212,9 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
       }
     })
     this.setState({aggreResult})
+
+    this.curIssue.total_time_spent = totalSpentTime
+    this.updateIssue()
   }
 
   observeNotesMutation = () => {
@@ -229,7 +234,6 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
       })
     })
     hasChanges && this.parseTimeNotes()
-    console.log('hasChanges? : ', hasChanges)
   }
 
   renderIssueTimeReport() {
