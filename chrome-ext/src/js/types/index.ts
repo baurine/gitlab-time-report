@@ -14,19 +14,16 @@ export interface ITimeLogDoc extends ITimeLogDetail {
   docId: string
 }
 
-export interface IOriginalTimeNote {
-  id: string,
-  author: string,
-  spentTime: string,
-  spentDate: string,
-  action: string, // '+' or '-'
-}
-
 export interface IParsedTimeNote {
   id: number,
   author: string,
   spentTime: number,
   spentDate: string,
+}
+
+export interface ITimeNote extends IParsedTimeNote {
+  issue_doc_id: string,
+  project_id: number
 }
 
 // https://gitlab.ekohe.com/api/v4/projects/ekohe%2Finternal%2Fekohe-time-reporting-tool/issues/3
