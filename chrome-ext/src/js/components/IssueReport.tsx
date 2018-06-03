@@ -51,7 +51,7 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
     this.initData()
   }
 
-  componentWillMount() {
+  componentWillUnmount() {
     this.mutationObserver && this.mutationObserver.disconnect()
   }
 
