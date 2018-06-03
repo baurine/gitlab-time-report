@@ -5,16 +5,29 @@ export default class DateUtil {
     return date.toISOString().substring(0, 10)
   }
 
+  // timeStr: 1h 30m
+  static parseSpentTime(timeStr: string) {
+    const regArr = /((\d+)h)?\s*((\d+)m)?/.exec(timeStr)
+    const hours = parseInt(regArr[2]) || 0
+    const minutes = parseInt(regArr[4]) || 0
+    const totalMins = hours*60 + minutes
+    return totalMins
+  }
+
   static formatSpentTime(spentTime: number) {
-    let retStr = []
+    let timeArr = []
     const hours = Math.floor(spentTime / 60)
     const remainMins = spentTime % 60
     if (hours > 0) {
-      retStr.push(`${hours}h`)
+      timeArr.push(`${hours}h`)
     }
     if (remainMins > 0) {
-      retStr.push(`${remainMins}m`)
+      timeArr.push(`${remainMins}m`)
     }
-    return retStr.join(' ')
+    let retStr = timeArr.join(' ')
+    if (spentTime < 0) {
+      retStr = '-' + retStr
+    }
+    return retStr
   }
 }

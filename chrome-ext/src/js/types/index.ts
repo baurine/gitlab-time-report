@@ -14,6 +14,21 @@ export interface ITimeLogDoc extends ITimeLogDetail {
   docId: string
 }
 
+export interface IOriginalTimeNote {
+  id: string,
+  author: string,
+  spentTime: string,
+  spentDate: string,
+  action: string, // '+' or '-'
+}
+
+export interface IParsedTimeNote {
+  id: number,
+  author: string,
+  spentTime: number,
+  spentDate: string,
+}
+
 // https://gitlab.ekohe.com/api/v4/projects/ekohe%2Finternal%2Fekohe-time-reporting-tool/issues/3
 // https://gitlab.ekohe.com/api/v4/projects/ekohe%2Fpodknife/merge_requests/554
 export interface IIssueRes {
@@ -33,9 +48,7 @@ export interface IIssueRes {
   },
   _links: {
     project: string,
-  },
-
-  // fields added by ourselves
+  }
 }
 
 export interface IIssue {
@@ -45,8 +58,8 @@ export interface IIssue {
 
   title: string,
   web_url: string,
-  total_time_spent: number,
   project_api_url: string,
+  total_time_spent: number,
 
   type: string, // 'issue' or 'merge_request'
   last_note_id: number,
@@ -77,4 +90,14 @@ export interface IReportBoxState {
   dateTo: string,
   aggreResult: object,
   message: string
+}
+
+export interface IIssueReportProps {
+  issuePageInfo: IIssuePageInfo,
+}
+
+export interface IIssueReportState {
+  issueDoc: IIssue,
+  timeNotes: IParsedTimeNote[],
+  aggreResult: any,
 }
