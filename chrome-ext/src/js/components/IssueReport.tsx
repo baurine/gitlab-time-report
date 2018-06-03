@@ -315,6 +315,7 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
   render() {
     return (
       <div className='issue-report-container'>
+        <p>Gitlab Issue Time Report is working for you.</p>
         {
           this.renderIssueTimeReport()
         }
