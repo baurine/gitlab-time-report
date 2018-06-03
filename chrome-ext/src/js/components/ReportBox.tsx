@@ -264,6 +264,10 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
     this.setState({message: '', aggreResult})
   }
 
+  todo = () => {
+    alert('TODO')
+  }
+
   render() {
     return (
       <div className='report-box-container'>
@@ -273,6 +277,10 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
           <input type='date' name='dateFrom' onChange={this.inputChange}/>
           <input type='date' name='dateTo' onChange={this.inputChange}/>
           <button onClick={this.queryTimeLogs}>Apply</button>
+          <button onClick={this.todo}>Today</button>
+          <button onClick={this.todo}>This Week</button>
+          <button onClick={this.todo}>Last Week</button>
+          <button onClick={this.todo}>This Month</button>
         </div>
         <div className='report-result'>
           { this.renderReports() }
