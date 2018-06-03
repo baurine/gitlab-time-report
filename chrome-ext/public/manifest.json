@@ -1,8 +1,8 @@
 {
-  "name": "GitLab Issue Time Logger",
+  "name": "GitLab Issue Time Report",
   "version": "0.0.1",
   "manifest_version": 2,
-  "description": "Log your gitlab issue spent time",
+  "description": "report your gitlab issue spent time",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -16,8 +16,5 @@
         "js": ["issue-report.js"],
         "css": ["issue-report.css"]
       }
-  ],
-  "permissions": [
-    "storage"
   ]
 }
