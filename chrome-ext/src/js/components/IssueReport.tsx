@@ -27,6 +27,7 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
   private issueDocRef: any
   private timeNotesCollectionRef: any
   private projectDocRef: any
+  private userDocRef: any
 
   private mutationObserver: MutationObserver
   private parsedTimeNotes: IParsedTimeNote[]
@@ -40,7 +41,7 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
       aggreResult: null
     }
 
-    const { curDomainDocId, curIssue, curProject } = props.issuePageInfo
+    const { curDomainDocId, curIssue, curProject, curUser } = props.issuePageInfo
     // the variables has no business with UI should store in Component directly
     this.curIssue = Object.assign({}, curIssue)
     this.issueDoc = null
@@ -58,6 +59,9 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
     this.projectDocRef = domainDocRef
                 .collection(dbCollections.PROJECTS)
                 .doc(curProject.id.toString())
+    this.userDocRef = domainDocRef
+                .collection(dbCollections.USERS)
+                .doc(curUser.id.toString())
   }
 
   componentDidMount() {
@@ -77,6 +81,7 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
         this.observeNotesMutation()
 
         this.createOrUpdateProject()
+        this.createUser()
       })
       .catch((err: any) => console.log(err))
   }
@@ -136,6 +141,22 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
           return this.projectDocRef
             .set(curProject)
             .then(() => console.log('project added'))
+        }
+      })
+      .catch((err: any) => console.log(err))
+  }
+
+  createUser = () => {
+    const { curUser } = this.props.issuePageInfo
+    this.userDocRef
+      .get()
+      .then((snapshot: any) => {
+        if (snapshot.exists) {
+          console.log('user existed')
+        } else {
+          return this.userDocRef
+            .set(curUser)
+            .then(() => console.log('user added'))
         }
       })
       .catch((err: any) => console.log(err))
