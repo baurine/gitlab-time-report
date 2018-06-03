@@ -7,17 +7,23 @@ export default class DateUtil {
 
   // timeStr: 1h 30m
   static parseSpentTime(timeStr: string) {
-    const regArr = /((\d+)h)?\s*((\d+)m)?/.exec(timeStr)
-    const hours = parseInt(regArr[2]) || 0
-    const minutes = parseInt(regArr[4]) || 0
-    const totalMins = hours*60 + minutes
+    const regArr = /((\d+)d)?\s*((\d+)h)?\s*((\d+)m)?/.exec(timeStr)
+    const days = parseInt(regArr[2]) || 0
+    const hours = parseInt(regArr[4]) || 0
+    const minutes = parseInt(regArr[6]) || 0
+    const totalMins = days*8*60 + hours*60 + minutes
     return totalMins
   }
 
   static formatSpentTime(spentTime: number) {
     let timeArr = []
-    const hours = Math.floor(spentTime / 60)
-    const remainMins = spentTime % 60
+    const days = Math.floor(spentTime / (60*8))
+    let remainMins = spentTime % (60*8)
+    const hours = Math.floor(remainMins / 60)
+    remainMins = remainMins % 60
+    if (days > 0) {
+      timeArr.push(`${days}d`)
+    }
     if (hours > 0) {
       timeArr.push(`${hours}h`)
     }
