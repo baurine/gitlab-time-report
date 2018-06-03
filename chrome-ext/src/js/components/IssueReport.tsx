@@ -23,8 +23,11 @@ const REMOVE_TIME_REG = /@(.+) removed time spent/
 class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> {
   private curIssue: IIssue
   private issueDoc: IIssue
+
   private issueDocRef: any
   private timeNotesCollectionRef: any
+  private projectDocRef: any
+
   private mutationObserver: MutationObserver
   private parsedTimeNotes: IParsedTimeNote[]
   private removedTimeNoteId: number
@@ -37,22 +40,24 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
       aggreResult: null
     }
 
-    const { curIssue, curDomainDocId } = props.issuePageInfo
+    const { curDomainDocId, curIssue, curProject } = props.issuePageInfo
     // the variables has no business with UI should store in Component directly
     this.curIssue = Object.assign({}, curIssue)
     this.issueDoc = null
     this.parsedTimeNotes = []
     this.removedTimeNoteId = 0
 
-    this.issueDocRef =
+    const domainDocRef =
       firebaseDb.collection(dbCollections.DOMAINS)
                 .doc(curDomainDocId)
+    this.issueDocRef = domainDocRef
                 .collection(dbCollections.ISSUES)
                 .doc(curIssue.doc_id)
-    this.timeNotesCollectionRef =
-      firebaseDb.collection(dbCollections.DOMAINS)
-                .doc(curDomainDocId)
+    this.timeNotesCollectionRef = domainDocRef
                 .collection(dbCollections.TIME_LOGS)
+    this.projectDocRef = domainDocRef
+                .collection(dbCollections.PROJECTS)
+                .doc(curProject.id.toString())
   }
 
   componentDidMount() {
@@ -70,6 +75,8 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
         this.curIssue.last_note_id = this.issueDoc.last_note_id
         this.parseNotesNode()
         this.observeNotesMutation()
+
+        this.createOrUpdateProject()
       })
       .catch((err: any) => console.log(err))
   }
@@ -99,12 +106,10 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
     const curIssue = this.curIssue
     if (issueDoc.title !== curIssue.title ||
         issueDoc.web_url !== curIssue.web_url ||
-        issueDoc.project_api_url !== curIssue.project_api_url ||
         issueDoc.total_time_spent !== curIssue.total_time_spent ||
         issueDoc.last_note_id !== curIssue.last_note_id) {
       issueDoc.title = curIssue.title
       issueDoc.web_url = curIssue.web_url
-      issueDoc.project_api_url = curIssue.project_api_url
       issueDoc.total_time_spent = curIssue.total_time_spent
       issueDoc.last_note_id = curIssue.last_note_id
       this.issueDocRef
@@ -112,6 +117,28 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
         .then(() => console.log('issue updated'))
         .catch((err: any) => console.log(err))
     }
+  }
+
+  createOrUpdateProject = () => {
+    const { curProject } = this.props.issuePageInfo
+    this.projectDocRef
+      .get()
+      .then((snapshot: any) => {
+        if (snapshot.exists) {
+          console.log('projet existed')
+          if (snapshot.data().name !== curProject.name ||
+              snapshot.data().api_url !== curProject.api_url) {
+            return this.projectDocRef
+              .update(curProject)
+              .then(() => console.log('project updated'))
+          }
+        } else {
+          return this.projectDocRef
+            .set(curProject)
+            .then(() => console.log('project added'))
+        }
+      })
+      .catch((err: any) => console.log(err))
   }
 
   parseNotesNode = () => {

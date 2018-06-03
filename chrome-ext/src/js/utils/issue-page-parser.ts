@@ -1,5 +1,5 @@
 import { firebaseDb, dbCollections } from '../firebase'
-import { IIssueRes, IIssue, IIssuePageInfo } from '../types'
+import { IIssueRes, IIssue, IProject, IIssuePageInfo } from '../types'
 import { CommonUtil, ApiUtil } from '../utils'
 
 export default class IssuePageParser {
@@ -15,11 +15,7 @@ export default class IssuePageParser {
         this.checkDomainEnabled()
           .then((domainDocId: string) => this.domainDocId = domainDocId)
           .then(this.fetchIssueDetail)
-          .then((issue: IIssue) => {
-            const pageInfo: IIssuePageInfo = {
-              curDomainDocId: this.domainDocId,
-              curIssue: issue
-            }
+          .then((pageInfo: IIssuePageInfo) => {
             console.log(pageInfo)
             resolve(pageInfo)
           })
@@ -89,13 +85,22 @@ export default class IssuePageParser {
                  title: issueRes.title,
                  web_url: issueRes.web_url,
                  total_time_spent: issueRes.time_stats.total_time_spent,
-                 project_api_url: issueRes._links.project,
 
                  type: issueRes.sha ? 'merge_request' : 'issue',
                  last_note_id: 0,
                  doc_id: [issueRes.id, issueRes.iid, issueRes.project_id].join('-')
                }
-               return issue
+               const project: IProject = {
+                 id: issueRes.project_id,
+                 api_url: issueRes._links.project,
+                 name: this.projectPath
+               }
+               const pageInfo = {
+                 curDomainDocId: this.domainDocId,
+                 curIssue: issue,
+                 curProject: project
+               }
+               return pageInfo
              })
   }
 }

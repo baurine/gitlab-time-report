@@ -55,7 +55,6 @@ export interface IIssue {
 
   title: string,
   web_url: string,
-  project_api_url: string,
   total_time_spent: number,
 
   type: string, // 'issue' or 'merge_request'
@@ -63,9 +62,16 @@ export interface IIssue {
   doc_id: string,  // id-iid-project_id
 }
 
+export interface IProject {
+  id: number,
+  api_url: string,
+  name: string,
+}
+
 export interface IIssuePageInfo {
   curDomainDocId: string,
-  curIssue: IIssue
+  curIssue: IIssue,
+  curProject: IProject
 }
 
 ///////////////////////////////////////////////////
