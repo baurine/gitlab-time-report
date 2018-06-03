@@ -17,6 +17,8 @@ export default class DateUtil {
 
   static formatSpentTime(spentTime: number) {
     let timeArr = []
+    let minus = spentTime < 0
+    spentTime = Math.abs(spentTime)
     const days = Math.floor(spentTime / (60*8))
     let remainMins = spentTime % (60*8)
     const hours = Math.floor(remainMins / 60)
@@ -31,7 +33,7 @@ export default class DateUtil {
       timeArr.push(`${remainMins}m`)
     }
     let retStr = timeArr.join(' ')
-    if (spentTime < 0) {
+    if (minus) {
       retStr = '-' + retStr
     }
     return retStr
