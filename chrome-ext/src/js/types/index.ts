@@ -16,7 +16,7 @@ export interface ITimeLogDoc extends ITimeLogDetail {
 
 // https://gitlab.ekohe.com/api/v4/projects/ekohe%2Finternal%2Fekohe-time-reporting-tool/issues/3
 // https://gitlab.ekohe.com/api/v4/projects/ekohe%2Fpodknife/merge_requests/554
-export interface IIssue {
+export interface IIssueRes {
   // come from api response
   // won't change
   id: number,
@@ -36,6 +36,18 @@ export interface IIssue {
   },
 
   // fields added by ourselves
+}
+
+export interface IIssue {
+  id: number,
+  iid: number,
+  project_id: number,
+
+  title: string,
+  web_url: string,
+  total_time_spent: number,
+  project_api_url: string,
+
   type: string, // 'issue' or 'merge_request'
   last_note_id: number,
   doc_id: string,  // id-iid-project_id
