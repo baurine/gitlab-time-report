@@ -8,13 +8,9 @@ import { IIssuePageInfo } from '../types'
 export default class IssuePage extends React.Component {
   render() {
     return (
-      <IssuePageContext.Consumer>
-        { (issuePageInfo: IIssuePageInfo) => 
-          <AuthBox>
-            <IssueReport/>
-          </AuthBox>
-        }
-      </IssuePageContext.Consumer>
+      <AuthBox>
+        <IssueReport/>
+      </AuthBox>
     )
   }
 }

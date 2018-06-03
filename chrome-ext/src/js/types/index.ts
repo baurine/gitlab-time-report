@@ -1,19 +1,3 @@
-export interface ITimeLog {
-  spentTime: number,
-  spentAt: Date,
-}
-
-export interface ITimeLogDetail extends ITimeLog {
-  gitlabUser: string,
-  issueDocId: string,
-  project: string,
-  createdAt: Date,
-}
-
-export interface ITimeLogDoc extends ITimeLogDetail {
-  docId: string
-}
-
 export interface IParsedTimeNote {
   id: number,
   author: string,
@@ -91,12 +75,17 @@ export interface IAuthBoxState {
 }
 
 export interface IReportBoxState {
+  enableDomains: object,
+  projects: any,
   users: string[],
-  projects: string[],
+
+  selectedDomain: string,
+  selectedProjectId: number,
   selectedUser: string,
-  selectedProject: string,
+
   dateFrom: string,
   dateTo: string,
+
   aggreResult: object,
   message: string
 }
