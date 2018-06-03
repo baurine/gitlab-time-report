@@ -11,6 +11,8 @@ const ALL = 'all'
 const DEF_PROJECTS = {0: 'all'}
 
 export default class ReportBox extends React.Component<{}, IReportBoxState> {
+  private unsubscribe: () => void
+
   constructor(props: {}) {
     super(props)
     this.state = {
@@ -28,10 +30,15 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
       aggreResult: {},
       message: '',
     }
+    this.unsubscribe = null
   }
 
   componentDidMount() {
     this.initData()
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe && this.unsubscribe()
   }
 
   initData = () => {
@@ -179,6 +186,8 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
   }
 
   queryTimeLogs = () => {
+    this.unsubscribe && this.unsubscribe()
+
     this.setState({message: 'applying...', aggreResult: {}})
 
     const { selectedDomain, selectedProjectId, selectedUser, dateFrom, dateTo } = this.state
@@ -203,15 +212,13 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
     if (selectedUser !== ALL) {
       query = query.where('author', '==', selectedUser)
     }
-
     query = query.orderBy('spentDate', 'desc')
-    query.get()
-      .then((snapshot: any) => {
+
+    this.unsubscribe = query.onSnapshot((snapshot: any) => {
         let timeLogs: Array<ITimeNote> = []
         snapshot.forEach((s: any) => timeLogs.push(s.data()))
         this.aggregateTimeLogs(timeLogs)
-      })
-      .catch((err: any) => {
+      }, (err: any) => {
         this.setState({message: CommonUtil.formatFirebaseError(err)})
       })
   }
