@@ -23,6 +23,7 @@ const REMOVE_TIME_REG = /@(.+) removed time spent/
 class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> {
   private issueDocRef: any
   private mutationObserver: MutationObserver
+  private originalTimeNotes: IOriginalTimeNote[]
 
   constructor(props: IIssueReportProps) {
     super(props)
@@ -39,11 +40,11 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
                 .doc(issuePageInfo.curDomainDocId)
                 .collection(dbCollections.ISSUES)
                 .doc(issuePageInfo.curIssue.doc_id)
+    this.originalTimeNotes = []
   }
 
   componentDidMount() {
     this.initData()
-    // this.observeNotesMutation()
   }
 
   componentWillMount() {
@@ -55,7 +56,8 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
       .then((issueDoc: IIssue) => {
         this.setState({issueDoc}, () => {
           this.updateIssue()
-          this.parseNotes()
+          this.parseNotesNode()
+          this.observeNotesMutation()
         })
       })
       .catch(CommonUtil.handleError)
@@ -102,52 +104,58 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
     }
   }
 
-  parseNotes = () => {
+  parseNotesNode = () => {
+    this.originalTimeNotes = []
     const notesList = document.getElementById('notes-list')
+    notesList.childNodes.forEach(this.parseNoteNode)
+    this.parseTimeNotes()
+  }
 
-    let originalTimeNotes: IOriginalTimeNote[] = []
-    notesList.childNodes.forEach(node => {
-      const id = (node as HTMLElement).id
-      if (id) {
-        const text = (node as HTMLElement).innerText
-        // just choose the first text line, for avoiding same format content in the comment content
-        // for example, someone added a comment: "@baurine added 1h of time spent at 2018-06-02"
-        // it is not a real time note, but just a comment
-        const firstLineText = text.split('\n')[0]
-        if (!TIME_REG.test(firstLineText)) return
+  // return true means has change
+  parseNoteNode = (node: Node) => {
+    const id = (node as HTMLElement).id
+    if (!id) return false
 
-        let regArr = ADD_TIME_REG.exec(firstLineText)
-        if (regArr) {
-          originalTimeNotes.push({
-            id,
-            author: regArr[1],
-            spentTime: regArr[2],
-            spentDate: regArr[3],
-            action: '+'
-          })
-          return
-        }
-        regArr = SUB_TIME_REG.exec(firstLineText)
-        if (regArr) {
-          originalTimeNotes.push({
-            id,
-            author: regArr[1],
-            spentTime: regArr[2],
-            spentDate: regArr[3],
-            action: '-'
-          })
-          return
-        }
-        regArr = REMOVE_TIME_REG.exec(firstLineText)
-        if (regArr) {
-          originalTimeNotes = []
-          return
-        }
-        console.log('parse time note error', text)
-      }
-    })
+    const text = (node as HTMLElement).innerText
+    // just choose the first text line, for avoiding same format content in the comment content
+    // for example, someone added a comment: "@baurine added 1h of time spent at 2018-06-02"
+    // it is not a real time note, but just a comment
+    const firstLineText = text.split('\n')[0]
+    if (!TIME_REG.test(firstLineText)) return false
 
-    let parsedTimeNotes: IParsedTimeNote[] = originalTimeNotes.map( note => {
+    let regArr = ADD_TIME_REG.exec(firstLineText)
+    if (regArr) {
+      this.originalTimeNotes.push({
+        id,
+        author: regArr[1],
+        spentTime: regArr[2],
+        spentDate: regArr[3],
+        action: '+'
+      })
+      return true
+    }
+    regArr = SUB_TIME_REG.exec(firstLineText)
+    if (regArr) {
+      this.originalTimeNotes.push({
+        id,
+        author: regArr[1],
+        spentTime: regArr[2],
+        spentDate: regArr[3],
+        action: '-'
+      })
+      return true
+    }
+    regArr = REMOVE_TIME_REG.exec(firstLineText)
+    if (regArr) {
+      this.originalTimeNotes = []
+      return true
+    }
+    console.log('parse time note error', text)
+    return false
+  }
+
+  parseTimeNotes = () => {
+    let parsedTimeNotes: IParsedTimeNote[] = this.originalTimeNotes.map(note => {
       // id: note_284939
       const id = parseInt(note.id.split('_')[1])
       let spentTime = DateUtil.parseSpentTime(note.spentTime)
@@ -161,7 +169,6 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
         spentDate: note.spentDate
       }
     })
-    this.setState({timeNotes: parsedTimeNotes})
     this.aggregateIssueTime(parsedTimeNotes)
   }
 
@@ -205,29 +212,24 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
     this.setState({aggreResult})
   }
 
-  observeNotesMutation() {
+  observeNotesMutation = () => {
     const notesContainerNode = document.getElementById('notes-list')
-    if (!notesContainerNode) {
-      CommonUtil.log('notes-list does not exist')
-      return
-    }
-
     this.mutationObserver = new MutationObserver(this.parseMutations)
-
     const config = { childList: true }
     this.mutationObserver.observe(notesContainerNode, config)
   }
 
   // find out added note about spent time
   parseMutations = (mutations: MutationRecord[]) => {
+    let hasChanges = false
     mutations.forEach(mutation => {
       mutation.addedNodes.forEach(node => {
-        const nodeEl = node as HTMLElement
-        if (nodeEl.id) {
-          console.log(nodeEl.id, nodeEl.innerText)
-        }
+        const hasChange = this.parseNoteNode(node)
+        hasChanges = hasChanges || hasChange
       })
     })
+    hasChanges && this.parseTimeNotes()
+    console.log('hasChanges? : ', hasChanges)
   }
 
   renderIssueTimeReport() {
