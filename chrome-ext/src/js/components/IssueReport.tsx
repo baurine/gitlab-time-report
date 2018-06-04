@@ -131,8 +131,7 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
       .then((snapshot: any) => {
         if (snapshot.exists) {
           console.log('projet existed')
-          if (snapshot.data().name !== curProject.name ||
-              snapshot.data().api_url !== curProject.api_url) {
+          if (snapshot.data().name !== curProject.name) {
             return this.projectDocRef
               .update(curProject)
               .then(() => console.log('project updated'))

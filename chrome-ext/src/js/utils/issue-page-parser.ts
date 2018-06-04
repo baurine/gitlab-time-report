@@ -99,7 +99,6 @@ export default class IssuePageParser {
                }
                this.curProject = {
                  id: issueRes.project_id,
-                 api_url: issueRes._links.project,
                  name: this.projectPath
                }
              })

@@ -26,9 +26,6 @@ export interface IIssueRes {
   web_url: string,
   time_stats: {
     total_time_spent: number,
-  },
-  _links: {
-    project: string,
   }
 }
 
@@ -48,7 +45,6 @@ export interface IIssue {
 
 export interface IProject {
   id: number,
-  api_url: string,
   name: string,
 }
 
