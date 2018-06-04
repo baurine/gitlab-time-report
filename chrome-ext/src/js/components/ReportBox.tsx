@@ -28,7 +28,8 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
       dateTo: '',
 
       aggreResult: {},
-      message: '',
+      message: 'loading...',
+      showBtns: false,
     }
     this.unsubscribe = null
   }
@@ -44,6 +45,7 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
   initData = () => {
     this.loadDomains()
       .then((domain: string) => Promise.all([this.loadProjects(domain), this.loadUsers(domain)]))
+      .then(() => this.setState({message: '', showBtns: true}))
       .catch((err: any) => {
         this.setState({message: CommonUtil.formatFirebaseError(err)})
       })
@@ -188,7 +190,7 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
   queryTimeLogs = () => {
     this.unsubscribe && this.unsubscribe()
 
-    this.setState({message: 'applying...', aggreResult: {}})
+    this.setState({message: 'applying...', aggreResult: {}, showBtns: false})
 
     const { selectedDomain, selectedProjectId, selectedUser, dateFrom, dateTo } = this.state
 
@@ -219,7 +221,7 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
         snapshot.forEach((s: any) => timeLogs.push(s.data()))
         this.aggregateTimeLogs(timeLogs)
       }, (err: any) => {
-        this.setState({message: CommonUtil.formatFirebaseError(err)})
+        this.setState({message: CommonUtil.formatFirebaseError(err), showBtns: true})
       })
   }
 
@@ -261,7 +263,7 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
         aggreResult[project]['dates'].push(spentAt)
       }
     })
-    this.setState({message: '', aggreResult})
+    this.setState({message: '', aggreResult, showBtns: true})
   }
 
   todo = () => {
@@ -276,11 +278,16 @@ export default class ReportBox extends React.Component<{}, IReportBoxState> {
           { this.renderUserSelector() }
           <input type='date' name='dateFrom' onChange={this.inputChange}/>
           <input type='date' name='dateTo' onChange={this.inputChange}/>
-          <button onClick={this.queryTimeLogs}>Apply</button>
-          <button onClick={this.todo}>Today</button>
-          <button onClick={this.todo}>This Week</button>
-          <button onClick={this.todo}>Last Week</button>
-          <button onClick={this.todo}>This Month</button>
+          {
+            this.state.showBtns &&
+            <span>
+              <button onClick={this.queryTimeLogs}>Apply</button>
+              <button onClick={this.todo}>Today</button>
+              <button onClick={this.todo}>This Week</button>
+              <button onClick={this.todo}>Last Week</button>
+              <button onClick={this.todo}>This Month</button>
+            </span>
+          }
         </div>
         <div className='report-result'>
           { this.renderReports() }

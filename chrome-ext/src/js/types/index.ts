@@ -87,7 +87,8 @@ export interface IReportBoxState {
   dateTo: string,
 
   aggreResult: object,
-  message: string
+  message: string,
+  showBtns: boolean
 }
 
 export interface IIssueReportProps {
