@@ -10,7 +10,7 @@ require('../../css/ReportTable.scss')
 export default class ReportTable extends React.Component<IReportTableProps, {}> {
 
   renderTable() {
-    const { aggreReport } = this.props
+    const { aggreReport, reportFor } = this.props
     if (!aggreReport || !aggreReport['users']) {
       return null
     }
@@ -20,6 +20,10 @@ export default class ReportTable extends React.Component<IReportTableProps, {}> 
     return (
       <div className='report-table-container'>
         <table>
+          {
+            reportFor &&
+            <caption>{reportFor.name}</caption>
+          }
           <thead>
             <tr>
               <th></th>

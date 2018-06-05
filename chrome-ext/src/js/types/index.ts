@@ -65,6 +65,13 @@ export interface IAggreReport {
   dates: string[],
 }
 
+export interface IReportMeta {
+  type: string,
+  id: number | string,
+  name: string,
+  link: string,
+}
+
 ///////////////////////////////////////////////////
 
 export interface IAuthBoxState {
@@ -101,5 +108,6 @@ export interface IIssueReportState {
 }
 
 export interface IReportTableProps {
+  reportFor?: IReportMeta
   aggreReport: IAggreReport
 }

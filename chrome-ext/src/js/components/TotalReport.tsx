@@ -1,10 +1,14 @@
 import * as React from 'react'
 
 import { firebaseDb, dbCollections } from '../firebase'
-import { IReportBoxState, ITimeNote, IProject } from '../types'
+import { IReportBoxState,
+         ITimeNote,
+         IProject,
+         IReportMeta } from '../types'
 import CommonUtil from '../utils/common-util'
 import DateUtil from '../utils/date-util'
 import FlashMessage from './FlashMessage'
+import ReportTable from './ReportTable'
 require('../../css/TotalReport.scss')
 
 const ALL = 'all'
@@ -137,40 +141,14 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
     const projectIds = Object.keys(aggreReport).sort((a, b) => projects[b] - projects[a])
     return projectIds.map(id => {
       const projectAggreResult = (aggreReport as any)[id]
-      return this.renderProjectReportTable(projects[id], projectAggreResult)
+      const projectInfo: IReportMeta = {
+        type: 'project',
+        id,
+        name: projects[id],
+        link: ''
+      }
+      return <ReportTable aggreReport={projectAggreResult} reportFor={projectInfo}/>
     })
-  }
-
-  // TODO: extract to a component
-  renderProjectReportTable(projectName: string, projectAggreResult: any) {
-    const dates: string[] = projectAggreResult['dates'].sort().concat('total')
-    const users: string[] = projectAggreResult['users'].sort().concat('total')
-    return (
-      <table key={projectName}>
-        <thead>
-          <tr>
-            <th>{projectName}</th>
-            {
-              dates.map(date=><th key={date}>{date.substr(0, 10)}</th>)
-            }
-          </tr>
-        </thead>
-        <tbody>
-          {
-            users.map(user=>
-              <tr key={user}>
-                <td>{user}</td>
-                {
-                  dates.map(date=>
-                    <td key={date}>{DateUtil.formatSpentTime(projectAggreResult[user][date])}</td>
-                  )
-                }
-              </tr>
-            )
-          }
-        </tbody>
-      </table>
-    )
   }
 
   inputChange = (event: any) => {
