@@ -5,6 +5,18 @@ export default class DateUtil {
     return date.toISOString().substring(0, 10)
   }
 
+  // date: '2018-06-05'
+  // return '2018-06-05 (Tue)'
+  static appendWeekDay(dateStr: string) {
+    // Date.toDateString() -- "Tue Jun 05 2018"
+    const date = new Date(dateStr)
+    if (date.valueOf()) {
+      const weekDay = date.toDateString().split(' ')[0]
+      return `${dateStr} (${weekDay})`
+    }
+    return dateStr
+  }
+
   // timeStr: 1h 30m
   static parseSpentTime(timeStr: string) {
     const regArr = /((\d+)d)?\s*((\d+)h)?\s*((\d+)m)?/.exec(timeStr)

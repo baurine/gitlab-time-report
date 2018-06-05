@@ -36,7 +36,7 @@ export default class ReportTable extends React.Component<IReportTableProps, {}> 
             {
               dates.map(date =>
                 <tr key={date}>
-                  <td>{date}</td>
+                  <td>{DateUtil.appendWeekDay(date)}</td>
                   {
                     users.map(user =>
                       <td key={user}>{DateUtil.formatSpentTime((aggreReport as any)[user][date])}</td>
