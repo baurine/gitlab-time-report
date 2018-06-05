@@ -7,6 +7,7 @@ import { IIssue,
          IIssueReportProps,
          IIssueReportState } from '../types'
 import { CommonUtil, DateUtil } from '../utils'
+import ReportTable from './ReportTable'
 require('../../css/IssueReport.scss')
 
 const TIME_REG = /time spent/
@@ -324,48 +325,11 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
     hasChanges && this.aggreAndSyncTimeNotes()
   }
 
-  renderIssueTimeReport() {
-    const { aggreResult } = this.state
-    if (!aggreResult || !aggreResult['users']) {
-      return null
-    }
-    const dates: string[] = aggreResult['dates'].sort().concat('total')
-    const users: string[] = aggreResult['users'].sort().concat('total')
-    return (
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            {
-              users.map(user => <th key={user}>{user}</th>)
-            }
-          </tr>
-        </thead>
-        <tbody>
-          {
-            dates.map(date =>
-              <tr key={date}>
-                <td>{date}</td>
-                {
-                  users.map(user =>
-                    <td key={user}>{DateUtil.formatSpentTime(aggreResult[user][date])}</td>
-                  )
-                }
-              </tr>
-            )
-          }
-        </tbody>
-      </table>
-    )
-  }
-
   render() {
     return (
       <div className='issue-report-container'>
         <p>Gitlab Issue Time Report is working for you.</p>
-        {
-          this.renderIssueTimeReport()
-        }
+        <ReportTable aggreReport={this.state.aggreResult}/>
       </div>
     )
   }

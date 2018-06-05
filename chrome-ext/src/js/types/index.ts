@@ -60,6 +60,11 @@ export interface IIssuePageInfo {
   curUser: IProfile
 }
 
+export interface IAggreReport {
+  users: string[],
+  dates: string[],
+}
+
 ///////////////////////////////////////////////////
 
 export interface IAuthBoxState {
@@ -93,4 +98,8 @@ export interface IIssueReportProps {
 
 export interface IIssueReportState {
   aggreResult: any,
+}
+
+export interface IReportTableProps {
+  aggreReport: IAggreReport
 }
