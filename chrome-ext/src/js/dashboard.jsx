@@ -1,9 +1,9 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
-import ReportPage from './pages/ReportPage'
+import DashboardPage from './pages/DashboardPage'
 
 ReactDOM.render(
-  <ReportPage/>,
+  <DashboardPage/>,
   document.getElementById('root')
 )

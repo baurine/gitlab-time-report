@@ -5,12 +5,12 @@ import { IReportBoxState, ITimeNote, IProject } from '../types'
 import CommonUtil from '../utils/common-util'
 import DateUtil from '../utils/date-util'
 import FlashMessage from './FlashMessage'
-require('../../css/ReportBox.scss')
+require('../../css/TotalReport.scss')
 
 const ALL = 'all'
 const DEF_PROJECTS = {0: 'all'}
 
-export default class ReportBox extends React.Component<{}, IReportBoxState> {
+export default class TotalReport extends React.Component<{}, IReportBoxState> {
   private unsubscribe: () => void
 
   constructor(props: {}) {

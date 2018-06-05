@@ -1,13 +1,13 @@
 import * as React from 'react'
 
 import AuthBox from '../components/AuthBox'
-import ReportBox from '../components/ReportBox'
+import TotalReport from '../components/TotalReport'
 
-export default class ReportPage extends React.Component {
+export default class DashboardPage extends React.Component {
   render() {
     return (
       <AuthBox>
-        <ReportBox/>
+        <TotalReport/>
       </AuthBox>
     )
   }

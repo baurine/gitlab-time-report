@@ -1,5 +1,4 @@
 import * as React from 'react'
-const md5 = require('blueimp-md5')
 
 import { firebaseAuth, firebaseDb, dbCollections } from '../firebase'
 import { IAuthBoxState } from '../types'

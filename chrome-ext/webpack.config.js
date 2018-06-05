@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: {
-    report: './src/js/report.jsx',
+    dashboard: './src/js/dashboard.jsx',
     'issue-report': './src/js/issue-report.tsx',
   },
   output: {},
@@ -51,8 +51,8 @@ module.exports = {
     new CleanWebpackPlugin('dist'),
     new HtmlWebpackPlugin({
       template: './src/html/template.html',
-      filename: 'report.html',
-      chunks: ['report'],
+      filename: 'dashboard.html',
+      chunks: ['dashboard'],
       hash: true
     }),
     new CssExtractWebpackPlugin({
