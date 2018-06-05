@@ -27,7 +27,7 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
       dateFrom: '',
       dateTo: '',
 
-      aggreResult: {},
+      aggreReport: {},
       message: 'loading...',
       showBtns: false,
     }
@@ -133,10 +133,10 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
   }
 
   renderReports() {
-    const { projects, aggreResult } = this.state
-    const projectIds = Object.keys(aggreResult).sort((a, b) => projects[b] - projects[a])
+    const { projects, aggreReport } = this.state
+    const projectIds = Object.keys(aggreReport).sort((a, b) => projects[b] - projects[a])
     return projectIds.map(id => {
-      const projectAggreResult = (aggreResult as any)[id]
+      const projectAggreResult = (aggreReport as any)[id]
       return this.renderProjectReportTable(projects[id], projectAggreResult)
     })
   }
@@ -190,7 +190,7 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
   queryTimeLogs = () => {
     this.unsubscribe && this.unsubscribe()
 
-    this.setState({message: 'applying...', aggreResult: {}, showBtns: false})
+    this.setState({message: 'applying...', aggreReport: {}, showBtns: false})
 
     const { selectedDomain, selectedProjectId, selectedUser, dateFrom, dateTo } = this.state
 
@@ -226,44 +226,44 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
   }
 
   aggregateTimeLogs(timeLogs: Array<ITimeNote>) {
-    let aggreResult: any = {}
+    let aggreReport: any = {}
     timeLogs.forEach(timeLog => {
       const project = timeLog.project_id
       const user = timeLog.author
       const spentAt = timeLog.spentDate
       const spentTime = timeLog.spentTime
 
-      aggreResult[project] = aggreResult[project] || {}
-      aggreResult[project][user] = aggreResult[project][user] || {}
-      aggreResult[project][user][spentAt] = aggreResult[project][user][spentAt] || 0
-      aggreResult[project][user][spentAt] += spentTime
+      aggreReport[project] = aggreReport[project] || {}
+      aggreReport[project][user] = aggreReport[project][user] || {}
+      aggreReport[project][user][spentAt] = aggreReport[project][user][spentAt] || 0
+      aggreReport[project][user][spentAt] += spentTime
 
       // a virtual 'total' date for every user
-      aggreResult[project][user]['total'] = aggreResult[project][user]['total'] || 0
-      aggreResult[project][user]['total'] += spentTime
+      aggreReport[project][user]['total'] = aggreReport[project][user]['total'] || 0
+      aggreReport[project][user]['total'] += spentTime
 
       // a virtual 'total' user for every project
-      aggreResult[project]['total'] = aggreResult[project]['total'] || {}
-      aggreResult[project]['total'][spentAt] = aggreResult[project]['total'][spentAt] || 0
-      aggreResult[project]['total'][spentAt] += spentTime
+      aggreReport[project]['total'] = aggreReport[project]['total'] || {}
+      aggreReport[project]['total'][spentAt] = aggreReport[project]['total'][spentAt] || 0
+      aggreReport[project]['total'][spentAt] += spentTime
 
       // a virtual 'total' date for every project's 'total' user
-      aggreResult[project]['total']['total'] = aggreResult[project]['total']['total'] || 0
-      aggreResult[project]['total']['total'] += spentTime
+      aggreReport[project]['total']['total'] = aggreReport[project]['total']['total'] || 0
+      aggreReport[project]['total']['total'] += spentTime
 
       // aggregate users
-      aggreResult[project]['users'] = aggreResult[project]['users'] || []
-      if (!aggreResult[project]['users'].includes(user)) {
-        aggreResult[project]['users'].push(user)
+      aggreReport[project]['users'] = aggreReport[project]['users'] || []
+      if (!aggreReport[project]['users'].includes(user)) {
+        aggreReport[project]['users'].push(user)
       }
 
       // aggregate dates
-      aggreResult[project]['dates'] = aggreResult[project]['dates'] || []
-      if (!aggreResult[project]['dates'].includes(spentAt)) {
-        aggreResult[project]['dates'].push(spentAt)
+      aggreReport[project]['dates'] = aggreReport[project]['dates'] || []
+      if (!aggreReport[project]['dates'].includes(spentAt)) {
+        aggreReport[project]['dates'].push(spentAt)
       }
     })
-    this.setState({message: '', aggreResult, showBtns: true})
+    this.setState({message: '', aggreReport, showBtns: true})
   }
 
   todo = () => {

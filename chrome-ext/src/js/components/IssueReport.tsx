@@ -39,7 +39,7 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
 
     // state stores variables present UI
     this.state = {
-      aggreResult: null
+      aggreReport: null
     }
 
     const { curDomainDocId, curIssue, curProject, curUser } = props.issuePageInfo
@@ -226,7 +226,7 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
   }
 
   aggregateIssueTime = () => {
-    let aggreResult: any = {}
+    let aggreReport: any = {}
     let totalSpentTime = 0
     const timeNotes = this.parsedTimeNotes.filter(note => note.id > this.removedTimeNoteId)
     timeNotes.forEach(timeNote => {
@@ -236,37 +236,37 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
 
       totalSpentTime += spentTime
 
-      aggreResult = aggreResult || {}
-      aggreResult[user] = aggreResult[user] || {}
-      aggreResult[user][spentDate] = aggreResult[user][spentDate] || 0
-      aggreResult[user][spentDate] += spentTime
+      aggreReport = aggreReport || {}
+      aggreReport[user] = aggreReport[user] || {}
+      aggreReport[user][spentDate] = aggreReport[user][spentDate] || 0
+      aggreReport[user][spentDate] += spentTime
 
       // a virtual 'total' user
-      aggreResult['total'] = aggreResult['total'] || {}
-      aggreResult['total'][spentDate] = aggreResult['total'][spentDate] || 0
-      aggreResult['total'][spentDate] += spentTime
+      aggreReport['total'] = aggreReport['total'] || {}
+      aggreReport['total'][spentDate] = aggreReport['total'][spentDate] || 0
+      aggreReport['total'][spentDate] += spentTime
 
       // a virtual 'total' date for every user
-      aggreResult[user]['total'] = aggreResult[user]['total'] || 0
-      aggreResult[user]['total'] += spentTime
+      aggreReport[user]['total'] = aggreReport[user]['total'] || 0
+      aggreReport[user]['total'] += spentTime
 
       // a virtual 'total' date for issue's 'total' user
-      aggreResult['total']['total'] = aggreResult['total']['total'] || 0
-      aggreResult['total']['total'] += spentTime
+      aggreReport['total']['total'] = aggreReport['total']['total'] || 0
+      aggreReport['total']['total'] += spentTime
 
       // aggregate users
-      aggreResult['users'] = aggreResult['users'] || []
-      if (!aggreResult['users'].includes(user)) {
-        aggreResult['users'].push(user)
+      aggreReport['users'] = aggreReport['users'] || []
+      if (!aggreReport['users'].includes(user)) {
+        aggreReport['users'].push(user)
       }
 
       // aggregate dates
-      aggreResult['dates'] = aggreResult['dates'] || []
-      if (!aggreResult['dates'].includes(spentDate)) {
-        aggreResult['dates'].push(spentDate)
+      aggreReport['dates'] = aggreReport['dates'] || []
+      if (!aggreReport['dates'].includes(spentDate)) {
+        aggreReport['dates'].push(spentDate)
       }
     })
-    this.setState({aggreResult})
+    this.setState({aggreReport})
 
     this.curIssue.total_time_spent = totalSpentTime
   }
@@ -329,7 +329,7 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
     return (
       <div className='issue-report-container'>
         <p>Gitlab Issue Time Report is working for you.</p>
-        <ReportTable aggreReport={this.state.aggreResult}/>
+        <ReportTable aggreReport={this.state.aggreReport}/>
       </div>
     )
   }
