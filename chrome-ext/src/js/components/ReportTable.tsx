@@ -21,12 +21,16 @@ export default class ReportTable extends React.Component<IReportTableProps, {}> 
       <div className='report-table-container'>
         <table>
           {
-            reportFor &&
+            reportFor && reportFor.type !== 'project' &&
             <caption>{reportFor.name}</caption>
           }
           <thead>
             <tr>
-              <th></th>
+              <th>
+                {
+                  reportFor && reportFor.type === 'project' && reportFor.name
+                }
+              </th>
               {
                 users.map(user => <th key={user}>{user}</th>)
               }
