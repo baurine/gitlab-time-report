@@ -35,6 +35,7 @@ export interface IIssue {
   project_id: number,
 
   title: string,
+  description: string,
   web_url: string,
   total_time_spent: number,
 

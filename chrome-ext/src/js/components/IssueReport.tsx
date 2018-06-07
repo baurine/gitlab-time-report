@@ -111,10 +111,12 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
     let issueDoc = this.issueDoc
     const curIssue = this.curIssue
     if (issueDoc.title !== curIssue.title ||
+        issueDoc.description != curIssue.description ||
         issueDoc.web_url !== curIssue.web_url ||
         issueDoc.total_time_spent !== curIssue.total_time_spent ||
         issueDoc.last_note_id !== curIssue.last_note_id) {
       issueDoc.title = curIssue.title
+      issueDoc.description = curIssue.description
       issueDoc.web_url = curIssue.web_url
       issueDoc.total_time_spent = curIssue.total_time_spent
       issueDoc.last_note_id = curIssue.last_note_id
