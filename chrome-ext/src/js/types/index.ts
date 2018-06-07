@@ -114,3 +114,7 @@ export interface IReportTableProps {
   reportFor?: IReportMeta
   aggreReport: IAggreReport
 }
+
+export interface IMessagePageProps {
+  message: string,
+}

@@ -92,7 +92,7 @@ export default class IssuePageParser {
                  title: issueRes.title,
                  description: issueRes.description,
                  web_url: issueRes.web_url,
-                 total_time_spent: issueRes.time_stats.total_time_spent,
+                 total_time_spent: issueRes.time_stats.total_time_spent / 60,  // the time from api is measured by seconds
 
                  type: issueRes.sha ? 'merge_request' : 'issue',
                  last_note_id: 0,

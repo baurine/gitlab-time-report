@@ -1,12 +1,5 @@
 
 .auth-box-container {
-  padding: 16px;
-  border: 1px solid #73afea;
-  border-radius: 3px;
-
-  font-family: "Fira Mono", Menlo, Monaco, 'Courier New', monospace;
-  font-size: 14px;
-
   .btn {
     display: inline-block;
     padding: 6px 12px;
@@ -44,7 +37,7 @@
     height: 40px;
     label {
       display: inline-block;
-      width: 80px;
+      width: 100px;
       font-size: 16px;
     }
     input {

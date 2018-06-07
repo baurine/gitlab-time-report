@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: {
-    dashboard: './src/js/dashboard.jsx',
+    dashboard: './src/js/dashboard.tsx',
     'issue-report': './src/js/issue-report.tsx',
   },
   output: {},
