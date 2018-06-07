@@ -271,7 +271,7 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
         name: project.name,
         link: ''
       }
-      return <ReportTable aggreReport={projectAggreResult} reportFor={projectInfo}/>
+      return <ReportTable aggreReport={projectAggreResult} reportFor={projectInfo} key={projectInfo.name}/>
     })
   }
 
