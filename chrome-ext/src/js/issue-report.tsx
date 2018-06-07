@@ -23,7 +23,7 @@ function renderIssuePage(curPageInfo: IIssuePageInfo) {
   const notesContainer = document.getElementById('notes')
   const issueReportContainer = document.createElement('div')
   issueReportContainer.id = 'issue-report-box'
-  notesContainer.insertBefore(issueReportContainer, notesContainer.lastChild)
+  notesContainer.parentNode.appendChild(issueReportContainer)
   ReactDOM.render(
     <IssuePageContext.Provider value={curPageInfo}>
       <IssuePage/>
