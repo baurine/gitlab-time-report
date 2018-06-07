@@ -12,7 +12,7 @@ import ReportTable from './ReportTable'
 require('../../css/TotalReport.scss')
 
 const ALL = 'all'
-const DEF_PROJECTS = {0: 'all'}
+const DEF_PROJECT: IProject = {id: 0, name: 'all'}
 
 const ONE_DAY_MILI_SECONDS = 24 * 60 * 60 * 1000
 
@@ -23,7 +23,7 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
     super(props)
     this.state = {
       enableDomains: {},
-      projects: DEF_PROJECTS,
+      projects: [DEF_PROJECT],
       users: [ALL],
 
       selectedDomain: '', // TODO
@@ -81,8 +81,8 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
       .orderBy('name')
       .get()
       .then((querySnapshot: any) => {
-        let projects: any = DEF_PROJECTS
-        querySnapshot.forEach((snapshot: any) => projects[snapshot.data().id] = snapshot.data().name)
+        let projects: IProject[] = [DEF_PROJECT]
+        querySnapshot.forEach((snapshot: any) => projects.push(snapshot.data()))
         this.setState({projects})
       })
   }
@@ -94,25 +94,23 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
       .orderBy('username')
       .get()
       .then((querySnapshot: any) => {
-        let users: string[] = []
+        let users: string[] = [ALL]
         querySnapshot.forEach((snapshot: any)=>users.push(snapshot.data().username))
-        users = [ALL].concat(users)
         this.setState({users})
       })
   }
 
   renderProjectSelector() {
     const { projects, selectedProjectId } = this.state
-    const projectIds = Object.keys(projects)
     return (
       <select name='selectedProjectId'
               value={selectedProjectId}
               onChange={this.inputChange}>
         {
-          projectIds.map(id =>
-            <option value={id}
-                    key={id}>
-              {projects[id]}
+          projects.map(project =>
+            <option value={project.id}
+                    key={project.id}>
+              {project.name}
             </option>
           )
         }
@@ -140,13 +138,12 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
 
   renderReports() {
     const { projects, aggreReport } = this.state
-    const projectIds = Object.keys(aggreReport).sort((a, b) => projects[b] - projects[a])
-    return projectIds.map(id => {
-      const projectAggreResult = (aggreReport as any)[id]
+    return projects.map(project => {
+      const projectAggreResult = (aggreReport as any)[project.id]
       const projectInfo: IReportMeta = {
         type: 'project',
-        id,
-        name: projects[id],
+        id: project.id,
+        name: project.name,
         link: ''
       }
       return <ReportTable aggreReport={projectAggreResult} reportFor={projectInfo}/>

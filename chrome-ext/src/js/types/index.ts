@@ -84,7 +84,7 @@ export interface IAuthBoxState {
 
 export interface IReportBoxState {
   enableDomains: object,
-  projects: any,
+  projects: IProject[],
   users: string[],
 
   selectedDomain: string,
