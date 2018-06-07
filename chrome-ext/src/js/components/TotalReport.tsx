@@ -247,48 +247,34 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
   }
 
   chooseToday = () => {
-    const today = new Date()
-    const todayDay = DateUtil.getDateFormat(today)
-    this.setState({dateFrom: todayDay, dateTo: todayDay })
+    const todayDate = DateUtil.getTodayDate()
+    this.setState({
+      dateFrom: todayDate,
+      dateTo: todayDate,
+    })
   }
 
   chooseThisWeek = () => {
-    const today = new Date()
-    const weekDay = today.getDay()
-    const lastSunday = new Date(today.valueOf() - weekDay * ONE_DAY_MILI_SECONDS)
-    const thisSaturday = new Date(today.valueOf() + (6-weekDay) * ONE_DAY_MILI_SECONDS)
+    const thisWeekRange = DateUtil.getThisWeekRange()
     this.setState({
-      dateFrom: DateUtil.getDateFormat(lastSunday),
-      dateTo: DateUtil.getDateFormat(thisSaturday)
+      dateFrom: thisWeekRange[0],
+      dateTo: thisWeekRange[1]
     })
   }
 
   chooseLastWeek = () => {
-    const today = new Date()
-    const weekDay = today.getDay()
-
-    const lastLastSunday = new Date(today.valueOf() - (weekDay+7) * ONE_DAY_MILI_SECONDS)
-    const lastSaturday = new Date(today.valueOf() - (weekDay+1) * ONE_DAY_MILI_SECONDS)
-
+    const lastWeekRange = DateUtil.getLastWeekRange()
     this.setState({
-      dateFrom: DateUtil.getDateFormat(lastLastSunday),
-      dateTo: DateUtil.getDateFormat(lastSaturday)
+      dateFrom: lastWeekRange[0],
+      dateTo: lastWeekRange[1]
     })
   }
 
   chooseThisMonth = () => {
-    const today = new Date()
-    const fullYear = today.getFullYear()
-    const month = today.getMonth()
-
-    // the result is local time
-    const thisMonthFirstDay = new Date(fullYear, month, 1)
-    const nextMonthFirstDay = new Date(fullYear, month+1, 1)
-    const thisMonthLastDay = new Date(nextMonthFirstDay.valueOf() - ONE_DAY_MILI_SECONDS)
-
+    const thisMonthRange = DateUtil.getThisMonthRange()
     this.setState({
-      dateFrom: DateUtil.getDateFormat(thisMonthFirstDay),
-      dateTo: DateUtil.getDateFormat(thisMonthLastDay)
+      dateFrom: thisMonthRange[0],
+      dateTo: thisMonthRange[1]
     })
   }
 

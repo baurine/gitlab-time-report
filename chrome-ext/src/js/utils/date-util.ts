@@ -1,3 +1,5 @@
+const ONE_DAY_MILI_SECONDS = 24 * 60 * 60 * 1000
+
 export default class DateUtil {
   static getDateFormat(date: Date) {
     // the parameter date is local time
@@ -26,6 +28,41 @@ export default class DateUtil {
       day = `0${day}`
     }
     return `${fullYear}-${month}-${day}`
+  }
+
+  static getTodayDate() {
+    return DateUtil.getDateFormat(new Date())
+  }
+
+  static getThisWeekRange() {
+    const today = new Date()
+    const weekDay = today.getDay()
+    const lastSunday = new Date(today.valueOf() - weekDay * ONE_DAY_MILI_SECONDS)
+    const thisSaturday = new Date(today.valueOf() + (6-weekDay) * ONE_DAY_MILI_SECONDS)
+    return [DateUtil.getDateFormat(lastSunday), DateUtil.getDateFormat(thisSaturday)]
+  }
+
+  static getLastWeekRange() {
+    const today = new Date()
+    const weekDay = today.getDay()
+
+    const lastLastSunday = new Date(today.valueOf() - (weekDay+7) * ONE_DAY_MILI_SECONDS)
+    const lastSaturday = new Date(today.valueOf() - (weekDay+1) * ONE_DAY_MILI_SECONDS)
+
+    return [DateUtil.getDateFormat(lastLastSunday), DateUtil.getDateFormat(lastSaturday)]
+  }
+
+  static getThisMonthRange() {
+    const today = new Date()
+    const fullYear = today.getFullYear()
+    const month = today.getMonth()
+
+    // the result is local time
+    const thisMonthFirstDay = new Date(fullYear, month, 1)
+    const nextMonthFirstDay = new Date(fullYear, month+1, 1)
+    const thisMonthLastDay = new Date(nextMonthFirstDay.valueOf() - ONE_DAY_MILI_SECONDS)
+
+    return [DateUtil.getDateFormat(thisMonthFirstDay), DateUtil.getDateFormat(thisMonthLastDay)]
   }
 
   // date: '2018-06-05'
