@@ -1,5 +1,5 @@
 export default class DateUtil {
-  static getDayFormat(date: Date) {
+  static getDateFormat(date: Date) {
     // the parameter date is local time
 
     // wrong

@@ -186,7 +186,7 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
     if (dateTo !== '') {
       query = query.where('spentDate', '<=', dateTo)
     } else {
-      query = query.where('spentDate', '<=', DateUtil.getDayFormat(new Date()))
+      query = query.where('spentDate', '<=', DateUtil.getDateFormat(new Date()))
     }
     if (selectedProjectId !== 0) {
       query = query.where('project_id', '==', selectedProjectId)
@@ -248,7 +248,7 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
 
   chooseToday = () => {
     const today = new Date()
-    const todayDay = DateUtil.getDayFormat(today)
+    const todayDay = DateUtil.getDateFormat(today)
     this.setState({dateFrom: todayDay, dateTo: todayDay })
   }
 
@@ -258,8 +258,8 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
     const lastSunday = new Date(today.valueOf() - weekDay * ONE_DAY_MILI_SECONDS)
     const thisSaturday = new Date(today.valueOf() + (6-weekDay) * ONE_DAY_MILI_SECONDS)
     this.setState({
-      dateFrom: DateUtil.getDayFormat(lastSunday),
-      dateTo: DateUtil.getDayFormat(thisSaturday)
+      dateFrom: DateUtil.getDateFormat(lastSunday),
+      dateTo: DateUtil.getDateFormat(thisSaturday)
     })
   }
 
@@ -271,8 +271,8 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
     const lastSaturday = new Date(today.valueOf() - (weekDay+1) * ONE_DAY_MILI_SECONDS)
 
     this.setState({
-      dateFrom: DateUtil.getDayFormat(lastLastSunday),
-      dateTo: DateUtil.getDayFormat(lastSaturday)
+      dateFrom: DateUtil.getDateFormat(lastLastSunday),
+      dateTo: DateUtil.getDateFormat(lastSaturday)
     })
   }
 
@@ -287,8 +287,8 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
     const thisMonthLastDay = new Date(nextMonthFirstDay.valueOf() - ONE_DAY_MILI_SECONDS)
 
     this.setState({
-      dateFrom: DateUtil.getDayFormat(thisMonthFirstDay),
-      dateTo: DateUtil.getDayFormat(thisMonthLastDay)
+      dateFrom: DateUtil.getDateFormat(thisMonthFirstDay),
+      dateTo: DateUtil.getDateFormat(thisMonthLastDay)
     })
   }
 
