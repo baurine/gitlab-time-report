@@ -100,56 +100,6 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
       })
   }
 
-  renderProjectSelector() {
-    const { projects, selectedProjectId } = this.state
-    return (
-      <select name='selectedProjectId'
-              value={selectedProjectId}
-              onChange={this.inputChange}>
-        {
-          projects.map(project =>
-            <option value={project.id}
-                    key={project.id}>
-              {project.name}
-            </option>
-          )
-        }
-      </select>
-    )
-  }
-
-  renderUserSelector() {
-    const { users, selectedUser } = this.state
-    return (
-      <select name='selectedUser'
-              value={selectedUser}
-              onChange={this.inputChange}>
-        {
-          users.map(user =>
-            <option value={user}
-                    key={user}>
-              {user}
-            </option>
-          )
-        }
-      </select>
-    )
-  }
-
-  renderReports() {
-    const { projects, aggreReport } = this.state
-    return projects.map(project => {
-      const projectAggreResult = (aggreReport as any)[project.id]
-      const projectInfo: IReportMeta = {
-        type: 'project',
-        id: project.id,
-        name: project.name,
-        link: ''
-      }
-      return <ReportTable aggreReport={projectAggreResult} reportFor={projectInfo}/>
-    })
-  }
-
   inputChange = (event: any) => {
     const target  = event.target
     let value = target.type === 'checkbox' ? target.checked : target.value
@@ -161,6 +111,38 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
 
     this.setState({
       [name]: value
+    })
+  }
+
+  chooseToday = () => {
+    const todayDate = DateUtil.getTodayDate()
+    this.setState({
+      dateFrom: todayDate,
+      dateTo: todayDate,
+    })
+  }
+
+  chooseThisWeek = () => {
+    const thisWeekRange = DateUtil.getThisWeekRange()
+    this.setState({
+      dateFrom: thisWeekRange[0],
+      dateTo: thisWeekRange[1]
+    })
+  }
+
+  chooseLastWeek = () => {
+    const lastWeekRange = DateUtil.getLastWeekRange()
+    this.setState({
+      dateFrom: lastWeekRange[0],
+      dateTo: lastWeekRange[1]
+    })
+  }
+
+  chooseThisMonth = () => {
+    const thisMonthRange = DateUtil.getThisMonthRange()
+    this.setState({
+      dateFrom: thisMonthRange[0],
+      dateTo: thisMonthRange[1]
     })
   }
 
@@ -243,35 +225,53 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
     this.setState({message: '', aggreReport, showBtns: true})
   }
 
-  chooseToday = () => {
-    const todayDate = DateUtil.getTodayDate()
-    this.setState({
-      dateFrom: todayDate,
-      dateTo: todayDate,
-    })
+  renderProjectSelector() {
+    const { projects, selectedProjectId } = this.state
+    return (
+      <select name='selectedProjectId'
+              value={selectedProjectId}
+              onChange={this.inputChange}>
+        {
+          projects.map(project =>
+            <option value={project.id}
+                    key={project.id}>
+              {project.name}
+            </option>
+          )
+        }
+      </select>
+    )
   }
 
-  chooseThisWeek = () => {
-    const thisWeekRange = DateUtil.getThisWeekRange()
-    this.setState({
-      dateFrom: thisWeekRange[0],
-      dateTo: thisWeekRange[1]
-    })
+  renderUserSelector() {
+    const { users, selectedUser } = this.state
+    return (
+      <select name='selectedUser'
+              value={selectedUser}
+              onChange={this.inputChange}>
+        {
+          users.map(user =>
+            <option value={user}
+                    key={user}>
+              {user}
+            </option>
+          )
+        }
+      </select>
+    )
   }
 
-  chooseLastWeek = () => {
-    const lastWeekRange = DateUtil.getLastWeekRange()
-    this.setState({
-      dateFrom: lastWeekRange[0],
-      dateTo: lastWeekRange[1]
-    })
-  }
-
-  chooseThisMonth = () => {
-    const thisMonthRange = DateUtil.getThisMonthRange()
-    this.setState({
-      dateFrom: thisMonthRange[0],
-      dateTo: thisMonthRange[1]
+  renderReports() {
+    const { projects, aggreReport } = this.state
+    return projects.map(project => {
+      const projectAggreResult = (aggreReport as any)[project.id]
+      const projectInfo: IReportMeta = {
+        type: 'project',
+        id: project.id,
+        name: project.name,
+        link: ''
+      }
+      return <ReportTable aggreReport={projectAggreResult} reportFor={projectInfo}/>
     })
   }
 
