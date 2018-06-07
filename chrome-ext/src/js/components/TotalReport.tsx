@@ -4,6 +4,7 @@ import { firebaseDb, dbCollections } from '../firebase'
 import { IReportBoxState,
          ITimeNote,
          IProject,
+         IDomain,
          IReportMeta } from '../types'
 import CommonUtil from '../utils/common-util'
 import DateUtil from '../utils/date-util'
@@ -22,11 +23,11 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
   constructor(props: {}) {
     super(props)
     this.state = {
-      enableDomains: {},
+      allowedDomains: {},
       projects: [DEF_PROJECT],
       users: [ALL],
 
-      selectedDomain: '', // TODO
+      selectedDomainDocId: '', // TODO
       selectedUser: ALL,
       selectedProjectId: 0,
 
@@ -41,6 +42,7 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
   }
 
   componentDidMount() {
+    this.chooseThisWeek()
     this.initData()
   }
 
@@ -58,18 +60,22 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
   }
 
   loadDomains = () => {
-    return firebaseDb.collection(dbCollections.DOMAINS)
-      .doc('enables')
+    return firebaseDb.collection(dbCollections.SETTINGS)
+      .doc('allowed_domains')
       .get()
       .then((snapshot: any) => {
         if (snapshot.exists) {
-          const enableDomains = snapshot.data()
-          const key = Object.keys(enableDomains)[0]
-          const selectedDomain = enableDomains[key]
-          this.setState({enableDomains, selectedDomain})
-          return selectedDomain
+          // TODO: add a select
+          const allowedDomains = snapshot.data()
+          const enabledDomains = Object.keys(allowedDomains).filter(key => allowedDomains[key].enabled)
+          if (enabledDomains.length === 0) {
+            throw new Error('has no enabled domain')
+          }
+          const selectedDomainDocId = allowedDomains[enabledDomains[0]].doc_id
+          this.setState({allowedDomains, selectedDomainDocId})
+          return selectedDomainDocId
         } else {
-          throw new Error('has no enabled domain')
+          throw new Error('there is no settings/allowed_domains doc in your database')
         }
       })
   }
@@ -151,10 +157,10 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
 
     this.setState({message: 'applying...', aggreReport: {}, showBtns: false})
 
-    const { selectedDomain, selectedProjectId, selectedUser, dateFrom, dateTo } = this.state
+    const { selectedDomainDocId, selectedProjectId, selectedUser, dateFrom, dateTo } = this.state
 
     let query = firebaseDb.collection(dbCollections.DOMAINS)
-      .doc(selectedDomain)
+      .doc(selectedDomainDocId)
       .collection(dbCollections.TIME_LOGS)
 
     if (dateFrom !== '') {

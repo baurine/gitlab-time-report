@@ -1,5 +1,5 @@
 import { firebaseDb, dbCollections } from '../firebase'
-import { IIssueRes, IIssue, IProject, IProfile, IIssuePageInfo } from '../types'
+import { IIssueRes, IIssue, IProject, IProfile, IIssuePageInfo, IDomain } from '../types'
 import { CommonUtil, ApiUtil } from '../utils'
 
 export default class IssuePageParser {
@@ -64,18 +64,18 @@ export default class IssuePageParser {
     // host includes port number while hostname doesn't if the location has port number
     // https://stackoverflow.com/a/11379802/2998877
     const host = document.location.host
-    return firebaseDb.collection(dbCollections.DOMAINS)
-      .doc('enables')
+    return firebaseDb.collection(dbCollections.SETTINGS)
+      .doc('allowed_domains')
       .get()
       .then((snapshot: any) => {
         if (snapshot.exists) {
-          const curDomainDocId = snapshot.data()[host]
-          if (!curDomainDocId) {
+          const curDomainDoc: IDomain = snapshot.data()[host] as IDomain
+          if (!curDomainDoc || !curDomainDoc.enabled) {
             throw new Error('this domain is not enabled')
           }
-          this.curDomainDocId = curDomainDocId
+          this.curDomainDocId = curDomainDoc.doc_id
         } else {
-          throw new Error('there is no domains/enables doc in your database')
+          throw new Error('there is no settings/allowed_domains doc in your database')
         }
       })
   }

@@ -63,6 +63,11 @@ export interface IIssuePageInfo {
   curUser: IProfile
 }
 
+export interface IDomain {
+  doc_id: string,
+  enabled: boolean
+}
+
 export interface IAggreReport {
   users: string[],
   dates: string[],
@@ -86,11 +91,11 @@ export interface IAuthBoxState {
 }
 
 export interface IReportBoxState {
-  enableDomains: object,
+  allowedDomains: object,
   projects: IProject[],
   users: string[],
 
-  selectedDomain: string,
+  selectedDomainDocId: string,
   selectedProjectId: number,
   selectedUser: string,
 
