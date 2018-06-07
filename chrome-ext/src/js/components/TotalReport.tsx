@@ -14,6 +14,8 @@ require('../../css/TotalReport.scss')
 const ALL = 'all'
 const DEF_PROJECTS = {0: 'all'}
 
+const ONE_DAY_MILI_SECONDS = 24 * 60 * 60 * 1000
+
 export default class TotalReport extends React.Component<{}, IReportBoxState> {
   private unsubscribe: () => void
 
@@ -244,27 +246,77 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
     this.setState({message: '', aggreReport, showBtns: true})
   }
 
-  todo = () => {
-    alert('TODO')
+  chooseToday = () => {
+    const today = new Date()
+    const todayDay = DateUtil.getDayFormat(today)
+    this.setState({dateFrom: todayDay, dateTo: todayDay })
+  }
+
+  chooseThisWeek = () => {
+    const today = new Date()
+    const weekDay = today.getDay()
+    const lastSunday = new Date(today.valueOf() - weekDay * ONE_DAY_MILI_SECONDS)
+    const thisSaturday = new Date(today.valueOf() + (6-weekDay) * ONE_DAY_MILI_SECONDS)
+    this.setState({
+      dateFrom: DateUtil.getDayFormat(lastSunday),
+      dateTo: DateUtil.getDayFormat(thisSaturday)
+    })
+  }
+
+  chooseLastWeek = () => {
+    const today = new Date()
+    const weekDay = today.getDay()
+
+    const lastLastSunday = new Date(today.valueOf() - (weekDay+7) * ONE_DAY_MILI_SECONDS)
+    const lastSaturday = new Date(today.valueOf() - (weekDay+1) * ONE_DAY_MILI_SECONDS)
+
+    this.setState({
+      dateFrom: DateUtil.getDayFormat(lastLastSunday),
+      dateTo: DateUtil.getDayFormat(lastSaturday)
+    })
+  }
+
+  chooseThisMonth = () => {
+    const today = new Date()
+    const fullYear = today.getFullYear()
+    const month = today.getMonth()
+
+    // the result is local time
+    const thisMonthFirstDay = new Date(fullYear, month, 1)
+    const nextMonthFirstDay = new Date(fullYear, month+1, 1)
+    const thisMonthLastDay = new Date(nextMonthFirstDay.valueOf() - ONE_DAY_MILI_SECONDS)
+
+    this.setState({
+      dateFrom: DateUtil.getDayFormat(thisMonthFirstDay),
+      dateTo: DateUtil.getDayFormat(thisMonthLastDay)
+    })
   }
 
   render() {
     return (
       <div className='report-box-container'>
         <div className='report-filters'>
-          { this.renderProjectSelector() }
-          { this.renderUserSelector() }
-          <input type='date' name='dateFrom' onChange={this.inputChange}/>
-          <input type='date' name='dateTo' onChange={this.inputChange}/>
+          <div className='filters-container'>
+            { this.renderProjectSelector() }
+            { this.renderUserSelector() }
+          </div>
+          <div className='filters-container'>
+            <input type='date'
+                   name='dateFrom'
+                   value={this.state.dateFrom}
+                   onChange={this.inputChange}/>
+            <input type='date'
+                   name='dateTo'
+                   value={this.state.dateTo}
+                   onChange={this.inputChange}/>
+            <button onClick={this.chooseToday}>Today</button>
+            <button onClick={this.chooseThisWeek}>This Week</button>
+            <button onClick={this.chooseLastWeek}>Last Week</button>
+            <button onClick={this.chooseThisMonth}>This Month</button>
+          </div>
           {
             this.state.showBtns &&
-            <span>
-              <button onClick={this.queryTimeLogs}>Apply</button>
-              <button onClick={this.todo}>Today</button>
-              <button onClick={this.todo}>This Week</button>
-              <button onClick={this.todo}>Last Week</button>
-              <button onClick={this.todo}>This Month</button>
-            </span>
+            <button onClick={this.queryTimeLogs} className='btn btn-default'>Apply</button>
           }
         </div>
         <div className='report-result'>

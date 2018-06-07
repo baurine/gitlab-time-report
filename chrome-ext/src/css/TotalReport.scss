@@ -6,23 +6,19 @@
 
   .report-filters {
     margin-bottom: 10px;
-  }
 
-  table {
-    margin-top: 10px;
-    padding: 2px;
-    border: 1px solid #ccc;
-    tr {
-      padding: 8px 0px;
-      border-bottom: 1px solid #707070;
+    select, input, button {
+      margin: 4px;
     }
-    tbody {
-      tr:last-child, td:last-child {
-        background: #eee
-      }
-    }
-    td, th {
+
+    .filters-container {
+      box-sizing: border-box;
+      display: inline-block;
       padding: 8px;
+      height: 50px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-right: 4px;
     }
   }
 }

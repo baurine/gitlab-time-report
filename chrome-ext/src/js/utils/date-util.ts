@@ -1,8 +1,31 @@
 export default class DateUtil {
   static getDayFormat(date: Date) {
+    // the parameter date is local time
+
+    // wrong
     // toISOString(): 2018-05-26T00:00:00.000Z
     // return: 2018-05-26
-    return date.toISOString().substring(0, 10)
+
+    // return date.toISOString().substring(0, 10)
+
+    // dd = new Date()
+    // Thu Jun 07 2018 12:52:48 GMT+0800 (CST)
+    // dd = new Date(new Date().valueOf() - 6*60*60*1000)
+    // Thu Jun 07 2018 06:54:13 GMT+0800 (CST)
+    // dd.toISOString()
+    // "2018-06-06T22:54:13.802Z"
+
+    const fullYear = date.getFullYear()
+    let month: number | string = date.getMonth() // start from 0
+    month += 1
+    if (month < 10) {
+      month = `0${month}`
+    }
+    let day: number | string = date.getDate()
+    if (day < 10) {
+      day = `0${day}`
+    }
+    return `${fullYear}-${month}-${day}`
   }
 
   // date: '2018-06-05'
