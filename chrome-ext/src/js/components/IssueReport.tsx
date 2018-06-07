@@ -114,12 +114,14 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
         issueDoc.description != curIssue.description ||
         issueDoc.web_url !== curIssue.web_url ||
         issueDoc.total_time_spent !== curIssue.total_time_spent ||
-        issueDoc.last_note_id !== curIssue.last_note_id) {
+        issueDoc.last_note_id !== curIssue.last_note_id ||
+        issueDoc.latest_spent_date !== curIssue.latest_spent_date) {
       issueDoc.title = curIssue.title
       issueDoc.description = curIssue.description
       issueDoc.web_url = curIssue.web_url
       issueDoc.total_time_spent = curIssue.total_time_spent
       issueDoc.last_note_id = curIssue.last_note_id
+      issueDoc.latest_spent_date = curIssue.latest_spent_date
       this.issueDocRef
         .set(issueDoc)
         .then(() => console.log('issue updated'))
@@ -271,6 +273,8 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
     this.setState({aggreReport})
 
     this.curIssue.total_time_spent = totalSpentTime
+    this.curIssue.latest_spent_date = timeNotes.map(note => note.spentDate).sort().reverse()[0] || ''
+    console.log(this.curIssue.latest_spent_date)
   }
 
   syncTimeNotes = () => {

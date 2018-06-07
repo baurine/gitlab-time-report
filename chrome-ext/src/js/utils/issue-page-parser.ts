@@ -90,11 +90,13 @@ export default class IssuePageParser {
                  project_id: issueRes.project_id,
 
                  title: issueRes.title,
+                 description: issueRes.description,
                  web_url: issueRes.web_url,
                  total_time_spent: issueRes.time_stats.total_time_spent,
 
                  type: issueRes.sha ? 'merge_request' : 'issue',
                  last_note_id: 0,
+                 latest_spent_date: '',
                  doc_id: [issueRes.id, issueRes.iid, issueRes.project_id].join('-')
                }
                this.curProject = {

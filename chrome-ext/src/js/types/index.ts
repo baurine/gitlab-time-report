@@ -23,6 +23,7 @@ export interface IIssueRes {
 
   // maybe change
   title: string,
+  description: string,
   web_url: string,
   time_stats: {
     total_time_spent: number,
@@ -41,6 +42,7 @@ export interface IIssue {
 
   type: string, // 'issue' or 'merge_request'
   last_note_id: number,
+  latest_spent_date: string,
   doc_id: string,  // id-iid-project_id
 }
 
