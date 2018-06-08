@@ -11,7 +11,10 @@ export default class VersionChecker {
       .get()
       .then((snapshot: any) => {
         const data = snapshot.data()
-        const enabled = VERSION_CODE >= data.min && data[VERSION_CODE]
+        let enabled = data[VERSION_CODE]
+        if (enabled !== false) {
+          enabled = VERSION_CODE >= data.min
+        }
         if (!enabled) {
           throw new Error(`Gitlab time report extension (${VERSION_NAME} | ${VERSION_CODE}) is outdated, please upgrade to a new version.`)
         }

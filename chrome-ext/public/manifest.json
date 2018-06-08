@@ -1,7 +1,7 @@
 {
   "name": "GitLab Issue Time Report",
-  "version": "0.0.4",
-  "version_code": 4,
+  "version": "0.0.5",
+  "version_code": 5,
   "manifest_version": 2,
   "description": "report your gitlab issue spent time",
   "icons": {
