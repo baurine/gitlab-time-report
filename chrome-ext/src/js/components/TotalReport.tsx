@@ -4,7 +4,7 @@ import { firebaseDb, dbCollections } from '../firebase'
 import { IReportBoxState,
          ITimeNote,
          IProject,
-         IDomain,
+         IIssue,
          IReportMeta } from '../types'
 import CommonUtil from '../utils/common-util'
 import DateUtil from '../utils/date-util'
@@ -15,8 +15,6 @@ require('../../css/TotalReport.scss')
 const ALL = 'all'
 const DEF_PROJECT: IProject = {id: 0, name: 'all'}
 
-const ONE_DAY_MILI_SECONDS = 24 * 60 * 60 * 1000
-
 export default class TotalReport extends React.Component<{}, IReportBoxState> {
   private unsubscribe: () => void
 
@@ -26,6 +24,7 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
       allowedDomains: {},
       projects: [DEF_PROJECT],
       users: [ALL],
+      issues: [],
 
       selectedDomainDocId: '', // TODO
       selectedUser: ALL,
@@ -34,7 +33,8 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
       dateFrom: '',
       dateTo: '',
 
-      aggreReport: {},
+      aggreProjectsReport: {},
+      aggreIssuesReport: {},
       message: 'loading...',
       showBtns: false,
     }
@@ -159,11 +159,48 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
     })
   }
 
-  queryTimeLogs = () => {
+  startQuery = () => {
     this.unsubscribe && this.unsubscribe()
+    this.setState({message: 'applying...', aggreProjectsReport: {}, aggreIssuesReport: {}, showBtns: false})
 
-    this.setState({message: 'applying...', aggreReport: {}, showBtns: false})
+    this.queryIssues()
+      .then(this.queryTimeLogs)
+      .catch((err: any) => {
+        this.setState({message: CommonUtil.formatFirebaseError(err), showBtns: true})
+      })
+  }
 
+  queryIssues = () => {
+    const { selectedDomainDocId, selectedProjectId, dateFrom, dateTo } = this.state
+
+    let query = firebaseDb.collection(dbCollections.DOMAINS)
+      .doc(selectedDomainDocId)
+      .collection(dbCollections.ISSUES)
+
+    if (dateFrom !== '') {
+      query = query.where('latest_spent_date', '>=', dateFrom)
+    } else {
+      query = query.limit(1000)
+    }
+    if (dateTo !== '') {
+      query = query.where('latest_spent_date', '<=', dateTo)
+    } else {
+      query = query.where('latest_spent_date', '<=', DateUtil.getDateFormat(new Date()))
+    }
+    if (selectedProjectId !== 0) {
+      query = query.where('project_id', '==', selectedProjectId)
+    }
+    query = query.orderBy('latest_spent_date')
+
+    return query.get()
+      .then((snapshot: any) => {
+        let issues: IIssue[] = []
+        snapshot.forEach((item: any) => issues.push(item.data()))
+        this.setState({issues})
+      })
+  }
+
+  queryTimeLogs = () => {
     const { selectedDomainDocId, selectedProjectId, selectedUser, dateFrom, dateTo } = this.state
 
     let query = firebaseDb.collection(dbCollections.DOMAINS)
@@ -189,53 +226,62 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
     query = query.orderBy('spentDate', 'desc')
 
     this.unsubscribe = query.onSnapshot((snapshot: any) => {
-        let timeLogs: Array<ITimeNote> = []
+        let timeLogs: ITimeNote[] = []
         snapshot.forEach((s: any) => timeLogs.push(s.data()))
         this.aggregateTimeLogs(timeLogs)
       }, (err: any) => {
-        this.setState({message: CommonUtil.formatFirebaseError(err), showBtns: true})
+        throw err
       })
   }
 
-  aggregateTimeLogs(timeLogs: Array<ITimeNote>) {
-    let aggreReport: any = {}
+  aggregateTimeLogs(timeLogs: ITimeNote[]) {
+    let aggreProjectsReport: any = {}
+    let aggreIssuesReport: any  ={}
+
     timeLogs.forEach(timeLog => {
       const project = timeLog.project_id
+      const issue = timeLog.issue_doc_id
+
       const user = timeLog.author
       const spentAt = timeLog.spentDate
       const spentTime = timeLog.spentTime
 
-      aggreReport[project] = aggreReport[project] || {}
-      aggreReport[project][user] = aggreReport[project][user] || {}
-      aggreReport[project][user][spentAt] = aggreReport[project][user][spentAt] || 0
-      aggreReport[project][user][spentAt] += spentTime
-
-      // a virtual 'total' date for every user
-      aggreReport[project][user]['total'] = aggreReport[project][user]['total'] || 0
-      aggreReport[project][user]['total'] += spentTime
-
-      // a virtual 'total' user for every project
-      aggreReport[project]['total'] = aggreReport[project]['total'] || {}
-      aggreReport[project]['total'][spentAt] = aggreReport[project]['total'][spentAt] || 0
-      aggreReport[project]['total'][spentAt] += spentTime
-
-      // a virtual 'total' date for every project's 'total' user
-      aggreReport[project]['total']['total'] = aggreReport[project]['total']['total'] || 0
-      aggreReport[project]['total']['total'] += spentTime
-
-      // aggregate users
-      aggreReport[project]['users'] = aggreReport[project]['users'] || []
-      if (!aggreReport[project]['users'].includes(user)) {
-        aggreReport[project]['users'].push(user)
-      }
-
-      // aggregate dates
-      aggreReport[project]['dates'] = aggreReport[project]['dates'] || []
-      if (!aggreReport[project]['dates'].includes(spentAt)) {
-        aggreReport[project]['dates'].push(spentAt)
-      }
+      this.aggregateTimeLog(aggreProjectsReport, project, user, spentAt, spentTime)
+      this.aggregateTimeLog(aggreIssuesReport, issue, user, spentAt, spentTime)
     })
-    this.setState({message: '', aggreReport, showBtns: true})
+    this.setState({message: '', aggreProjectsReport, aggreIssuesReport, showBtns: true})
+  }
+
+  aggregateTimeLog = (aggreReport: any, rootKey: string | number, user: string, spentAt: string, spentTime: number) => {
+    aggreReport[rootKey] = aggreReport[rootKey] || {}
+    aggreReport[rootKey][user] = aggreReport[rootKey][user] || {}
+    aggreReport[rootKey][user][spentAt] = aggreReport[rootKey][user][spentAt] || 0
+    aggreReport[rootKey][user][spentAt] += spentTime
+
+    // a virtual 'total' date for every user
+    aggreReport[rootKey][user]['total'] = aggreReport[rootKey][user]['total'] || 0
+    aggreReport[rootKey][user]['total'] += spentTime
+
+    // a virtual 'total' user for every rootKey
+    aggreReport[rootKey]['total'] = aggreReport[rootKey]['total'] || {}
+    aggreReport[rootKey]['total'][spentAt] = aggreReport[rootKey]['total'][spentAt] || 0
+    aggreReport[rootKey]['total'][spentAt] += spentTime
+
+    // a virtual 'total' date for every rootKey's 'total' user
+    aggreReport[rootKey]['total']['total'] = aggreReport[rootKey]['total']['total'] || 0
+    aggreReport[rootKey]['total']['total'] += spentTime
+
+    // aggregate users
+    aggreReport[rootKey]['users'] = aggreReport[rootKey]['users'] || []
+    if (!aggreReport[rootKey]['users'].includes(user)) {
+      aggreReport[rootKey]['users'].push(user)
+    }
+
+    // aggregate dates
+    aggreReport[rootKey]['dates'] = aggreReport[rootKey]['dates'] || []
+    if (!aggreReport[rootKey]['dates'].includes(spentAt)) {
+      aggreReport[rootKey]['dates'].push(spentAt)
+    }
   }
 
   renderProjectSelector() {
@@ -275,9 +321,9 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
   }
 
   renderReports() {
-    const { projects, aggreReport } = this.state
+    const { projects, aggreProjectsReport } = this.state
     return projects.map(project => {
-      const projectAggreResult = (aggreReport as any)[project.id]
+      const projectAggreResult = (aggreProjectsReport as any)[project.id]
       const projectInfo: IReportMeta = {
         type: 'project',
         id: project.id,
@@ -313,7 +359,7 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
           </div>
           {
             this.state.showBtns &&
-            <button onClick={this.queryTimeLogs} className='btn btn-default'>Apply</button>
+            <button onClick={this.startQuery} className='btn btn-default'>Apply</button>
           }
         </div>
         <div className='report-result'>
