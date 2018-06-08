@@ -152,6 +152,13 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
     })
   }
 
+  resetDate = () => {
+    this.setState({
+      dateFrom: '',
+      dateTo: ''
+    })
+  }
+
   queryTimeLogs = () => {
     this.unsubscribe && this.unsubscribe()
 
@@ -302,6 +309,7 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
             <button onClick={this.chooseThisWeek}>This Week</button>
             <button onClick={this.chooseLastWeek}>Last Week</button>
             <button onClick={this.chooseThisMonth}>This Month</button>
+            <button onClick={this.resetDate}>Reset</button>
           </div>
           {
             this.state.showBtns &&
