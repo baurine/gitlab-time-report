@@ -1,7 +1,8 @@
 import { firebaseDb, dbCollections } from '../firebase'
 
-const VERSION_CODE = 3
-const VERSION_NAME = '0.0.3'
+const manifestConfig = require('../../../public/manifest')
+const VERSION_CODE = manifestConfig.version_code
+const VERSION_NAME = manifestConfig.version
 
 export default class VersionChecker {
   checkVersion = () => {
