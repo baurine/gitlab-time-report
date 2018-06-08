@@ -106,7 +106,9 @@ export interface IReportBoxState {
   aggreProjectsReport: object,
   aggreIssuesReport: object,
   message: string,
-  showBtns: boolean
+  showBtns: boolean,
+
+  detailProject: IProject
 }
 
 export interface IIssueReportProps {
@@ -118,8 +120,9 @@ export interface IIssueReportState {
 }
 
 export interface IReportTableProps {
-  reportFor?: IReportMeta
-  aggreReport: IAggreReport
+  aggreReport: IAggreReport,
+  reportFor?: IReportMeta,
+  onTitleClick?: () => void
 }
 
 export interface IMessagePageProps {

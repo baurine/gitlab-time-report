@@ -9,6 +9,37 @@ require('../../css/ReportTable.scss')
 
 export default class ReportTable extends React.Component<IReportTableProps, {}> {
 
+  onTitleClick = () => {
+    const { onTitleClick } = this.props
+    onTitleClick && onTitleClick()
+  }
+
+  renderCaption() {
+    const { reportFor } = this.props
+    if (reportFor && reportFor.type !== 'project') {
+      return (
+        <caption>
+          <a href={reportFor.link} target='_blank'>{reportFor.name}</a>
+        </caption>
+      )
+    }
+    return null
+  }
+
+  renderTitle() {
+    const { reportFor, onTitleClick } = this.props
+    if (reportFor && reportFor.type === 'project') {
+      if (onTitleClick) {
+        return (
+          <a href='#' onClick={this.onTitleClick}>{reportFor.name}</a>
+        )
+      } else {
+        return reportFor.name
+      }
+    }
+    return null
+  }
+
   renderTable() {
     const { aggreReport, reportFor } = this.props
     if (!aggreReport || !aggreReport['users']) {
@@ -20,16 +51,11 @@ export default class ReportTable extends React.Component<IReportTableProps, {}> 
     return (
       <div className='report-table-container'>
         <table>
-          {
-            reportFor && reportFor.type !== 'project' &&
-            <caption>{reportFor.name}</caption>
-          }
+          { this.renderCaption() }
           <thead>
             <tr>
               <th>
-                {
-                  reportFor && reportFor.type === 'project' && reportFor.name
-                }
+                { this.renderTitle()}
               </th>
               {
                 users.map(user => <th key={user}>{user}</th>)

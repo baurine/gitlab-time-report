@@ -37,6 +37,8 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
       aggreIssuesReport: {},
       message: 'loading...',
       showBtns: false,
+
+      detailProject: null
     }
     this.unsubscribe = null
   }
@@ -157,6 +159,14 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
       dateFrom: '',
       dateTo: ''
     })
+  }
+
+  showProjectReportDetail = (project: IProject) => {
+    this.setState({detailProject: project})
+  }
+
+  gobackProjectsReports = () => {
+    this.setState({detailProject: null})
   }
 
   startQuery = () => {
@@ -320,7 +330,7 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
     )
   }
 
-  renderReports() {
+  renderProjectsReports() {
     const { projects, aggreProjectsReport } = this.state
     return projects.map(project => {
       const projectAggreResult = (aggreProjectsReport as any)[project.id]
@@ -330,8 +340,46 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
         name: project.name,
         link: ''
       }
-      return <ReportTable aggreReport={projectAggreResult} reportFor={projectInfo} key={projectInfo.name}/>
+      return <ReportTable key={projectInfo.name}
+                          aggreReport={projectAggreResult}
+                          reportFor={projectInfo}
+                          onTitleClick={() => this.showProjectReportDetail(project)}/>
     })
+  }
+
+  renderProjectDetailReports() {
+    const { detailProject, issues, aggreProjectsReport, aggreIssuesReport } = this.state
+    const projectInfo: IReportMeta = {
+      type: 'project',
+      id: detailProject.id,
+      name: detailProject.name,
+      link: ''
+    }
+    const projectAggreResult = (aggreProjectsReport as any)[detailProject.id]
+    const projectIssues = issues.filter(issue => issue.project_id === detailProject.id)
+
+    return (
+      <div>
+        <a onClick={this.gobackProjectsReports} href='#'>&lt; Go Back</a>
+        <ReportTable aggreReport={projectAggreResult}
+                     reportFor={projectInfo}/>
+        <br/>
+        {
+          projectIssues.map(issue => {
+            const issueAggreResult = (aggreIssuesReport as any)[issue.doc_id]
+            const issueInfo: IReportMeta = {
+              type: issue.type,
+              id: issue.id,
+              name: `${issue.type} #${issue.iid} - ${issue.title}`,
+              link: issue.web_url
+            }
+            return <ReportTable key={issue.id}
+                                aggreReport={issueAggreResult}
+                                reportFor={issueInfo}/>
+          })
+        }
+      </div>
+    )
   }
 
   render() {
@@ -363,7 +411,11 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
           }
         </div>
         <div className='report-result'>
-          { this.renderReports() }
+          {
+            this.state.detailProject ?
+            this.renderProjectDetailReports() :
+            this.renderProjectsReports()
+          }
           <FlashMessage message={this.state.message}/>
         </div>
       </div>
