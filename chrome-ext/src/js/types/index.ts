@@ -94,6 +94,7 @@ export interface IReportBoxState {
   allowedDomains: object,
   projects: IProject[],
   users: string[],
+  issues: IIssue[],
 
   selectedDomainDocId: string,
   selectedProjectId: number,
@@ -102,9 +103,12 @@ export interface IReportBoxState {
   dateFrom: string,
   dateTo: string,
 
-  aggreReport: object,
+  aggreProjectsReport: object,
+  aggreIssuesReport: object,
   message: string,
-  showBtns: boolean
+  showBtns: boolean,
+
+  detailProject: IProject
 }
 
 export interface IIssueReportProps {
@@ -116,8 +120,9 @@ export interface IIssueReportState {
 }
 
 export interface IReportTableProps {
-  reportFor?: IReportMeta
-  aggreReport: IAggreReport
+  aggreReport: IAggreReport,
+  reportFor?: IReportMeta,
+  onTitleClick?: () => void
 }
 
 export interface IMessagePageProps {
