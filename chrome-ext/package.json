@@ -5,11 +5,13 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack-dev-server",
-    "build": "webpack"
+    "build": "webpack",
+    "clear_js": "find ./src/js -iname '*.js' -exec rm -fv {} +"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^10.3.2",
     "autoprefixer": "^8.5.0",
     "awesome-typescript-loader": "^5.0.0",
     "babel-core": "^6.26.3",
