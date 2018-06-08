@@ -100,7 +100,7 @@ export default class AuthBox extends React.Component<{}, IAuthBoxState> {
     return (
       <div>
         <button className='btn btn-default' onClick={this.signOut}>Sign Out</button>
-        <span className='login-status'>{user.displayName || user.email} has logged in.</span>
+        <span className='login-status'>{user.email} has logged in.</span>
         { this.props.children }
       </div>
     )

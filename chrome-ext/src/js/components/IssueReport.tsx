@@ -82,7 +82,7 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
         this.observeNotesMutation()
 
         this.createOrUpdateProject()
-        this.createUser()
+        this.createOrUpdateUser()
       })
       .catch((err: any) => console.log(err))
   }
@@ -150,13 +150,18 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
       .catch((err: any) => console.log(err))
   }
 
-  createUser = () => {
+  createOrUpdateUser = () => {
     const { curUser } = this.props.issuePageInfo
     this.userDocRef
       .get()
       .then((snapshot: any) => {
         if (snapshot.exists) {
           console.log('user existed')
+          if (snapshot.data().name !== curUser.name) {
+            return this.userDocRef
+              .update(curUser)
+              .then(() => console.log('user updated'))
+          }
         } else {
           return this.userDocRef
             .set(curUser)

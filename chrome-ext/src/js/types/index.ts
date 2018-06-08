@@ -10,8 +10,6 @@ export interface ITimeNote extends IParsedTimeNote {
   project_id: number
 }
 
-// https://gitlab.ekohe.com/api/v4/projects/ekohe%2Finternal%2Fekohe-time-reporting-tool/issues/3
-// https://gitlab.ekohe.com/api/v4/projects/ekohe%2Fpodknife/merge_requests/554
 export interface IIssueRes {
   // come from api response
   // won't change
@@ -21,7 +19,7 @@ export interface IIssueRes {
 
   sha: string, // for judge whether this is a issue or merge request
 
-  // maybe change
+  // may change
   title: string,
   description: string,
   web_url: string,
@@ -52,8 +50,13 @@ export interface IProject {
 }
 
 export interface IProfile {
+  // won't change
   id: number,
+  email: string,
   username: string,
+
+  // may change
+  name: string,
 }
 
 export interface IIssuePageInfo {
