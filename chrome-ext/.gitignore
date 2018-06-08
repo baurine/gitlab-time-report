@@ -3,3 +3,4 @@ node_modules
 firebase-config.json
 auth-info.json
 *.js
+*.zip

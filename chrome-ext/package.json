@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "webpack-dev-server",
     "build": "webpack",
-    "clear_js": "find ./src/js -iname '*.js' -exec rm -fv {} +"
+    "clear_js": "find ./src/js -iname '*.js' -exec rm -fv {} +",
+    "dist": "npm run build && rm ./dist/*.map && tar cvzf dist.zip dist"
   },
   "author": "",
   "license": "ISC",
