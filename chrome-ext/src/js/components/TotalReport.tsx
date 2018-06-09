@@ -229,14 +229,14 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
       .collection(dbCollections.TIME_LOGS)
 
     if (dateFrom !== '') {
-      query = query.where('spentDate', '>=', dateFrom)
+      query = query.where('spent_date', '>=', dateFrom)
     } else {
       query = query.limit(1000)
     }
     if (dateTo !== '') {
-      query = query.where('spentDate', '<=', dateTo)
+      query = query.where('spent_date', '<=', dateTo)
     } else {
-      query = query.where('spentDate', '<=', DateUtil.getDateFormat(new Date()))
+      query = query.where('spent_date', '<=', DateUtil.getDateFormat(new Date()))
     }
     if (selectedProjectId !== 0) {
       query = query.where('project_id', '==', selectedProjectId)
@@ -244,7 +244,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
     if (selectedUserName !== DEF_USER.username) {
       query = query.where('author', '==', selectedUserName)
     }
-    query = query.orderBy('spentDate', 'desc')
+    query = query.orderBy('spent_date', 'desc')
 
     this.unsubscribe = query.onSnapshot((snapshot: any) => {
         let timeLogs: ITimeNote[] = []
@@ -264,8 +264,8 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
       const issue = timeLog.issue_doc_id
 
       const user = timeLog.author
-      const spentAt = timeLog.spentDate
-      const spentTime = timeLog.spentTime
+      const spentAt = timeLog.spent_date
+      const spentTime = timeLog.spent_time
 
       this.aggregateTimeLog(aggreProjectsReport, project, user, spentAt, spentTime)
       this.aggregateTimeLog(aggreIssuesReport, issue, user, spentAt, spentTime)
