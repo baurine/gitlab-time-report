@@ -1,5 +1,5 @@
 {
-  "name": "gitlab-time-tracker",
+  "name": "gitlab-time-report",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,7 @@
     "clear_js": "find ./src/js -iname '*.js' -exec rm -fv {} +",
     "dist": "npm run build && rm ./dist/*.map && tar cvzf dist.zip dist"
   },
-  "author": "",
+  "author": "baurine",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^10.3.2",
