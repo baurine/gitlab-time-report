@@ -7,7 +7,7 @@
     "dev": "webpack-dev-server",
     "build": "webpack",
     "clear_js": "find ./src/js -iname '*.js' -exec rm -fv {} +",
-    "dist": "npm run build && rm ./dist/*.map && tar cvzf dist.zip dist"
+    "dist": "rm -f dist.zip && npm run build && rm ./dist/*.map && zip -r dist.zip ./dist"
   },
   "author": "baurine",
   "license": "ISC",
