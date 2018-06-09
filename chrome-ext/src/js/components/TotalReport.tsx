@@ -326,7 +326,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
   renderUserSelector() {
     const { users, selectedUserName } = this.state
     return (
-      <select name='selectedUser'
+      <select name='selectedUserName'
               value={selectedUserName}
               onChange={this.inputChange}>
         {
