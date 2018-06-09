@@ -8,17 +8,17 @@ const PASSWORD = authInfo.password
 const TARGET_DOMAIN_DOC_ID = authInfo.domain_id
 
 let issues: IIssue[] = []
-let notes: any = {}
+let timeLogs: any = {}
 
 function updateIssueLastSpentDate() {
   firebaseAuth.signInWithEmailAndPassword(EMAIL, PASSWORD)
-    .then(loadIssuesAndNotes)
+    .then(loadIssuesAndTimeLogs)
     .then(updateIssues)
     .catch(CommonUtil.handleError)
 }
 
-function loadIssuesAndNotes() {
-  return Promise.all([loadIssues(), loadNotes()])
+function loadIssuesAndTimeLogs() {
+  return Promise.all([loadIssues(), loadTimeLogs()])
 }
 
 function loadIssues() {
@@ -31,29 +31,29 @@ function loadIssues() {
     })
 }
 
-function loadNotes() {
+function loadTimeLogs() {
   return firebaseDb.collection(dbCollections.DOMAINS)
     .doc(TARGET_DOMAIN_DOC_ID)
     .collection(dbCollections.TIME_LOGS)
     .get()
     .then((snapshot: any) => {
-      snapshot.forEach((item: any) => notes[item.id] = item.data())
+      snapshot.forEach((item: any) => timeLogs[item.id] = item.data())
     })
 }
 
 function updateIssues() {
   // console.log(issues.length)
-  // console.log(Object.keys(notes).length)
+  // console.log(Object.keys(timeLogs).length)
   // return
 
   issues.forEach(issue => {
     console.log(issue)
     if (issue.last_note_id !== 0 && !issue.latest_spent_date) {
-      const note: ITimeNote = notes[issue.last_note_id.toString()] as ITimeNote
-      console.log(note)
+      const timeLog: ITimeNote = timeLogs[issue.last_note_id] as ITimeNote
+      console.log(timeLog)
 
-      if (note) {
-        issue.latest_spent_date = note.spentDate
+      if (timeLog) {
+        issue.latest_spent_date = timeLog.spentDate
         updateIssue(issue)
       }
     }
