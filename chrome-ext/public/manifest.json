@@ -1,7 +1,7 @@
 {
   "name": "GitLab Time Report",
-  "version": "0.0.7",
-  "version_code": 7,
+  "version": "0.0.8",
+  "version_code": 8,
   "manifest_version": 2,
   "description": "report your gitlab spent time",
   "icons": {
