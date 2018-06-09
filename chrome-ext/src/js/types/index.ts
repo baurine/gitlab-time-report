@@ -1,8 +1,10 @@
 export interface IParsedTimeNote {
   id: number,
   author: string,
-  spentTime: number,
-  spentDate: string,
+  spentTime?: number,
+  spentDate?: string,
+  spent_time?: number,
+  spent_date?: string,
 }
 
 export interface ITimeNote extends IParsedTimeNote {
