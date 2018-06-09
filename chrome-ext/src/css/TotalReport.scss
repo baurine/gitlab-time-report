@@ -7,18 +7,35 @@
   .report-filters {
     margin-bottom: 10px;
 
-    select, input, button {
-      margin: 4px;
-    }
+    display: flex;
+    align-items: center;
 
     .filters-container {
-      box-sizing: border-box;
-      display: inline-block;
-      padding: 8px;
-      height: 50px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      margin-right: 4px;
+      display: flex;
+      align-items: center;
+
+      .select, .input-date, a.button {
+        margin-right: 4px;
+      }
     }
+
+    .filters-container:after {
+      content: '|';
+      padding: 0px 8px 0px 4px;
+    }
+
+    .input-date {
+      width: auto;
+    }
+  }
+  
+  .report-result {
+    padding-top: 10px;
+  }
+
+  .goback-link {
+    display: inline-block;
+    padding-bottom: 8px;
+    font-size: 16px;
   }
 }

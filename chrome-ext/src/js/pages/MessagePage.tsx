@@ -7,7 +7,7 @@ require('../../css/common.scss')
 export default class MessagePage extends React.Component<IMessagePageProps, {}> {
   render() {
     return (
-      <div className='gitlab-time-report-container'>
+      <div className='message-page gtr-container'>
         <FlashMessage message={this.props.message}/>
       </div>
     )

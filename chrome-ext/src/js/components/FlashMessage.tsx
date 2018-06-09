@@ -12,7 +12,7 @@ const FlashMessage = (props: {message?: string, onClose?: ()=>void}) => {
           onClose &&
           <a className='close' onClick={onClose}>×</a>
         }
-        <span className='message'>{message}</span>
+        <span>{message}</span>
       </div>
     )
   }

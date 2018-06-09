@@ -1,20 +1,28 @@
-
+// make it only works in issue page
+// in dashboard page we will use bulma css
+.issue-report-container
 .report-table-container {
   table {
     margin-top: 10px;
-    padding: 2px;
     border: 1px solid #ccc;
     tr {
-      padding: 8px 0px;
       border-bottom: 1px solid #707070;
-    }
-    tbody {
-      tr:last-child, td:last-child {
-        background: #eee
-      }
     }
     td, th {
       padding: 8px;
+    }
+    tbody {
+      th:last-child {
+        background: #eee;
+        font-weight: bold;
+      }
+    }
+    tfoot {
+      background: #eee;
+      font-weight: bold;
+      th {
+        text-transform: none;
+      }
     }
   }
 }

@@ -7,7 +7,7 @@ require('../../css/common.scss')
 export default class IssuePage extends React.Component {
   render() {
     return (
-      <div className='gitlab-time-report-container'>
+      <div className='issue-page gtr-container'>
         <AuthBox>
           <IssueReport/>
         </AuthBox>

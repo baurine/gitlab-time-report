@@ -57,7 +57,8 @@ module.exports = {
     }),
     new CssExtractWebpackPlugin({
       filename: "[name].css",
-      chunkFilename: "[id].css"
+      chunkFilename: "[id].css",
+      hash: true
     }),
     new CopyWebpackPlugin([
       { from: './public', to: '' }

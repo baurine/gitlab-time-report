@@ -41,41 +41,50 @@ export default class ReportTable extends React.Component<IReportTableProps, {}> 
   }
 
   renderTable() {
-    const { aggreReport, reportFor } = this.props
+    const { aggreReport } = this.props
     if (!aggreReport || !aggreReport['users']) {
       return null
     }
-    const dates: string[] = aggreReport['dates'].sort().concat('total')
-    const users: string[] = aggreReport['users'].sort().concat('total')
 
+    const dates: string[] = aggreReport['dates'].sort()
+    const users: string[] = aggreReport['users'].sort()
     return (
-      <div className='report-table-container'>
+      <div className='report-table-container table is-bordered is-striped is-hoverable is-fullwidth'>
         <table>
           { this.renderCaption() }
           <thead>
             <tr>
-              <th>
-                { this.renderTitle()}
-              </th>
-              {
-                users.map(user => <th key={user}>{user}</th>)
-              }
+              <th>{this.renderTitle()}</th>
+              { users.map(user => <th key={user}>{user}</th>) }
+              <th>total</th>
             </tr>
           </thead>
           <tbody>
             {
               dates.map(date =>
                 <tr key={date}>
-                  <td>{DateUtil.appendWeekDay(date)}</td>
+                  <th className='fixed-width-font'>{DateUtil.appendWeekDay(date)}</th>
                   {
                     users.map(user =>
                       <td key={user}>{DateUtil.formatSpentTime((aggreReport as any)[user][date])}</td>
                     )
                   }
+                  <th key='total'>{DateUtil.formatSpentTime((aggreReport as any)['total'][date])}</th>
                 </tr>
               )
             }
           </tbody>
+          <tfoot>
+            <tr key='total'>
+              <th>total</th>
+              {
+                users.map(user =>
+                  <th key={user}>{DateUtil.formatSpentTime((aggreReport as any)[user]['total'])}</th>
+                )
+              }
+              <th key='total'>{DateUtil.formatSpentTime((aggreReport as any)['total']['total'])}</th>
+            </tr>
+          </tfoot>
         </table>
       </div>
     )

@@ -7,7 +7,7 @@ require('../../css/common.scss')
 export default class DashboardPage extends React.Component {
   render() {
     return (
-      <div className='gitlab-time-report-container'>
+      <div className='dashboard-page gtr-container'>
         <AuthBox>
           <TotalReport curUserEmail=''/>
         </AuthBox>
