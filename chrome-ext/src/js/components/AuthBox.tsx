@@ -1,9 +1,10 @@
 import * as React from 'react'
 
 import { firebaseAuth, firebaseDb, dbCollections } from '../firebase'
-import { IAuthBoxState } from '../types'
+import { IAuthBoxState, IProfile } from '../types'
 import CommonUtil from '../utils/common-util'
 import FlashMessage from './FlashMessage'
+import TotalReport from './TotalReport';
 require('../../css/AuthBox.scss')
 
 export default class AuthBox extends React.Component<{}, IAuthBoxState> {
@@ -95,13 +96,28 @@ export default class AuthBox extends React.Component<{}, IAuthBoxState> {
     })
   }
 
+  // https://jaketrent.com/post/send-props-to-children-react/
+  renderChildren = () => {
+    const { user } = this.state
+    return React.Children.map(this.props.children, child => {
+      if ((child as any).type === TotalReport) {
+        return React.cloneElement(child as any, {
+          curUserEmail: user.email
+        })
+      }
+      else {
+        return child
+      }
+    })
+  }
+
   renderLoggedInStatus() {
     const { user } = this.state
     return (
       <div>
         <button className='btn btn-default' onClick={this.signOut}>Sign Out</button>
-        <span className='login-status'>{user.displayName || user.email} has logged in.</span>
-        { this.props.children }
+        <span className='login-status'>{user.email} has logged in.</span>
+        { this.renderChildren() }
       </div>
     )
   }

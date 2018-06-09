@@ -112,7 +112,9 @@ export default class IssuePageParser {
       .then((userRes: IProfile) => {
         this.curUser = {
           id: userRes.id,
-          username: userRes.username
+          email: userRes.email,
+          username: userRes.username,
+          name: userRes.name,
         }
       })
   }

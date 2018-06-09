@@ -1,34 +1,36 @@
 import * as React from 'react'
 
 import { firebaseDb, dbCollections } from '../firebase'
-import { IReportBoxState,
+import { ITotalReportProps,
+         ITotalReportState,
          ITimeNote,
          IProject,
          IIssue,
-         IReportMeta } from '../types'
+         IReportMeta, 
+         IProfile} from '../types'
 import CommonUtil from '../utils/common-util'
 import DateUtil from '../utils/date-util'
 import FlashMessage from './FlashMessage'
 import ReportTable from './ReportTable'
 require('../../css/TotalReport.scss')
 
-const ALL = 'all'
 const DEF_PROJECT: IProject = {id: 0, name: 'all'}
+const DEF_USER: IProfile = {id: 0, username: 'all', email: 'all', name: 'all'}
 
-export default class TotalReport extends React.Component<{}, IReportBoxState> {
+export default class TotalReport extends React.Component<ITotalReportProps, ITotalReportState> {
   private unsubscribe: () => void
 
-  constructor(props: {}) {
+  constructor(props: ITotalReportProps) {
     super(props)
     this.state = {
       allowedDomains: {},
       projects: [DEF_PROJECT],
-      users: [ALL],
+      users: [DEF_USER],
       issues: [],
 
       selectedDomainDocId: '', // TODO
-      selectedUser: ALL,
       selectedProjectId: 0,
+      selectedUserName: DEF_USER.username,
 
       dateFrom: '',
       dateTo: '',
@@ -102,10 +104,19 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
       .orderBy('username')
       .get()
       .then((querySnapshot: any) => {
-        let users: string[] = [ALL]
-        querySnapshot.forEach((snapshot: any)=>users.push(snapshot.data().username))
+        let users: IProfile[] = [DEF_USER]
+        querySnapshot.forEach((snapshot: any)=>users.push(snapshot.data()))
         this.setState({users})
+        this.autoChooseUser(users)
       })
+  }
+
+  autoChooseUser = (users: IProfile[]) => {
+    const { curUserEmail } = this.props
+    const curUser = users.filter(user => user.email === curUserEmail)[0]
+    if (curUser) {
+      this.setState({selectedUserName: curUser.username})
+    }
   }
 
   inputChange = (event: any) => {
@@ -211,7 +222,7 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
   }
 
   queryTimeLogs = () => {
-    const { selectedDomainDocId, selectedProjectId, selectedUser, dateFrom, dateTo } = this.state
+    const { selectedDomainDocId, selectedProjectId, selectedUserName, dateFrom, dateTo } = this.state
 
     let query = firebaseDb.collection(dbCollections.DOMAINS)
       .doc(selectedDomainDocId)
@@ -230,8 +241,8 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
     if (selectedProjectId !== 0) {
       query = query.where('project_id', '==', selectedProjectId)
     }
-    if (selectedUser !== ALL) {
-      query = query.where('author', '==', selectedUser)
+    if (selectedUserName !== DEF_USER.username) {
+      query = query.where('author', '==', selectedUserName)
     }
     query = query.orderBy('spentDate', 'desc')
 
@@ -313,16 +324,16 @@ export default class TotalReport extends React.Component<{}, IReportBoxState> {
   }
 
   renderUserSelector() {
-    const { users, selectedUser } = this.state
+    const { users, selectedUserName } = this.state
     return (
       <select name='selectedUser'
-              value={selectedUser}
+              value={selectedUserName}
               onChange={this.inputChange}>
         {
           users.map(user =>
-            <option value={user}
-                    key={user}>
-              {user}
+            <option value={user.username}
+                    key={user.username}>
+              {user.username}
             </option>
           )
         }
