@@ -251,7 +251,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
         snapshot.forEach((s: any) => timeLogs.push(s.data()))
         this.aggregateTimeLogs(timeLogs)
       }, (err: any) => {
-        throw err
+        this.setState({message: CommonUtil.formatFirebaseError(err), showBtns: true})
       })
   }
 
