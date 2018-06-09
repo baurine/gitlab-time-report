@@ -182,7 +182,13 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
 
   startQuery = () => {
     this.unsubscribe && this.unsubscribe()
-    this.setState({message: 'applying...', aggreProjectsReport: {}, aggreIssuesReport: {}, showBtns: false})
+    this.setState({
+      message: 'applying...',
+      aggreProjectsReport: {},
+      aggreIssuesReport: {},
+      detailProject: null,
+      showBtns: false
+    })
 
     this.queryIssues()
       .then(this.queryTimeLogs)
@@ -385,10 +391,9 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
 
     return (
       <div>
-        <a onClick={this.gobackProjectsReports} href='#'>&lt; Go Back</a>
+        <a className='goback-link' onClick={this.gobackProjectsReports} href='#'>&lt; Go Back</a>
         <ReportTable aggreReport={projectAggreResult}
                      reportFor={projectInfo}/>
-        <br/>
         {
           projectIssues.map(issue => {
             const issueAggreResult = (aggreIssuesReport as any)[issue.doc_id]
