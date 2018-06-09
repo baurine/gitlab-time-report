@@ -308,36 +308,50 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
   renderProjectSelector() {
     const { projects, selectedProjectId } = this.state
     return (
-      <select name='selectedProjectId'
-              value={selectedProjectId}
-              onChange={this.inputChange}>
-        {
-          projects.map(project =>
-            <option value={project.id}
-                    key={project.id}>
-              {project.name}
-            </option>
-          )
-        }
-      </select>
+      <div className="control has-icons-left">
+        <div className='select'>
+          <select name='selectedProjectId'
+                  value={selectedProjectId}
+                  onChange={this.inputChange}>
+            {
+              projects.map(project =>
+                <option value={project.id}
+                        key={project.id}>
+                  {project.name}
+                </option>
+              )
+            }
+          </select>
+        </div>
+        <div className="icon is-small is-left">
+          <i className="fab fa-product-hunt"></i>
+        </div>
+      </div>
     )
   }
 
   renderUserSelector() {
     const { users, selectedUserName } = this.state
     return (
-      <select name='selectedUserName'
-              value={selectedUserName}
-              onChange={this.inputChange}>
-        {
-          users.map(user =>
-            <option value={user.username}
-                    key={user.username}>
-              {user.username}
-            </option>
-          )
-        }
-      </select>
+      <div className="control has-icons-left">
+        <div className='select'>
+          <select name='selectedUserName'
+                  value={selectedUserName}
+                  onChange={this.inputChange}>
+            {
+              users.map(user =>
+                <option value={user.username}
+                        key={user.username}>
+                  {user.username}
+                </option>
+              )
+            }
+          </select>
+        </div>
+        <div className="icon is-small is-left">
+          <i className="fas fa-user"></i>
+        </div>
+      </div>
     )
   }
 
@@ -393,41 +407,67 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
     )
   }
 
-  render() {
+  renderQueryFilters = () => {
     return (
-      <div className='report-box-container'>
-        <div className='report-filters'>
-          <div className='filters-container'>
-            { this.renderProjectSelector() }
-            { this.renderUserSelector() }
-          </div>
-          <div className='filters-container'>
-            <input type='date'
+      <div className='report-filters'>
+        <div className='filters-container'>
+          { this.renderProjectSelector() }
+          { this.renderUserSelector() }
+        </div>
+        <div className='filters-container'>
+          <div className='control has-icons-left'>
+            <input className='input input-date'
+                   type='date'
                    name='dateFrom'
                    value={this.state.dateFrom}
                    onChange={this.inputChange}/>
-            <input type='date'
+            <div className="icon is-small is-left">
+              <i className="far fa-calendar-alt"></i>
+            </div>
+          </div>
+          <div className='control has-icons-left'>
+            <input className='input input-date'
+                   type='date'
                    name='dateTo'
                    value={this.state.dateTo}
                    onChange={this.inputChange}/>
-            <button onClick={this.chooseToday}>Today</button>
-            <button onClick={this.chooseThisWeek}>This Week</button>
-            <button onClick={this.chooseLastWeek}>Last Week</button>
-            <button onClick={this.chooseThisMonth}>This Month</button>
-            <button onClick={this.resetDate}>Reset</button>
+            <div className="icon is-small is-left">
+              <i className="far fa-calendar-alt"></i>
+            </div>
           </div>
-          {
-            this.state.showBtns &&
-            <button onClick={this.startQuery} className='btn btn-default'>Apply</button>
-          }
+          <a className='button is-light' onClick={this.chooseToday}>Today</a>
+          <a className='button is-light' onClick={this.chooseThisWeek}>This Week</a>
+          <a className='button is-light' onClick={this.chooseLastWeek}>Last Week</a>
+          <a className='button is-light' onClick={this.chooseThisMonth}>This Month</a>
+          <a className='button is-light' onClick={this.resetDate}>Reset</a>
         </div>
+        <div>
+        {
+          this.state.showBtns &&
+          <a className="button is-success"
+             onClick={this.startQuery}>
+            <span className="icon is-small">
+              <i className="fas fa-check"></i>
+            </span>
+            <span>Apply</span>
+          </a>
+        }
+        </div>
+      </div>
+    )
+  }
+
+  render() {
+    return (
+      <div className='report-box-container'>
+        { this.renderQueryFilters() }
+        <FlashMessage message={this.state.message}/>
         <div className='report-result'>
           {
             this.state.detailProject ?
             this.renderProjectDetailReports() :
             this.renderProjectsReports()
           }
-          <FlashMessage message={this.state.message}/>
         </div>
       </div>
     )

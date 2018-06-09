@@ -2,7 +2,6 @@
 .report-table-container {
   table {
     margin-top: 10px;
-    padding: 2px;
     border: 1px solid #ccc;
     tr {
       padding: 8px 0px;
@@ -10,7 +9,8 @@
     }
     tbody {
       tr:last-child, td:last-child {
-        background: #eee
+        background: #eee;
+        font-weight: bold;
       }
     }
     td, th {
