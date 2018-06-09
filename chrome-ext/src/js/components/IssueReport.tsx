@@ -198,8 +198,8 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
       this.parsedTimeNotes.push({
         id,
         author: regArr[1],
-        spentTime: DateUtil.parseSpentTime(regArr[2]),
-        spentDate: regArr[3],
+        spent_date: regArr[3],
+        spent_time: DateUtil.parseSpentTime(regArr[2]),
       })
       return true
     }
@@ -208,8 +208,8 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
       this.parsedTimeNotes.push({
         id,
         author: regArr[1],
-        spentTime: DateUtil.parseSpentTime(regArr[2]) * -1,
-        spentDate: regArr[3],
+        spent_date: regArr[3],
+        spent_time: DateUtil.parseSpentTime(regArr[2]) * -1,
       })
       return true
     }
@@ -218,8 +218,8 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
       this.parsedTimeNotes.push({
         id,
         author: regArr[1],
-        spentTime: 0,
-        spentDate: '',
+        spent_date: '',
+        spent_time: 0,
       })
       this.removedTimeNoteId = id
       return true
@@ -240,8 +240,8 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
     const timeNotes = this.parsedTimeNotes.filter(note => note.id > this.removedTimeNoteId)
     timeNotes.forEach(timeNote => {
       const user = timeNote.author
-      const spentDate = timeNote.spentDate
-      const spentTime = timeNote.spentTime
+      const spentDate = timeNote.spent_date
+      const spentTime = timeNote.spent_time
 
       totalSpentTime += spentTime
 
@@ -278,7 +278,7 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
     this.setState({aggreReport})
 
     this.curIssue.total_time_spent = totalSpentTime
-    this.curIssue.latest_spent_date = timeNotes.map(note => note.spentDate).sort().reverse()[0] || ''
+    this.curIssue.latest_spent_date = timeNotes.map(note => note.spent_date).sort().reverse()[0] || ''
     console.log(this.curIssue.latest_spent_date)
   }
 
