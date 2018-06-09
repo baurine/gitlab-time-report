@@ -6,17 +6,23 @@
     margin-top: 10px;
     border: 1px solid #ccc;
     tr {
-      padding: 8px 0px;
       border-bottom: 1px solid #707070;
     }
+    td, th {
+      padding: 8px;
+    }
     tbody {
-      tr:last-child, td:last-child {
+      th:last-child {
         background: #eee;
         font-weight: bold;
       }
     }
-    td, th {
-      padding: 8px;
+    tfoot {
+      background: #eee;
+      font-weight: bold;
+      th {
+        text-transform: none;
+      }
     }
   }
 }
