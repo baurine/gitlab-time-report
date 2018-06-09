@@ -93,15 +93,19 @@ export interface IAuthBoxState {
   message: string
 }
 
-export interface IReportBoxState {
+export interface ITotalReportProps {
+  curUserEmail: string,
+}
+
+export interface ITotalReportState {
   allowedDomains: object,
   projects: IProject[],
-  users: string[],
+  users: IProfile[],
   issues: IIssue[],
 
   selectedDomainDocId: string,
   selectedProjectId: number,
-  selectedUser: string,
+  selectedUserName: string,
 
   dateFrom: string,
   dateTo: string,

@@ -9,7 +9,7 @@ export default class DashboardPage extends React.Component {
     return (
       <div className='gitlab-time-report-container'>
         <AuthBox>
-          <TotalReport/>
+          <TotalReport curUserEmail=''/>
         </AuthBox>
       </div>
     )
