@@ -97,7 +97,7 @@ export default class IssuePageParser {
                  type: issueRes.sha ? 'merge_request' : 'issue',
                  last_note_id: 0,
                  latest_spent_date: '',
-                 doc_id: [issueRes.id, issueRes.iid, issueRes.project_id].join('-')
+                 doc_id: [issueRes.project_id, issueRes.iid, issueRes.id].join('-')
                }
                this.curProject = {
                  id: issueRes.project_id,
