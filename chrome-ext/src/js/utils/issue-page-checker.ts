@@ -2,7 +2,7 @@ import { firebaseDb, dbCollections } from '../firebase'
 import { IIssueRes, IIssue, IProject, IProfile, IIssuePageInfo, IDomain } from '../types'
 import { CommonUtil, ApiUtil } from '../utils'
 
-export default class IssuePageParser {
+export default class IssuePageChecker {
   private projectPath: string
   private issueType: string
   private issueNum: string
@@ -11,27 +11,6 @@ export default class IssuePageParser {
   private curIssue: IIssue
   private curProject: IProject
   private curUser: IProfile
-
-  parse = () => {
-    return new Promise((resolve, reject) => {
-      if (this.checkAvailabeIssuePage()) {
-        Promise.all([this.checkDomainEnabled(), this.fetchIssueDetail(), this.fetchProfile()])
-          .then(() => {
-            const pageInfo: IIssuePageInfo = {
-              curDomainDocId: this.curDomainDocId,
-              curIssue: this.curIssue,
-              curProject: this.curProject,
-              curUser: this.curUser
-            }
-            console.log(pageInfo)
-            resolve(pageInfo)
-          })
-          .catch((err: Error) => reject(err))
-      } else {
-        reject(new Error('invalid issue page'))
-      }
-    })
-  }
 
   checkAvailabeIssuePage = () => {
     // path = "/ekohe/podknife/issues/547"
@@ -43,7 +22,7 @@ export default class IssuePageParser {
 
     const arr = regPattern.exec(pathname)
     if (arr === null) {
-      CommonUtil.log(`${document.location.href} is not a gitlab issue url`)
+      console.log(`${document.location.href} is not a gitlab issue url`)
       return false
     }
     this.projectPath = arr[1]
@@ -52,11 +31,26 @@ export default class IssuePageParser {
 
     const notesContainer = document.getElementById('notes')
     if (!notesContainer) {
-      CommonUtil.log('this page has no notes container')
+      console.log('this page has no notes container')
       return false
     }
 
     return true
+  }
+
+  parse = () => {
+    return this.checkDomainEnabled()
+      .then(() => Promise.all([this.fetchIssueDetail(), this.fetchProfile()]))
+      .then(() => {
+        const pageInfo: IIssuePageInfo = {
+          curDomainDocId: this.curDomainDocId,
+          curIssue: this.curIssue,
+          curProject: this.curProject,
+          curUser: this.curUser
+        }
+        console.log(pageInfo)
+        return pageInfo
+      })
   }
 
   checkDomainEnabled = () => {

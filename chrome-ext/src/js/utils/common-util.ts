@@ -14,7 +14,9 @@ export default class CommonUtil {
   static formatFirebaseError(err: any) {
     let message
     if (err.code === 'permission-denied') {
-      message = 'You have no permission to access any data, please contact your admin.'
+      message = 'You have no permission to access any data, please contact with your admin.'
+    } else if (err.code === 'unavailable') {
+      message = err.message + " Please make sure you can access firebase then refresh this page."
     } else {
       message = err.message
     }

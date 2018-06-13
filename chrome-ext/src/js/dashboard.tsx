@@ -1,6 +1,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
+import { CommonUtil } from './utils'
 import VersionChecker from './utils/version-checker'
 import DashboardPage from './pages/DashboardPage'
 import MessagePage from './pages/MessagePage'
@@ -20,7 +21,7 @@ function main() {
     })
     .catch((err: Error) => {
       ReactDOM.render(
-        <MessagePage message={err.message}/>,
+        <MessagePage message={CommonUtil.formatFirebaseError(err)}/>,
         document.getElementById('root')
       )
     })
