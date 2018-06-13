@@ -25,7 +25,7 @@ function main() {
 }
 
 function checkVersion(curPageInfo: IIssuePageInfo, containerNode: Element) {
-  new VersionChecker().checkVersion()
+  return new VersionChecker().checkVersion()
     .then(() => renderIssuePage(curPageInfo, containerNode))
 }
 
