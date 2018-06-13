@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
 import CommonUtil from './utils/common-util'
-import IssuePageParser from './utils/issue-page-parser'
+import IssuePageChecker from './utils/issue-page-checker'
 import VersionChecker from './utils/version-checker'
 import IssuePage from './pages/IssuePage'
 import MessagePage from './pages/MessagePage'
@@ -13,19 +13,20 @@ import { IIssuePageInfo } from './types'
 function main() {
   CommonUtil.log('load')
 
-  new IssuePageParser().parse()
-    .then((curPageInfo: IIssuePageInfo) => checkVersion(curPageInfo))
-    .catch(CommonUtil.handleError)
+  const issuePageChecker = new IssuePageChecker()
+  if (issuePageChecker.checkAvailabeIssuePage()) {
+    const containerNode = createContainerNode()
+    renderMessage('loading...', containerNode)
+
+    issuePageChecker.parse()
+      .then((curPageInfo: IIssuePageInfo) => checkVersion(curPageInfo, containerNode))
+      .catch((err: Error) => renderMessage(CommonUtil.formatFirebaseError(err), containerNode))
+  }
 }
 
-function checkVersion(curPageInfo: IIssuePageInfo) {
-  const containerNode = createContainerNode()
-
-  renderMessage('loading...', containerNode)
-
-  new VersionChecker().checkVersion()
+function checkVersion(curPageInfo: IIssuePageInfo, containerNode: Element) {
+  return new VersionChecker().checkVersion()
     .then(() => renderIssuePage(curPageInfo, containerNode))
-    .catch((err: Error) => renderMessage(err.message, containerNode))
 }
 
 function createContainerNode() {
