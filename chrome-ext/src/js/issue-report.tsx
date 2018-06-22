@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
-import { CommonUtil } from './utils'
+import { CommonUtil, DateUtil } from './utils'
 import IssuePageChecker from './utils/issue-page-checker'
 import VersionChecker from './utils/version-checker'
 import IssuePage from './pages/IssuePage'
@@ -20,7 +20,10 @@ function main() {
     renderMessage('loading...', containerNode)
 
     issuePageChecker.parse()
-      .then((pageInfo: IIssuePageInfo) => curPageInfo = pageInfo)
+      .then((pageInfo: IIssuePageInfo) => {
+        curPageInfo = pageInfo
+        renderTodaySpendTimeButton()
+      })
       .then(checkVersion)
       .then(() => renderIssuePage(curPageInfo, containerNode))
       .catch((err: Error) => renderMessage(CommonUtil.formatFirebaseError(err), containerNode))
@@ -46,6 +49,29 @@ function renderIssuePage(curPageInfo: IIssuePageInfo, containerNode: Element) {
     </IssuePageContext.Provider>,
     containerNode
   )
+}
+
+function updateCommentContent() {
+  const commentBox = document.querySelector('textarea#note-body') as HTMLTextAreaElement
+  commentBox.value = `/spend  ${DateUtil.getTodayDate()}`
+  commentBox.focus()
+  commentBox.selectionEnd = 7
+}
+
+function renderTodaySpendTimeButton() {
+  const editorBtnContainer = document.querySelector('li.md-header-toolbar')
+  const firstBtn = editorBtnContainer.children[0]
+  const spendTimeBtnContainer = document.createElement('span')
+  editorBtnContainer.insertBefore(spendTimeBtnContainer, firstBtn)
+
+  const spendTimeBtn =
+    <button type='button' 
+            tabIndex={-1}
+            className='toolbar-btn js-md'
+            onClick={updateCommentContent}>
+      S
+    </button>
+  ReactDOM.render(spendTimeBtn, spendTimeBtnContainer)
 }
 
 function renderMessage(message: string, containerNode: Element) {
