@@ -1,6 +1,6 @@
 import { firebaseDb, dbCollections } from '../firebase'
 import { IIssueRes, IIssue, IProject, IProfile, IIssuePageInfo, IDomain } from '../types'
-import { CommonUtil, ApiUtil } from '../utils'
+import { ApiUtil } from '../utils'
 
 export default class IssuePageChecker {
   private projectPath: string

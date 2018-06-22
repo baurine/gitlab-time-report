@@ -1,7 +1,7 @@
 import * as React from 'react'
 
-import { firebaseAuth, firebaseDb, dbCollections } from '../firebase'
-import { IAuthBoxState, IProfile } from '../types'
+import { firebaseAuth } from '../firebase'
+import { IAuthBoxState } from '../types'
 import CommonUtil from '../utils/common-util'
 import FlashMessage from './FlashMessage'
 import TotalReport from './TotalReport';
@@ -174,7 +174,7 @@ export default class AuthBox extends React.Component<{}, IAuthBoxState> {
   }
 
   render() {
-    const { user, loading, message } = this.state
+    const { message } = this.state
     return (
       <div className='auth-box-container'>
         <FlashMessage message={message}/>

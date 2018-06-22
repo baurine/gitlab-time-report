@@ -1,8 +1,7 @@
 
 import * as React from 'react'
 
-import { IAggreReport,
-         IReportTableProps } from '../types'
+import { IReportTableProps } from '../types'
 import { DateUtil } from '../utils'
 
 require('../../css/ReportTable.scss')
