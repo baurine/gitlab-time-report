@@ -10,7 +10,7 @@ function main() {
   renderMessagePage('loading...')
 
   new VersionChecker().checkVersion()
-    .then(() => renderDashboardPage())
+    .then(renderDashboardPage)
     .catch((err: Error) => renderMessagePage(CommonUtil.formatFirebaseError(err)))
 }
 
