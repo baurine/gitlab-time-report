@@ -6,7 +6,7 @@ import { IIssue,
          ITimeNote,
          IIssueReportProps,
          IIssueReportState } from '../types'
-import { CommonUtil, DateUtil } from '../utils'
+import { DateUtil } from '../utils'
 import ReportTable from './ReportTable'
 require('../../css/IssueReport.scss')
 
