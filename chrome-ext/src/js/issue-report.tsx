@@ -52,20 +52,22 @@ function renderIssuePage(curPageInfo: IIssuePageInfo, containerNode: Element) {
 }
 
 function updateCommentContent() {
-  const commentBox = document.querySelector('textarea#note-body') as HTMLTextAreaElement
+  const commentBox = document.querySelector('.js-main-target-form textarea.note-textarea') as HTMLTextAreaElement
   commentBox.value = `/spend  ${DateUtil.getTodayDate()}`
   commentBox.focus()
   commentBox.selectionEnd = 7
 }
 
 function renderTodaySpendTimeButton() {
-  const editorBtnContainer = document.querySelector('li.md-header-toolbar')
+  // it has many comment forms in merge request page,
+  // but only the form in the most bottom of the page has `.js-main-target-form` class
+  const editorBtnContainer = document.querySelector('.js-main-target-form li.md-header-toolbar')
   const firstBtn = editorBtnContainer.children[0]
   const spendTimeBtnContainer = document.createElement('span')
   editorBtnContainer.insertBefore(spendTimeBtnContainer, firstBtn)
 
   const spendTimeBtn =
-    <button type='button' 
+    <button type='button'
             tabIndex={-1}
             className='toolbar-btn js-md'
             onClick={updateCommentContent}>
