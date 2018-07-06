@@ -113,7 +113,7 @@ export interface ITotalReportState {
   aggreProjectsReport: object,
   aggreIssuesReport: object,
   message: string,
-  showBtns: boolean,
+  loading: boolean,
 
   detailProject: IProject
 }

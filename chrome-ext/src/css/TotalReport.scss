@@ -4,33 +4,11 @@
   padding-top: 10px;
   border-top: 1px solid #428BCA;
 
-  .report-filters {
-    margin-bottom: 10px;
-
-    display: flex;
-    align-items: center;
-
-    .filters-container {
-      display: flex;
-      align-items: center;
-
-      .select, .input-date, a.button {
-        margin-right: 4px;
-      }
-    }
-
-    .filters-container:after {
-      content: '|';
-      padding: 0px 8px 0px 4px;
-    }
-
-    .input-date {
-      width: auto;
-    }
+  .field-label .label {
+    width: 72px;
   }
-  
-  .report-result {
-    padding-top: 10px;
+  .field-body {
+    max-width: 300px;
   }
 
   .goback-link {

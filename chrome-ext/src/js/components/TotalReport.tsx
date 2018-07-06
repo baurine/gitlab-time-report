@@ -37,8 +37,8 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
 
       aggreProjectsReport: {},
       aggreIssuesReport: {},
-      message: 'loading...',
-      showBtns: false,
+      message: '',
+      loading: true,
 
       detailProject: null
     }
@@ -57,7 +57,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
   initData = () => {
     this.loadDomains()
       .then((domain: string) => Promise.all([this.loadProjects(domain), this.loadUsers(domain)]))
-      .then(() => this.setState({message: '', showBtns: true}))
+      .then(this.startQuery)
       .catch((err: any) => {
         this.setState({message: CommonUtil.formatFirebaseError(err)})
       })
@@ -183,17 +183,17 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
   startQuery = () => {
     this.unsubscribe && this.unsubscribe()
     this.setState({
-      message: 'applying...',
+      message: '',
       aggreProjectsReport: {},
       aggreIssuesReport: {},
       detailProject: null,
-      showBtns: false
+      loading: true
     })
 
     this.queryIssues()
       .then(this.queryTimeLogs)
       .catch((err: any) => {
-        this.setState({message: CommonUtil.formatFirebaseError(err), showBtns: true})
+        this.setState({message: CommonUtil.formatFirebaseError(err), loading: false})
       })
   }
 
@@ -257,7 +257,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
         snapshot.forEach((s: any) => timeLogs.push(s.data()))
         this.aggregateTimeLogs(timeLogs)
       }, (err: any) => {
-        this.setState({message: CommonUtil.formatFirebaseError(err), showBtns: true})
+        this.setState({message: CommonUtil.formatFirebaseError(err), loading: false})
       })
   }
 
@@ -276,7 +276,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
       this.aggregateTimeLog(aggreProjectsReport, project, user, spentAt, spentTime)
       this.aggregateTimeLog(aggreIssuesReport, issue, user, spentAt, spentTime)
     })
-    this.setState({message: '', aggreProjectsReport, aggreIssuesReport, showBtns: true})
+    this.setState({message: '', aggreProjectsReport, aggreIssuesReport, loading: false})
   }
 
   aggregateTimeLog = (aggreReport: any, rootKey: string | number, user: string, spentAt: string, spentTime: number) => {
@@ -314,23 +314,32 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
   renderProjectSelector() {
     const { projects, selectedProjectId } = this.state
     return (
-      <div className="control has-icons-left">
-        <div className='select'>
-          <select name='selectedProjectId'
-                  value={selectedProjectId}
-                  onChange={this.inputChange}>
-            {
-              projects.map(project =>
-                <option value={project.id}
-                        key={project.id}>
-                  {project.name}
-                </option>
-              )
-            }
-          </select>
+      <div className="field is-horizontal">
+        <div className="field-label is-normal">
+          <label className="label has-text-left">Project</label>
         </div>
-        <div className="icon is-small is-left">
-          <i className="fab fa-product-hunt"></i>
+        <div className="field-body">
+          <div className="field">
+            <div className="control has-icons-left">
+              <div className='select is-fullwidth'>
+                <select name='selectedProjectId'
+                        value={selectedProjectId}
+                        onChange={this.inputChange}>
+                  {
+                    projects.map(project =>
+                      <option value={project.id}
+                              key={project.id}>
+                        {project.name}
+                      </option>
+                    )
+                  }
+                </select>
+              </div>
+              <div className="icon is-small is-left">
+                <i className="fab fa-product-hunt"></i>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -339,23 +348,99 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
   renderUserSelector() {
     const { users, selectedUserName } = this.state
     return (
-      <div className="control has-icons-left">
-        <div className='select'>
-          <select name='selectedUserName'
-                  value={selectedUserName}
-                  onChange={this.inputChange}>
-            {
-              users.map(user =>
-                <option value={user.username}
-                        key={user.username}>
-                  {user.username}
-                </option>
-              )
-            }
-          </select>
+      <div className="field is-horizontal">
+        <div className="field-label is-normal">
+          <label className="label has-text-left">User</label>
         </div>
-        <div className="icon is-small is-left">
-          <i className="fas fa-user"></i>
+        <div className="field-body">
+          <div className="field">
+            <div className="control has-icons-left">
+              <div className='select is-fullwidth'>
+                <select name='selectedUserName'
+                        value={selectedUserName}
+                        onChange={this.inputChange}>
+                  {
+                    users.map(user =>
+                      <option value={user.username}
+                              key={user.username}>
+                        {user.username}
+                      </option>
+                    )
+                  }
+                </select>
+              </div>
+              <div className="icon is-small is-left">
+                <i className="fas fa-user"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderDateSelector(dateType: string, label: string) {
+    const dateVal = (this.state as any)[dateType]
+    return (
+      <div className="field is-horizontal">
+        <div className="field-label is-normal">
+          <label className="label has-text-left">{label}</label>
+        </div>
+        <div className="field-body">
+          <div className="field">
+            <div className='control has-icons-left'>
+              <input className='input input-date'
+                     type='date'
+                     name={dateType}
+                     value={dateVal}
+                     onChange={this.inputChange}/>
+              <div className="icon is-small is-left">
+                <i className="far fa-calendar-alt"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderDateShortcuts() {
+    return (
+      <div className="field is-horizontal">
+        <div className="field-label">
+          <label className="label"></label>
+        </div>
+        <div className="field-body">
+          <div className="field">
+            <div className='buttons'>
+              <a className='button is-info' onClick={this.chooseToday}>Today</a>
+              <a className='button is-info' onClick={this.chooseThisWeek}>This Week</a>
+              <a className='button is-info' onClick={this.chooseLastWeek}>Last Week</a>
+              <a className='button is-info' onClick={this.chooseThisMonth}>This Month</a>
+              <a className='button is-info' onClick={this.resetDate}>Reset</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderApplyBtn() {
+    return (
+      <div className="field is-horizontal">
+        <div className="field-label">
+          <label className="label"></label>
+        </div>
+        <div className="field-body">
+          <div className="field">
+            <a className={`button is-success is-fullwidth ${this.state.loading ? 'is-loading' : ''}`}
+                onClick={this.startQuery}>
+              <span className="icon is-small">
+                <i className="fas fa-check"></i>
+              </span>
+              <span>Apply</span>
+            </a>
+          </div>
         </div>
       </div>
     )
@@ -414,49 +499,14 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
 
   renderQueryFilters = () => {
     return (
-      <div className='report-filters'>
-        <div className='filters-container'>
+      <div className='column is-narrow'>
+        <div className="box">
           { this.renderProjectSelector() }
           { this.renderUserSelector() }
-        </div>
-        <div className='filters-container'>
-          <div className='control has-icons-left'>
-            <input className='input input-date'
-                   type='date'
-                   name='dateFrom'
-                   value={this.state.dateFrom}
-                   onChange={this.inputChange}/>
-            <div className="icon is-small is-left">
-              <i className="far fa-calendar-alt"></i>
-            </div>
-          </div>
-          <div className='control has-icons-left'>
-            <input className='input input-date'
-                   type='date'
-                   name='dateTo'
-                   value={this.state.dateTo}
-                   onChange={this.inputChange}/>
-            <div className="icon is-small is-left">
-              <i className="far fa-calendar-alt"></i>
-            </div>
-          </div>
-          <a className='button is-light' onClick={this.chooseToday}>Today</a>
-          <a className='button is-light' onClick={this.chooseThisWeek}>This Week</a>
-          <a className='button is-light' onClick={this.chooseLastWeek}>Last Week</a>
-          <a className='button is-light' onClick={this.chooseThisMonth}>This Month</a>
-          <a className='button is-light' onClick={this.resetDate}>Reset</a>
-        </div>
-        <div>
-        {
-          this.state.showBtns &&
-          <a className="button is-success"
-             onClick={this.startQuery}>
-            <span className="icon is-small">
-              <i className="fas fa-check"></i>
-            </span>
-            <span>Apply</span>
-          </a>
-        }
+          { this.renderDateSelector('dateFrom', 'Date From') }
+          { this.renderDateSelector('dateTo', 'Date To') }
+          { this.renderDateShortcuts() }
+          { this.renderApplyBtn() }
         </div>
       </div>
     )
@@ -464,10 +514,10 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
 
   render() {
     return (
-      <div className='report-box-container'>
+      <div className='report-box-container columns'>
         { this.renderQueryFilters() }
-        <FlashMessage message={this.state.message}/>
-        <div className='report-result'>
+        <div className="column">
+          <FlashMessage message={this.state.message}/>
           {
             this.state.detailProject ?
             this.renderProjectDetailReports() :
