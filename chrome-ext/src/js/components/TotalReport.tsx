@@ -37,8 +37,8 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
 
       aggreProjectsReport: {},
       aggreIssuesReport: {},
-      message: 'loading...',
-      showBtns: false,
+      message: '',
+      loading: true,
 
       detailProject: null
     }
@@ -57,7 +57,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
   initData = () => {
     this.loadDomains()
       .then((domain: string) => Promise.all([this.loadProjects(domain), this.loadUsers(domain)]))
-      .then(() => this.setState({message: '', showBtns: true}))
+      .then(this.startQuery)
       .catch((err: any) => {
         this.setState({message: CommonUtil.formatFirebaseError(err)})
       })
@@ -183,17 +183,17 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
   startQuery = () => {
     this.unsubscribe && this.unsubscribe()
     this.setState({
-      message: 'applying...',
+      message: '',
       aggreProjectsReport: {},
       aggreIssuesReport: {},
       detailProject: null,
-      showBtns: false
+      loading: true
     })
 
     this.queryIssues()
       .then(this.queryTimeLogs)
       .catch((err: any) => {
-        this.setState({message: CommonUtil.formatFirebaseError(err), showBtns: true})
+        this.setState({message: CommonUtil.formatFirebaseError(err), loading: false})
       })
   }
 
@@ -257,7 +257,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
         snapshot.forEach((s: any) => timeLogs.push(s.data()))
         this.aggregateTimeLogs(timeLogs)
       }, (err: any) => {
-        this.setState({message: CommonUtil.formatFirebaseError(err), showBtns: true})
+        this.setState({message: CommonUtil.formatFirebaseError(err), loading: false})
       })
   }
 
@@ -276,7 +276,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
       this.aggregateTimeLog(aggreProjectsReport, project, user, spentAt, spentTime)
       this.aggregateTimeLog(aggreIssuesReport, issue, user, spentAt, spentTime)
     })
-    this.setState({message: '', aggreProjectsReport, aggreIssuesReport, showBtns: true})
+    this.setState({message: '', aggreProjectsReport, aggreIssuesReport, loading: false})
   }
 
   aggregateTimeLog = (aggreReport: any, rootKey: string | number, user: string, spentAt: string, spentTime: number) => {
@@ -486,7 +486,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
             </div>
             <div className="field-body">
               <div className="field">
-                <a className={`button is-success is-fullwidth ${this.state.showBtns ? '' : 'is-loading'}`}
+                <a className={`button is-success is-fullwidth ${this.state.loading ? 'is-loading' : ''}`}
                   onClick={this.startQuery}>
                   <span className="icon is-small">
                     <i className="fas fa-check"></i>
