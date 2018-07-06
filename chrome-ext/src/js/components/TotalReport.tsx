@@ -314,23 +314,32 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
   renderProjectSelector() {
     const { projects, selectedProjectId } = this.state
     return (
-      <div className="control has-icons-left">
-        <div className='select'>
-          <select name='selectedProjectId'
-                  value={selectedProjectId}
-                  onChange={this.inputChange}>
-            {
-              projects.map(project =>
-                <option value={project.id}
-                        key={project.id}>
-                  {project.name}
-                </option>
-              )
-            }
-          </select>
+      <div className="field is-horizontal">
+        <div className="field-label is-normal">
+          <label className="label has-text-left">Project</label>
         </div>
-        <div className="icon is-small is-left">
-          <i className="fab fa-product-hunt"></i>
+        <div className="field-body">
+          <div className="field">
+            <div className="control has-icons-left">
+              <div className='select is-fullwidth'>
+                <select name='selectedProjectId'
+                        value={selectedProjectId}
+                        onChange={this.inputChange}>
+                  {
+                    projects.map(project =>
+                      <option value={project.id}
+                              key={project.id}>
+                        {project.name}
+                      </option>
+                    )
+                  }
+                </select>
+              </div>
+              <div className="icon is-small is-left">
+                <i className="fab fa-product-hunt"></i>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -339,23 +348,57 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
   renderUserSelector() {
     const { users, selectedUserName } = this.state
     return (
-      <div className="control has-icons-left">
-        <div className='select'>
-          <select name='selectedUserName'
-                  value={selectedUserName}
-                  onChange={this.inputChange}>
-            {
-              users.map(user =>
-                <option value={user.username}
-                        key={user.username}>
-                  {user.username}
-                </option>
-              )
-            }
-          </select>
+      <div className="field is-horizontal">
+        <div className="field-label is-normal">
+          <label className="label has-text-left">User</label>
         </div>
-        <div className="icon is-small is-left">
-          <i className="fas fa-user"></i>
+        <div className="field-body">
+          <div className="field">
+            <div className="control has-icons-left">
+              <div className='select is-fullwidth'>
+                <select name='selectedUserName'
+                        value={selectedUserName}
+                        onChange={this.inputChange}>
+                  {
+                    users.map(user =>
+                      <option value={user.username}
+                              key={user.username}>
+                        {user.username}
+                      </option>
+                    )
+                  }
+                </select>
+              </div>
+              <div className="icon is-small is-left">
+                <i className="fas fa-user"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderDateSelector(dateType: string) {
+    const dateVal = (this.state as any)[dateType]
+    return (
+      <div className="field is-horizontal">
+        <div className="field-label is-normal">
+          <label className="label is-capitalized has-text-left">{dateType}</label>
+        </div>
+        <div className="field-body">
+          <div className="field">
+            <div className='control has-icons-left'>
+              <input className='input input-date'
+                    type='date'
+                    name={dateType}
+                    value={dateVal}
+                    onChange={this.inputChange}/>
+              <div className="icon is-small is-left">
+                <i className="far fa-calendar-alt"></i>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -414,60 +457,57 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
 
   renderQueryFilters = () => {
     return (
-      <div className='report-filters'>
-        <div className='filters-container'>
+      <div className='column is-3'>
+        <form>
           { this.renderProjectSelector() }
           { this.renderUserSelector() }
-        </div>
-        <div className='filters-container'>
-          <div className='control has-icons-left'>
-            <input className='input input-date'
-                   type='date'
-                   name='dateFrom'
-                   value={this.state.dateFrom}
-                   onChange={this.inputChange}/>
-            <div className="icon is-small is-left">
-              <i className="far fa-calendar-alt"></i>
+          { this.renderDateSelector('dateFrom') }
+          { this.renderDateSelector('dateTo') }
+          <div className="field is-horizontal">
+            <div className="field-label">
+              <label className="label"></label>
+            </div>
+            <div className="field-body">
+              <div className="field">
+                <div className='buttons'>
+                  <a className='button is-info' onClick={this.chooseToday}>Today</a>
+                  <a className='button is-info' onClick={this.chooseThisWeek}>This Week</a>
+                  <a className='button is-info' onClick={this.chooseLastWeek}>Last Week</a>
+                  <a className='button is-info' onClick={this.chooseThisMonth}>This Month</a>
+                  <a className='button is-info' onClick={this.resetDate}>Reset</a>
+                </div>
+              </div>
             </div>
           </div>
-          <div className='control has-icons-left'>
-            <input className='input input-date'
-                   type='date'
-                   name='dateTo'
-                   value={this.state.dateTo}
-                   onChange={this.inputChange}/>
-            <div className="icon is-small is-left">
-              <i className="far fa-calendar-alt"></i>
+          <div>
+          <div className="field is-horizontal">
+            <div className="field-label">
+              <label className="label"></label>
+            </div>
+            <div className="field-body">
+              <div className="field">
+                <a className={`button is-success is-fullwidth ${this.state.showBtns ? '' : 'is-loading'}`}
+                  onClick={this.startQuery}>
+                  <span className="icon is-small">
+                    <i className="fas fa-check"></i>
+                  </span>
+                  <span>Apply</span>
+                </a>
+              </div>
             </div>
           </div>
-          <a className='button is-light' onClick={this.chooseToday}>Today</a>
-          <a className='button is-light' onClick={this.chooseThisWeek}>This Week</a>
-          <a className='button is-light' onClick={this.chooseLastWeek}>Last Week</a>
-          <a className='button is-light' onClick={this.chooseThisMonth}>This Month</a>
-          <a className='button is-light' onClick={this.resetDate}>Reset</a>
-        </div>
-        <div>
-        {
-          this.state.showBtns &&
-          <a className="button is-success"
-             onClick={this.startQuery}>
-            <span className="icon is-small">
-              <i className="fas fa-check"></i>
-            </span>
-            <span>Apply</span>
-          </a>
-        }
-        </div>
+          </div>
+        </form>
       </div>
     )
   }
 
   render() {
     return (
-      <div className='report-box-container'>
+      <div className='report-box-container columns'>
         { this.renderQueryFilters() }
-        <FlashMessage message={this.state.message}/>
-        <div className='report-result'>
+        <div className="column is-9">
+          <FlashMessage message={this.state.message}/>
           {
             this.state.detailProject ?
             this.renderProjectDetailReports() :

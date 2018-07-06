@@ -4,6 +4,10 @@
   padding-top: 10px;
   border-top: 1px solid #428BCA;
 
+  .field-label .label {
+    width: 68px;
+  }
+
   .report-filters {
     margin-bottom: 10px;
 
@@ -29,10 +33,6 @@
     }
   }
   
-  .report-result {
-    padding-top: 10px;
-  }
-
   .goback-link {
     display: inline-block;
     padding-bottom: 8px;
