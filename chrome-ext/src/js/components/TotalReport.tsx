@@ -379,25 +379,67 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
     )
   }
 
-  renderDateSelector(dateType: string) {
+  renderDateSelector(dateType: string, label: string) {
     const dateVal = (this.state as any)[dateType]
     return (
       <div className="field is-horizontal">
         <div className="field-label is-normal">
-          <label className="label is-capitalized has-text-left">{dateType}</label>
+          <label className="label has-text-left">{label}</label>
         </div>
         <div className="field-body">
           <div className="field">
             <div className='control has-icons-left'>
               <input className='input input-date'
-                    type='date'
-                    name={dateType}
-                    value={dateVal}
-                    onChange={this.inputChange}/>
+                     type='date'
+                     name={dateType}
+                     value={dateVal}
+                     onChange={this.inputChange}/>
               <div className="icon is-small is-left">
                 <i className="far fa-calendar-alt"></i>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderDateShortcuts() {
+    return (
+      <div className="field is-horizontal">
+        <div className="field-label">
+          <label className="label"></label>
+        </div>
+        <div className="field-body">
+          <div className="field">
+            <div className='buttons'>
+              <a className='button is-info' onClick={this.chooseToday}>Today</a>
+              <a className='button is-info' onClick={this.chooseThisWeek}>This Week</a>
+              <a className='button is-info' onClick={this.chooseLastWeek}>Last Week</a>
+              <a className='button is-info' onClick={this.chooseThisMonth}>This Month</a>
+              <a className='button is-info' onClick={this.resetDate}>Reset</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderApplyBtn() {
+    return (
+      <div className="field is-horizontal">
+        <div className="field-label">
+          <label className="label"></label>
+        </div>
+        <div className="field-body">
+          <div className="field">
+            <a className={`button is-success is-fullwidth ${this.state.loading ? 'is-loading' : ''}`}
+                onClick={this.startQuery}>
+              <span className="icon is-small">
+                <i className="fas fa-check"></i>
+              </span>
+              <span>Apply</span>
+            </a>
           </div>
         </div>
       </div>
@@ -457,47 +499,15 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
 
   renderQueryFilters = () => {
     return (
-      <div className='column is-3'>
-        <form>
+      <div className='column is-narrow'>
+        <div className="box">
           { this.renderProjectSelector() }
           { this.renderUserSelector() }
-          { this.renderDateSelector('dateFrom') }
-          { this.renderDateSelector('dateTo') }
-          <div className="field is-horizontal">
-            <div className="field-label">
-              <label className="label"></label>
-            </div>
-            <div className="field-body">
-              <div className="field">
-                <div className='buttons'>
-                  <a className='button is-info' onClick={this.chooseToday}>Today</a>
-                  <a className='button is-info' onClick={this.chooseThisWeek}>This Week</a>
-                  <a className='button is-info' onClick={this.chooseLastWeek}>Last Week</a>
-                  <a className='button is-info' onClick={this.chooseThisMonth}>This Month</a>
-                  <a className='button is-info' onClick={this.resetDate}>Reset</a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-          <div className="field is-horizontal">
-            <div className="field-label">
-              <label className="label"></label>
-            </div>
-            <div className="field-body">
-              <div className="field">
-                <a className={`button is-success is-fullwidth ${this.state.loading ? 'is-loading' : ''}`}
-                  onClick={this.startQuery}>
-                  <span className="icon is-small">
-                    <i className="fas fa-check"></i>
-                  </span>
-                  <span>Apply</span>
-                </a>
-              </div>
-            </div>
-          </div>
-          </div>
-        </form>
+          { this.renderDateSelector('dateFrom', 'Date From') }
+          { this.renderDateSelector('dateTo', 'Date To') }
+          { this.renderDateShortcuts() }
+          { this.renderApplyBtn() }
+        </div>
       </div>
     )
   }
@@ -506,7 +516,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
     return (
       <div className='report-box-container columns'>
         { this.renderQueryFilters() }
-        <div className="column is-9">
+        <div className="column">
           <FlashMessage message={this.state.message}/>
           {
             this.state.detailProject ?
