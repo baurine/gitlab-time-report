@@ -4,8 +4,10 @@ import { firebaseAuth } from '../firebase'
 import { IAuthBoxState } from '../types'
 import CommonUtil from '../utils/common-util'
 import FlashMessage from './FlashMessage'
-import TotalReport from './TotalReport';
+import TotalReport from './TotalReport'
 require('../../css/AuthBox.scss')
+
+const logo = require('../../images/logo-64x64.png')
 
 export default class AuthBox extends React.Component<{}, IAuthBoxState> {
   constructor(props: {}) {
@@ -34,7 +36,9 @@ export default class AuthBox extends React.Component<{}, IAuthBoxState> {
     firebaseAuth.signOut()
   }
 
-  logIn = () => {
+  logIn = (e: any) => {
+    e.preventDefault()
+
     const { email, password } = this.state
     if (email.length === 0 || password.length === 0) {
       this.setState({message: 'Please fill the email and password.'})
@@ -111,13 +115,28 @@ export default class AuthBox extends React.Component<{}, IAuthBoxState> {
     })
   }
 
+  renderHeader() {
+    const { user } = this.state
+
+    return (
+      <div className='auth-header'>
+        <div className="auth-header-left">
+          <img src={logo} width={42} height={42}/>
+          <span className='brand-name'>Gitlab Time Report</span>
+        </div>
+        {
+          user && this.renderLoggedInStatus()
+        }
+      </div>
+    )
+  }
+
   renderLoggedInStatus() {
     const { user } = this.state
     return (
-      <div>
+      <div className='auth-header-right'>
+        <span className='login-status'>{user.email}</span>
         <button className='btn btn-default' onClick={this.signOut}>Sign Out</button>
-        <span className='login-status'>{user.email} has logged in.</span>
-        { this.renderChildren() }
       </div>
     )
   }
@@ -125,36 +144,36 @@ export default class AuthBox extends React.Component<{}, IAuthBoxState> {
   renderSignedOutStatus() {
     const { email, password } = this.state
     return (
-      <div className='login-form'>
+      <form className='login-form'
+            onSubmit={this.logIn}>
         <div className='form-group'>
           <label>Email:</label>
           <input type='email'
-                name='email'
-                value={email}
-                onChange={this.inputChange}/>
+                 name='email'
+                 value={email}
+                 onChange={this.inputChange}/>
         </div>
         <div className='form-group'>
           <label>Password:</label>
           <input type='password'
-                name='password'
-                value={password}
-                onChange={this.inputChange}/>
+                 name='password'
+                 value={password}
+                 onChange={this.inputChange}/>
         </div>
         <div>
           <button className='btn btn-default' onClick={this.logIn}>Log In</button>
           <button className='btn btn-default' onClick={this.register}>Register</button>
           <button className='btn btn-default' onClick={this.resetPwd}>Reset Password</button>
         </div>
-      </div>
+      </form>
     )
   }
 
   renderVerifyEmailStatus() {
     return (
-      <div>
-        <button className='btn btn-default' onClick={this.signOut}>Sign Out</button>
+      <div className='verify-container'>
+        <span className='login-status'>Your email isn't verified yet, click the button to send the verification email.</span>
         <button className='btn btn-default' onClick={this.verifyEmail}>Verify Email</button>
-        <span className='login-status'>Your email isn't verified yet, click the button to send verification email.</span>
       </div>
     )
   }
@@ -167,16 +186,17 @@ export default class AuthBox extends React.Component<{}, IAuthBoxState> {
     if (!user) {
       return this.renderSignedOutStatus()
     }
-    if (user.emailVerified) {
-      return this.renderLoggedInStatus()
+    if (!user.emailVerified) {
+      return this.renderVerifyEmailStatus()
     }
-    return this.renderVerifyEmailStatus()
+    return this.renderChildren()
   }
 
   render() {
     const { message } = this.state
     return (
       <div className='auth-box-container'>
+        { this.renderHeader() }
         <FlashMessage message={message}/>
         { this.renderAuthInputs() }
       </div>
