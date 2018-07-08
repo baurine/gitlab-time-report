@@ -1,12 +1,16 @@
 .gtr-container {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 14px;
-  padding: 16px;
 }
 
 .issue-page {
   border: 1px solid #73afea;
-  border-radius: 3px;
+  border-radius: 4px;
+
+  .auth-header {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
 }
 
 .fixed-width-font {
