@@ -1,13 +1,11 @@
 import * as React from 'react'
 
 import { firebaseDb, dbCollections } from '../firebase'
-import { ITotalReportProps,
-         ITotalReportState,
-         ITimeNote,
+import { ITimeNote,
          IProject,
          IIssue,
-         IReportMeta, 
-         IProfile} from '../types'
+         IReportMeta,
+         IProfile } from '../types'
 import CommonUtil from '../utils/common-util'
 import DateUtil from '../utils/date-util'
 import FlashMessage from './FlashMessage'
@@ -17,33 +15,55 @@ require('../../css/TotalReport.scss')
 const DEF_PROJECT: IProject = {id: 0, name: 'all'}
 const DEF_USER: IProfile = {id: 0, username: 'all', email: 'all', name: 'all'}
 
-export default class TotalReport extends React.Component<ITotalReportProps, ITotalReportState> {
-  private unsubscribe: () => void
+type Props = {
+  curUserEmail: string,
+}
 
-  constructor(props: ITotalReportProps) {
-    super(props)
-    this.state = {
-      allowedDomains: {},
-      projects: [DEF_PROJECT],
-      users: [DEF_USER],
-      issues: [],
+type State = {
+  allowedDomains: object,
+  projects: IProject[],
+  users: IProfile[],
+  issues: IIssue[],
 
-      selectedDomainDocId: '', // TODO
-      selectedProjectId: 0,
-      selectedUserName: DEF_USER.username,
+  selectedDomainDocId: string,
+  selectedProjectId: number,
+  selectedUserName: string,
 
-      dateFrom: '',
-      dateTo: '',
+  dateFrom: string,
+  dateTo: string,
 
-      aggreProjectsReport: {},
-      aggreIssuesReport: {},
-      message: '',
-      loading: true,
+  aggreProjectsReport: object,
+  aggreIssuesReport: object,
+  message: string,
+  loading: boolean,
 
-      detailProject: null
-    }
-    this.unsubscribe = null
-  }
+  detailProject: IProject
+}
+
+const initialState: State = {
+  allowedDomains: {},
+  projects: [DEF_PROJECT],
+  users: [DEF_USER],
+  issues: [],
+
+  selectedDomainDocId: '',  // TODO
+  selectedProjectId: 0,
+  selectedUserName: DEF_USER.username,
+
+  dateFrom: '',
+  dateTo: '',
+
+  aggreProjectsReport: {},
+  aggreIssuesReport: {},
+  message: '',
+  loading: true,
+
+  detailProject: null
+}
+
+export default class TotalReport extends React.Component<Props, State> {
+  readonly state = initialState
+  private unsubscribe: () => void = null
 
   componentDidMount() {
     this.initData()

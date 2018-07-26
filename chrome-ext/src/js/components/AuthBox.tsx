@@ -1,7 +1,6 @@
 import * as React from 'react'
 
 import { firebaseAuth } from '../firebase'
-import { IAuthBoxState } from '../types'
 import CommonUtil from '../utils/common-util'
 import FlashMessage from './FlashMessage'
 import TotalReport from './TotalReport'
@@ -9,18 +8,24 @@ require('../../css/AuthBox.scss')
 
 const logo = require('../../images/logo-64x64.png')
 
-export default class AuthBox extends React.Component<{}, IAuthBoxState> {
-  constructor(props: {}) {
-    super(props)
-    this.state = {
-      user: null,
-      email: '',
-      password: '',
+type State = {
+  user: any,
+  email: string,
+  password: string,
+  loading: boolean,
+  message: string
+}
 
-      loading: true,
-      message: 'logging in...'
-    }
-  }
+const initialState: State = {
+  user: null,
+  email: '',
+  password: '',
+  loading: true,
+  message: 'logging in...'
+}
+
+export default class AuthBox extends React.Component<{}, State> {
+  readonly state = initialState
 
   componentDidMount() {
     this.loadAuthState()

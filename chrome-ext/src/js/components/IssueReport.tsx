@@ -4,8 +4,7 @@ import { firebaseDb, dbCollections } from '../firebase'
 import { IIssue,
          IParsedTimeNote,
          ITimeNote,
-         IIssueReportProps,
-         IIssueReportState } from '../types'
+         IAggreReport } from '../types'
 import { DateUtil } from '../utils'
 import ReportTable from './ReportTable'
 require('../../css/IssueReport.scss')
@@ -21,7 +20,15 @@ const SUB_TIME_REG = /@(.+) subtracted (.+) of time spent at (\d{4}-\d{2}-\d{2})
 // 1. baurine
 const REMOVE_TIME_REG = /@(.+) removed time spent/
 
-class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> {
+type Props = {
+  issuePageInfo: IIssuePageInfo,
+}
+
+type State = {
+  aggreReport: IAggreReport,
+}
+
+class IssueReport extends React.Component<Props, State> {
   private curIssue: IIssue
   private issueDoc: IIssue
 
@@ -34,7 +41,8 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
   private parsedTimeNotes: IParsedTimeNote[]
   private removedTimeNoteId: number
 
-  constructor(props: IIssueReportProps) {
+
+  constructor(props: Props) {
     super(props)
 
     // state stores variables present UI

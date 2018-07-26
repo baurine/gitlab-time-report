@@ -1,12 +1,18 @@
 
 import * as React from 'react'
 
-import { IReportTableProps } from '../types'
+import { IAggreReport, IReportMeta } from '../types'
 import { DateUtil } from '../utils'
 
 require('../../css/ReportTable.scss')
 
-export default class ReportTable extends React.Component<IReportTableProps, {}> {
+type Props = {
+  aggreReport: IAggreReport,
+  reportFor?: IReportMeta,
+  onTitleClick?: () => void
+}
+
+export default class ReportTable extends React.Component<Props, {}> {
 
   onTitleClick = () => {
     const { onTitleClick } = this.props
