@@ -46,7 +46,6 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
   }
 
   componentDidMount() {
-    this.chooseThisWeek()
     this.initData()
   }
 
@@ -57,7 +56,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
   initData = () => {
     this.loadDomains()
       .then((domain: string) => Promise.all([this.loadProjects(domain), this.loadUsers(domain)]))
-      .then(this.startQuery)
+      .then(this.chooseThisWeek)
       .catch((err: any) => {
         this.setState({message: CommonUtil.formatFirebaseError(err)})
       })
@@ -138,7 +137,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
     this.setState({
       dateFrom: todayDate,
       dateTo: todayDate,
-    })
+    }, this.startQuery)
   }
 
   chooseThisWeek = () => {
@@ -146,7 +145,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
     this.setState({
       dateFrom: thisWeekRange[0],
       dateTo: thisWeekRange[1]
-    })
+    }, this.startQuery)
   }
 
   chooseLastWeek = () => {
@@ -154,7 +153,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
     this.setState({
       dateFrom: lastWeekRange[0],
       dateTo: lastWeekRange[1]
-    })
+    }, this.startQuery)
   }
 
   chooseThisMonth = () => {
@@ -162,7 +161,7 @@ export default class TotalReport extends React.Component<ITotalReportProps, ITot
     this.setState({
       dateFrom: thisMonthRange[0],
       dateTo: thisMonthRange[1]
-    })
+    }, this.startQuery)
   }
 
   resetDate = () => {
