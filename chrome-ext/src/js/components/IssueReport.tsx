@@ -1,5 +1,6 @@
 import * as React from 'react'
 
+require('../../css/IssueReport.scss')
 import { firebaseDb, dbCollections } from '../firebase'
 import { IIssue,
          IParsedTimeNote,
@@ -7,7 +8,6 @@ import { IIssue,
          IAggreReport } from '../types'
 import { DateUtil } from '../utils'
 import ReportTable from './ReportTable'
-require('../../css/IssueReport.scss')
 
 const TIME_REG = /time spent/
 // baurine_bao @baurine added 1h 30m of time spent at 2018-06-02 about 15 hours ago

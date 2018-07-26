@@ -1,12 +1,12 @@
 import * as React from 'react'
-
 import { firebaseAuth } from '../firebase'
-import CommonUtil from '../utils/common-util'
+
+require('../../css/AuthBox.scss')
+const logo = require('../../images/logo-64x64.png')
+
+import { CommonUtil } from '../utils'
 import FlashMessage from './FlashMessage'
 import TotalReport from './TotalReport'
-require('../../css/AuthBox.scss')
-
-const logo = require('../../images/logo-64x64.png')
 
 type State = {
   user: any,

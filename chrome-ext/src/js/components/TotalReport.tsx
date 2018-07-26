@@ -1,16 +1,15 @@
 import * as React from 'react'
 
+require('../../css/TotalReport.scss')
 import { firebaseDb, dbCollections } from '../firebase'
 import { ITimeNote,
          IProject,
          IIssue,
          IReportMeta,
          IProfile } from '../types'
-import CommonUtil from '../utils/common-util'
-import DateUtil from '../utils/date-util'
+import { CommonUtil, DateUtil } from '../utils'
 import FlashMessage from './FlashMessage'
 import ReportTable from './ReportTable'
-require('../../css/TotalReport.scss')
 
 const DEF_PROJECT: IProject = {id: 0, name: 'all'}
 const DEF_USER: IProfile = {id: 0, username: 'all', email: 'all', name: 'all'}
@@ -280,7 +279,7 @@ export default class TotalReport extends React.Component<Props, State> {
       })
   }
 
-  aggregateTimeLogs(timeLogs: ITimeNote[]) {
+  aggregateTimeLogs= (timeLogs: ITimeNote[]) => {
     let aggreProjectsReport: any = {}
     let aggreIssuesReport: any  ={}
 
@@ -330,7 +329,7 @@ export default class TotalReport extends React.Component<Props, State> {
     }
   }
 
-  renderProjectSelector() {
+  renderProjectSelector = () => {
     const { projects, selectedProjectId } = this.state
     return (
       <div className="field is-horizontal">
@@ -364,7 +363,7 @@ export default class TotalReport extends React.Component<Props, State> {
     )
   }
 
-  renderUserSelector() {
+  renderUserSelector = () => {
     const { users, selectedUserName } = this.state
     return (
       <div className="field is-horizontal">
@@ -398,7 +397,7 @@ export default class TotalReport extends React.Component<Props, State> {
     )
   }
 
-  renderDateSelector(dateType: string, label: string) {
+  renderDateSelector = (dateType: string, label: string) => {
     const dateVal = (this.state as any)[dateType]
     return (
       <div className="field is-horizontal">
@@ -423,49 +422,43 @@ export default class TotalReport extends React.Component<Props, State> {
     )
   }
 
-  renderDateShortcuts() {
-    return (
-      <div className="field is-horizontal">
-        <div className="field-label">
-          <label className="label"></label>
-        </div>
-        <div className="field-body">
-          <div className="field">
-            <div className='buttons'>
-              <a className='button is-info' onClick={this.chooseToday}>Today</a>
-              <a className='button is-info' onClick={this.chooseThisWeek}>This Week</a>
-              <a className='button is-info' onClick={this.chooseLastWeek}>Last Week</a>
-              <a className='button is-info' onClick={this.chooseThisMonth}>This Month</a>
-              <a className='button is-info' onClick={this.resetDate}>Reset</a>
-            </div>
+  renderDateShortcuts = () =>
+    <div className="field is-horizontal">
+      <div className="field-label">
+        <label className="label"></label>
+      </div>
+      <div className="field-body">
+        <div className="field">
+          <div className='buttons'>
+            <a className='button is-info' onClick={this.chooseToday}>Today</a>
+            <a className='button is-info' onClick={this.chooseThisWeek}>This Week</a>
+            <a className='button is-info' onClick={this.chooseLastWeek}>Last Week</a>
+            <a className='button is-info' onClick={this.chooseThisMonth}>This Month</a>
+            <a className='button is-info' onClick={this.resetDate}>Reset</a>
           </div>
         </div>
       </div>
-    )
-  }
+    </div>
 
-  renderApplyBtn() {
-    return (
-      <div className="field is-horizontal">
-        <div className="field-label">
-          <label className="label"></label>
-        </div>
-        <div className="field-body">
-          <div className="field">
-            <a className={`button is-success is-fullwidth ${this.state.loading ? 'is-loading' : ''}`}
-                onClick={this.startQuery}>
-              <span className="icon is-small">
-                <i className="fas fa-check"></i>
-              </span>
-              <span>Apply</span>
-            </a>
-          </div>
+  renderApplyBtn = () =>
+    <div className="field is-horizontal">
+      <div className="field-label">
+        <label className="label"></label>
+      </div>
+      <div className="field-body">
+        <div className="field">
+          <a className={`button is-success is-fullwidth ${this.state.loading ? 'is-loading' : ''}`}
+              onClick={this.startQuery}>
+            <span className="icon is-small">
+              <i className="fas fa-check"></i>
+            </span>
+            <span>Apply</span>
+          </a>
         </div>
       </div>
-    )
-  }
+    </div>
 
-  renderProjectsReports() {
+  renderProjectsReports = () => {
     const { projects, aggreProjectsReport } = this.state
     return projects.map(project => {
       const projectAggreResult = (aggreProjectsReport as any)[project.id]
@@ -482,7 +475,7 @@ export default class TotalReport extends React.Component<Props, State> {
     })
   }
 
-  renderProjectDetailReports() {
+  renderProjectDetailReports = () => {
     const { detailProject, issues, aggreProjectsReport, aggreIssuesReport } = this.state
     const projectInfo: IReportMeta = {
       type: 'project',
@@ -516,20 +509,17 @@ export default class TotalReport extends React.Component<Props, State> {
     )
   }
 
-  renderQueryFilters = () => {
-    return (
-      <div className='column is-narrow'>
-        <div className="box">
-          { this.renderProjectSelector() }
-          { this.renderUserSelector() }
-          { this.renderDateSelector('dateFrom', 'Date From') }
-          { this.renderDateSelector('dateTo', 'Date To') }
-          { this.renderDateShortcuts() }
-          { this.renderApplyBtn() }
-        </div>
+  renderQueryFilters = () =>
+    <div className='column is-narrow'>
+      <div className="box">
+        { this.renderProjectSelector() }
+        { this.renderUserSelector() }
+        { this.renderDateSelector('dateFrom', 'Date From') }
+        { this.renderDateSelector('dateTo', 'Date To') }
+        { this.renderDateShortcuts() }
+        { this.renderApplyBtn() }
       </div>
-    )
-  }
+    </div>
 
   render() {
     return (

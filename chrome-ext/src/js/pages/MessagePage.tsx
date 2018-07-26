@@ -1,7 +1,7 @@
 import * as React from 'react'
 
-import FlashMessage from '../components/FlashMessage'
 require('../../css/common.scss')
+import FlashMessage from '../components/FlashMessage'
 
 type Props = {
   message: string
