@@ -16,7 +16,7 @@ export default class VersionChecker {
           enabled = VERSION_CODE >= data.min
         }
         if (!enabled) {
-          throw new Error(`Gitlab time report extension (${VERSION_NAME} | ${VERSION_CODE}) is outdated, please upgrade to a new version.`)
+          throw new Error(`GitLab Time Report extension (${VERSION_NAME} | ${VERSION_CODE}) is outdated, please upgrade to a new version.`)
         }
       })
   }
