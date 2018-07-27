@@ -21,26 +21,25 @@ const SUB_TIME_REG = /@(.+) subtracted (.+) of time spent at (\d{4}-\d{2}-\d{2})
 const REMOVE_TIME_REG = /@(.+) removed time spent/
 
 type Props = {
-  issuePageInfo: IIssuePageInfo,
+  issuePageInfo: IIssuePageInfo
 }
 
 type State = {
-  aggreReport: IAggreReport,
+  aggreReport: IAggreReport | null
 }
 
 class IssueReport extends React.Component<Props, State> {
   private curIssue: IIssue
-  private issueDoc: IIssue
+  private issueDoc: IIssue | null = null
 
   private issueDocRef: any
   private timeNotesCollectionRef: any
   private projectDocRef: any
   private userDocRef: any
 
-  private mutationObserver: MutationObserver
-  private parsedTimeNotes: IParsedTimeNote[]
-  private removedTimeNoteId: number
-
+  private mutationObserver: MutationObserver | null = null
+  private parsedTimeNotes: IParsedTimeNote[] = []
+  private removedTimeNoteId: number = 0
 
   constructor(props: Props) {
     super(props)
@@ -50,12 +49,9 @@ class IssueReport extends React.Component<Props, State> {
       aggreReport: null
     }
 
+    // the variables has no business with UI should store in component directly
     const { curDomainDocId, curIssue, curProject, curUser } = props.issuePageInfo
-    // the variables has no business with UI should store in Component directly
     this.curIssue = Object.assign({}, curIssue)
-    this.issueDoc = null
-    this.parsedTimeNotes = []
-    this.removedTimeNoteId = 0
 
     const domainDocRef =
       firebaseDb.collection(dbCollections.DOMAINS)
@@ -116,7 +112,7 @@ class IssueReport extends React.Component<Props, State> {
   }
 
   updateIssue = () => {
-    let issueDoc = this.issueDoc
+    let issueDoc = this.issueDoc!
     const curIssue = this.curIssue
     if (issueDoc.title !== curIssue.title ||
         issueDoc.description != curIssue.description ||
@@ -182,7 +178,7 @@ class IssueReport extends React.Component<Props, State> {
   parseNotesNode = () => {
     this.parsedTimeNotes = []
     const notesList = document.getElementById('notes-list')
-    notesList.childNodes.forEach(this.parseNoteNode)
+    notesList && notesList.childNodes.forEach(this.parseNoteNode)
     this.aggreAndSyncTimeNotes()
   }
 
@@ -327,9 +323,11 @@ class IssueReport extends React.Component<Props, State> {
 
   observeNotesMutation = () => {
     const notesContainerNode = document.getElementById('notes-list')
-    this.mutationObserver = new MutationObserver(this.parseMutations)
-    const config = { childList: true }
-    this.mutationObserver.observe(notesContainerNode, config)
+    if (notesContainerNode) {
+      this.mutationObserver = new MutationObserver(this.parseMutations)
+      const config = { childList: true }
+      this.mutationObserver.observe(notesContainerNode, config)
+    }
   }
 
   // find out added note about spent time
@@ -362,7 +360,7 @@ import { IIssuePageInfo } from '../types'
 const IssueReportWrapper = (props: {}) =>
   <IssuePageContext.Consumer>
     {
-      (issuePageInfo: IIssuePageInfo) =>
+      (issuePageInfo: any) =>
       <IssueReport
         issuePageInfo={issuePageInfo}
         {...props}/>

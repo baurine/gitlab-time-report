@@ -6,7 +6,7 @@ import { IAggreReport, IReportMeta } from '../types'
 import { DateUtil } from '../utils'
 
 type Props = {
-  aggreReport: IAggreReport,
+  aggreReport: IAggreReport | null,
   reportFor?: IReportMeta,
   onTitleClick?: () => void
 }

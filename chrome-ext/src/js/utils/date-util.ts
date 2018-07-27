@@ -80,11 +80,14 @@ export default class DateUtil {
   // timeStr: 1h 30m
   static parseSpentTime(timeStr: string) {
     const regArr = /((\d+)d)?\s*((\d+)h)?\s*((\d+)m)?/.exec(timeStr)
-    const days = parseInt(regArr[2]) || 0
-    const hours = parseInt(regArr[4]) || 0
-    const minutes = parseInt(regArr[6]) || 0
-    const totalMins = days*8*60 + hours*60 + minutes
-    return totalMins
+    if (regArr) {
+      const days = parseInt(regArr[2]) || 0
+      const hours = parseInt(regArr[4]) || 0
+      const minutes = parseInt(regArr[6]) || 0
+      const totalMins = days*8*60 + hours*60 + minutes
+      return totalMins
+    }
+    return 0
   }
 
   static formatSpentTime(spentTime: number) {

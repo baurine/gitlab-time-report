@@ -16,7 +16,7 @@ function main() {
   const issuePageChecker = new IssuePageChecker()
   if (issuePageChecker.checkAvailabeIssuePage()) {
     const containerNode = createContainerNode()
-    let curPageInfo: IIssuePageInfo = null
+    let curPageInfo: IIssuePageInfo
     renderMessage('loading...', containerNode)
 
     issuePageChecker.parse()
@@ -35,16 +35,19 @@ function checkVersion() {
 }
 
 function createContainerNode() {
-  const notesContainer = document.getElementById('notes')
   const issueReportContainer = document.createElement('div')
   issueReportContainer.id = 'issue-report-box'
-  notesContainer.parentNode.appendChild(issueReportContainer)
+
+  const notesContainer = document.getElementById('notes')
+  if (notesContainer) {
+    notesContainer.parentNode && notesContainer.parentNode.appendChild(issueReportContainer)
+  }
   return issueReportContainer
 }
 
 function renderIssuePage(curPageInfo: IIssuePageInfo, containerNode: Element) {
   ReactDOM.render(
-    <IssuePageContext.Provider value={curPageInfo}>
+    <IssuePageContext.Provider value={curPageInfo as any}>
       <IssuePage/>
     </IssuePageContext.Provider>,
     containerNode
@@ -62,18 +65,20 @@ function renderTodaySpendTimeButton() {
   // it has many comment forms in merge request page,
   // but only the form in the most bottom of the page has `.js-main-target-form` class
   const editorBtnContainer = document.querySelector('.js-main-target-form li.md-header-toolbar')
-  const firstBtn = editorBtnContainer.children[0]
-  const spendTimeBtnContainer = document.createElement('span')
-  editorBtnContainer.insertBefore(spendTimeBtnContainer, firstBtn)
+  if (editorBtnContainer) {
+    const firstBtn = editorBtnContainer.children[0]
+    const spendTimeBtnContainer = document.createElement('span')
+    editorBtnContainer.insertBefore(spendTimeBtnContainer, firstBtn)
 
-  const spendTimeBtn =
-    <button type='button'
-            tabIndex={-1}
-            className='toolbar-btn js-md'
-            onClick={updateCommentContent}>
-      S
-    </button>
-  ReactDOM.render(spendTimeBtn, spendTimeBtnContainer)
+    const spendTimeBtn =
+      <button type='button'
+              tabIndex={-1}
+              className='toolbar-btn js-md'
+              onClick={updateCommentContent}>
+        S
+      </button>
+    ReactDOM.render(spendTimeBtn, spendTimeBtnContainer)
+  }
 }
 
 function renderMessage(message: string, containerNode: Element) {

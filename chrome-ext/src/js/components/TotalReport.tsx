@@ -36,7 +36,7 @@ type State = {
   message: string,
   loading: boolean,
 
-  detailProject: IProject
+  detailProject: IProject | null
 }
 
 const initialState: State = {
@@ -62,7 +62,7 @@ const initialState: State = {
 
 export default class TotalReport extends React.Component<Props, State> {
   readonly state = initialState
-  private unsubscribe: () => void = null
+  private unsubscribe: (() => void) | null = null
 
   componentDidMount() {
     this.initData()
@@ -476,7 +476,8 @@ export default class TotalReport extends React.Component<Props, State> {
   }
 
   renderProjectDetailReports = () => {
-    const { detailProject, issues, aggreProjectsReport, aggreIssuesReport } = this.state
+    const { issues, aggreProjectsReport, aggreIssuesReport } = this.state
+    const detailProject = this.state.detailProject!
     const projectInfo: IReportMeta = {
       type: 'project',
       id: detailProject.id,
