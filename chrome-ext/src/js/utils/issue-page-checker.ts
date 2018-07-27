@@ -3,14 +3,14 @@ import { IIssueRes, IIssue, IProject, IProfile, IIssuePageInfo, IDomain } from '
 import { ApiUtil } from '../utils'
 
 export default class IssuePageChecker {
-  private projectPath: string
-  private issueType: string
-  private issueNum: string
+  private projectPath: string = ''
+  private issueType: string = ''
+  private issueNum: string = ''
 
-  private curDomainDocId: string
-  private curIssue: IIssue
-  private curProject: IProject
-  private curUser: IProfile
+  private curDomainDocId: string = ''
+  private curIssue: IIssue | null = null
+  private curProject: IProject | null = null
+  private curUser: IProfile | null = null
 
   checkAvailabeIssuePage = () => {
     // path = "/ekohe/podknife/issues/547"
@@ -44,9 +44,9 @@ export default class IssuePageChecker {
       .then(() => {
         const pageInfo: IIssuePageInfo = {
           curDomainDocId: this.curDomainDocId,
-          curIssue: this.curIssue,
-          curProject: this.curProject,
-          curUser: this.curUser
+          curIssue: this.curIssue!,
+          curProject: this.curProject!,
+          curUser: this.curUser!
         }
         console.log(pageInfo)
         return pageInfo

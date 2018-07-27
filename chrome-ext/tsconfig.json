@@ -2,12 +2,10 @@
     "compilerOptions": {
         "outDir": "./dist/",
         "sourceMap": true,
-        "noImplicitAny": true,
+        "strict": true,
         "module": "commonjs",
         "target": "es6",
-        "jsx": "react",
-        "allowSyntheticDefaultImports": true
-        // https://juejin.im/post/595cc34ff265da6c3d6c262b
+        "jsx": "react"
     },
     "include": [
         "./src/**/*"

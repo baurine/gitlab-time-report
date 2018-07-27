@@ -1,14 +1,13 @@
 import * as React from 'react'
 
+require('../../css/IssueReport.scss')
 import { firebaseDb, dbCollections } from '../firebase'
 import { IIssue,
          IParsedTimeNote,
          ITimeNote,
-         IIssueReportProps,
-         IIssueReportState } from '../types'
+         IAggreReport } from '../types'
 import { DateUtil } from '../utils'
 import ReportTable from './ReportTable'
-require('../../css/IssueReport.scss')
 
 const TIME_REG = /time spent/
 // baurine_bao @baurine added 1h 30m of time spent at 2018-06-02 about 15 hours ago
@@ -21,20 +20,28 @@ const SUB_TIME_REG = /@(.+) subtracted (.+) of time spent at (\d{4}-\d{2}-\d{2})
 // 1. baurine
 const REMOVE_TIME_REG = /@(.+) removed time spent/
 
-class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> {
+type Props = {
+  issuePageInfo: IIssuePageInfo
+}
+
+type State = {
+  aggreReport: IAggreReport | null
+}
+
+class IssueReport extends React.Component<Props, State> {
   private curIssue: IIssue
-  private issueDoc: IIssue
+  private issueDoc: IIssue | null = null
 
   private issueDocRef: any
   private timeNotesCollectionRef: any
   private projectDocRef: any
   private userDocRef: any
 
-  private mutationObserver: MutationObserver
-  private parsedTimeNotes: IParsedTimeNote[]
-  private removedTimeNoteId: number
+  private mutationObserver: MutationObserver | null = null
+  private parsedTimeNotes: IParsedTimeNote[] = []
+  private removedTimeNoteId: number = 0
 
-  constructor(props: IIssueReportProps) {
+  constructor(props: Props) {
     super(props)
 
     // state stores variables present UI
@@ -42,12 +49,9 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
       aggreReport: null
     }
 
+    // the variables has no business with UI should store in component directly
     const { curDomainDocId, curIssue, curProject, curUser } = props.issuePageInfo
-    // the variables has no business with UI should store in Component directly
     this.curIssue = Object.assign({}, curIssue)
-    this.issueDoc = null
-    this.parsedTimeNotes = []
-    this.removedTimeNoteId = 0
 
     const domainDocRef =
       firebaseDb.collection(dbCollections.DOMAINS)
@@ -108,7 +112,7 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
   }
 
   updateIssue = () => {
-    let issueDoc = this.issueDoc
+    let issueDoc = this.issueDoc!
     const curIssue = this.curIssue
     if (issueDoc.title !== curIssue.title ||
         issueDoc.description != curIssue.description ||
@@ -174,7 +178,7 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
   parseNotesNode = () => {
     this.parsedTimeNotes = []
     const notesList = document.getElementById('notes-list')
-    notesList.childNodes.forEach(this.parseNoteNode)
+    notesList && notesList.childNodes.forEach(this.parseNoteNode)
     this.aggreAndSyncTimeNotes()
   }
 
@@ -319,9 +323,11 @@ class IssueReport extends React.Component<IIssueReportProps, IIssueReportState> 
 
   observeNotesMutation = () => {
     const notesContainerNode = document.getElementById('notes-list')
-    this.mutationObserver = new MutationObserver(this.parseMutations)
-    const config = { childList: true }
-    this.mutationObserver.observe(notesContainerNode, config)
+    if (notesContainerNode) {
+      this.mutationObserver = new MutationObserver(this.parseMutations)
+      const config = { childList: true }
+      this.mutationObserver.observe(notesContainerNode, config)
+    }
   }
 
   // find out added note about spent time
@@ -354,7 +360,7 @@ import { IIssuePageInfo } from '../types'
 const IssueReportWrapper = (props: {}) =>
   <IssuePageContext.Consumer>
     {
-      (issuePageInfo: IIssuePageInfo) =>
+      (issuePageInfo: any) =>
       <IssueReport
         issuePageInfo={issuePageInfo}
         {...props}/>

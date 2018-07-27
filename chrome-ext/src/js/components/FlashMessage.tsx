@@ -2,9 +2,12 @@ import * as React from 'react'
 
 require('../../css/FlashMessage.scss')
 
-const FlashMessage = (props: {message?: string, onClose?: ()=>void}) => {
-  const { message, onClose } = props
+type Props = {
+  message?: string,
+  onClose?: () => void
+}
 
+const FlashMessage = ({message, onClose}: Props) => {
   if (message) {
     return (
       <div className='flash-message-container'>

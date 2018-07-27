@@ -1,19 +1,23 @@
 
 import * as React from 'react'
 
-import { IReportTableProps } from '../types'
+require('../../css/ReportTable.scss')
+import { IAggreReport, IReportMeta } from '../types'
 import { DateUtil } from '../utils'
 
-require('../../css/ReportTable.scss')
+type Props = {
+  aggreReport: IAggreReport | null,
+  reportFor?: IReportMeta,
+  onTitleClick?: () => void
+}
 
-export default class ReportTable extends React.Component<IReportTableProps, {}> {
-
+export default class ReportTable extends React.Component<Props, {}> {
   onTitleClick = () => {
     const { onTitleClick } = this.props
     onTitleClick && onTitleClick()
   }
 
-  renderCaption() {
+  renderCaption = () => {
     const { reportFor } = this.props
     if (reportFor && reportFor.type !== 'project') {
       return (
@@ -25,7 +29,7 @@ export default class ReportTable extends React.Component<IReportTableProps, {}> 
     return null
   }
 
-  renderTitle() {
+  renderTitle = () => {
     const { reportFor, onTitleClick } = this.props
     if (reportFor && reportFor.type === 'project') {
       if (onTitleClick) {
@@ -39,7 +43,7 @@ export default class ReportTable extends React.Component<IReportTableProps, {}> 
     return null
   }
 
-  renderTable() {
+  renderTable = () => {
     const { aggreReport } = this.props
     if (!aggreReport || !aggreReport['users']) {
       return null
