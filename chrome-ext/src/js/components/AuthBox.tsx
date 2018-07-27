@@ -100,9 +100,8 @@ export default class AuthBox extends React.Component<{}, State> {
     const value = target.type === 'checkbox' ? target.checked : target.value
     const name = target.name
 
-    this.setState({
-      [name]: value.trim()
-    })
+    const obj = {[name]: value.trim()}
+    this.setState(obj as any)
   }
 
   // https://jaketrent.com/post/send-props-to-children-react/

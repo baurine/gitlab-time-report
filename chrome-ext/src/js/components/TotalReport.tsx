@@ -146,9 +146,8 @@ export default class TotalReport extends React.Component<Props, State> {
       value = parseInt(value)
     }
 
-    this.setState({
-      [name]: value
-    })
+    const obj = {[name]: value}
+    this.setState(obj as any)
   }
 
   chooseToday = () => {
@@ -292,6 +291,8 @@ export default class TotalReport extends React.Component<Props, State> {
       const spentTime = timeLog.spent_time
 
       this.aggregateTimeLog(aggreProjectsReport, project, user, spentAt, spentTime)
+      this.aggregateTimeLog(aggreProjectsReport, 0, user, spentAt, spentTime)
+
       this.aggregateTimeLog(aggreIssuesReport, issue, user, spentAt, spentTime)
     })
     this.setState({message: '', aggreProjectsReport, aggreIssuesReport, loading: false})
