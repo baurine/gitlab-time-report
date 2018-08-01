@@ -7,7 +7,7 @@ import { ITimeNote,
          IIssue,
          IReportMeta,
          IProfile } from '../types'
-import { CommonUtil, DateUtil } from '../utils'
+import { CommonUtil, DateUtil, FuzzUtil } from '../utils'
 import FlashMessage from './FlashMessage'
 import ReportTable from './ReportTable'
 
@@ -348,7 +348,8 @@ export default class TotalReport extends React.Component<Props, State> {
                     projects.map(project =>
                       <option value={project.id}
                               key={project.id}>
-                        {project.name}
+                        {/* {project.name} */}
+                        {FuzzUtil.fuzzProjectName(project.name)}
                       </option>
                     )
                   }
@@ -382,7 +383,8 @@ export default class TotalReport extends React.Component<Props, State> {
                     users.map(user =>
                       <option value={user.username}
                               key={user.username}>
-                        {user.username}
+                        {/* {user.username} */}
+                        {FuzzUtil.fuzzUserName(user.username)}
                       </option>
                     )
                   }

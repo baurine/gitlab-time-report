@@ -4,7 +4,7 @@ import { firebaseAuth } from '../firebase'
 require('../../css/AuthBox.scss')
 const logo = require('../../images/logo-64x64.png')
 
-import { CommonUtil } from '../utils'
+import { CommonUtil, FuzzUtil } from '../utils'
 import FlashMessage from './FlashMessage'
 import TotalReport from './TotalReport'
 
@@ -132,7 +132,10 @@ export default class AuthBox extends React.Component<{}, State> {
           {
             user &&
             <React.Fragment>
-              <span className='login-status'>{user.email}</span>
+              <span className='login-status'>
+                {/* {user.email} */}
+                {FuzzUtil.fuzzEmail(user.email)}
+              </span>
               <button className='btn btn-default' onClick={this.signOut}>Sign Out</button>
             </React.Fragment>
           }

@@ -3,7 +3,7 @@ import * as React from 'react'
 
 require('../../css/ReportTable.scss')
 import { IAggreReport, IReportMeta } from '../types'
-import { DateUtil } from '../utils'
+import { DateUtil, FuzzUtil } from '../utils'
 
 type Props = {
   aggreReport: IAggreReport | null,
@@ -22,7 +22,10 @@ export default class ReportTable extends React.Component<Props, {}> {
     if (reportFor && reportFor.type !== 'project') {
       return (
         <caption>
-          <a href={reportFor.link} target='_blank'>{reportFor.name}</a>
+          <a href={reportFor.link} target='_blank'>
+            {/* {reportFor.name} */}
+            {FuzzUtil.fuzzIssueName(reportFor.name)}
+          </a>
         </caption>
       )
     }
@@ -34,10 +37,14 @@ export default class ReportTable extends React.Component<Props, {}> {
     if (reportFor && reportFor.type === 'project') {
       if (onTitleClick && reportFor.name !== 'all') {
         return (
-          <a onClick={this.onTitleClick}>{reportFor.name}</a>
+          <a onClick={this.onTitleClick}>
+            {/*reportFor.name*/}
+            {FuzzUtil.fuzzProjectName(reportFor.name)}
+          </a>
         )
       } else {
-        return reportFor.name
+        // return reportFor.name
+        return FuzzUtil.fuzzProjectName(reportFor.name)
       }
     }
     return null
@@ -58,7 +65,7 @@ export default class ReportTable extends React.Component<Props, {}> {
           <thead>
             <tr>
               <th>{this.renderTitle()}</th>
-              { users.map(user => <th key={user}>{user}</th>) }
+              { users.map(user => <th key={user}>{/*user*/}{FuzzUtil.fuzzUserName(user)}</th>) }
               <th>total</th>
             </tr>
           </thead>
