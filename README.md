@@ -1,20 +1,32 @@
 # GitLab Time Report
 
-This is a chrome extension used to generate **realtime** (thanks for Firebase) report for gitlab issues spent time.
+This is a chrome extension used to generate **realtime** (thanks for Firebase) spent time report for gitlab issues and projects.
 
-1. A realtime report for a single issue in each issue page:
+## What can it do
 
-   ![](./art/single-issue-report.png)
+(I use the asterisk to hide the real information.)
 
-1. A realtime report for all projects/users in a dashboard page:
+1. A realtime report for a single issue in each issue page
 
-   ![](./art/project-report.png)
+   ![](./art/issue-report.png)
 
-1. A realtime report for all issues of a project in a dashboard page:
+   ![](./art/issue-report.gif)
 
-   ![](./art/issues-report.png)
+1. A realtime report for all projects/users in a dashboard page
 
-## How to use
+   ![](./art/dashboard-projects-users.png)
+
+1. A realtime report for all issues of a project in a dashboard page
+
+   ![](./art/dashboard-project-issues.png)
+
+   ![](./art/dashboard.gif)
+
+1. A shortcut button to log today's spent time to resolve the timezone problem if your gitlab server deploys in another far timezone
+
+   ![](./art/log-today-spent-time.gif)
+
+## How to start
 
 TODO
 
