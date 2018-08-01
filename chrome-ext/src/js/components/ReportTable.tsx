@@ -32,9 +32,9 @@ export default class ReportTable extends React.Component<Props, {}> {
   renderTitle = () => {
     const { reportFor, onTitleClick } = this.props
     if (reportFor && reportFor.type === 'project') {
-      if (onTitleClick) {
+      if (onTitleClick && reportFor.name !== 'all') {
         return (
-          <a href='#' onClick={this.onTitleClick}>{reportFor.name}</a>
+          <a onClick={this.onTitleClick}>{reportFor.name}</a>
         )
       } else {
         return reportFor.name

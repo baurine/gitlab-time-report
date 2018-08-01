@@ -490,7 +490,7 @@ export default class TotalReport extends React.Component<Props, State> {
 
     return (
       <div>
-        <a className='goback-link' onClick={this.gobackProjectsReports} href='#'>&lt; Go Back</a>
+        <a className='goback-link' onClick={this.gobackProjectsReports}>&lt; Go Back</a>
         <ReportTable aggreReport={projectAggreResult}
                      reportFor={projectInfo}/>
         {
