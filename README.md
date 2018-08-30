@@ -1,8 +1,16 @@
-# GitLab Time Report
+# GitLab Time Report Chrome Extension
 
 This is a chrome extension used to generate **realtime** (thanks for Firebase) spent time report for gitlab issues and projects.
 
 Note: the gitlab is deployed and hosted by yourself, for example: <https://gitlab.mycompany.com>, not the public <https://gitlab.com>.
+
+This extension is developed by:
+
+- React
+- TypeScript
+- Webpack
+- Firebase
+- Bulma.css
 
 ## What can it do
 
@@ -28,13 +36,13 @@ Note: the gitlab is deployed and hosted by yourself, for example: <https://gitla
 
    ![](./art/log-today-spent-time.gif)
 
-## How the extension works
+## How does the extension work
 
-The extension is injected into every gitlab issue page, it parses the page content and listen to its changes, stores the spent time logs to Firebase realtime database - Firestore.
+The extension is injected into every gitlab issue page, it parses the page content and listens to its changes, stores the spent time logs to Firebase realtime database - Firestore.
 
 ## How to start
 
-Because of the data privacy, I think you maybe don't want to store the data to others' server, so this extension won't be published public, it is recommended to build this extension by yourself and use inside the company.
+Because of the data privacy, I think you maybe don't want to store the data to others' server, so this extension won't be published public, it is recommended to build this extension by yourself and use inside the company only.
 
 ### Setting Firebase
 
@@ -87,9 +95,9 @@ Because of the data privacy, I think you maybe don't want to store the data to o
             }
           }
 
-   We config the `settings` collection only can be read but can't be written, for other collections, they only can be read and written by users whose email matches your company's email format.
+   Note, you need to change the email format '.*@company[.]com' to yourself email format.
 
-   You can change this rule to adjust your requirement but remember to keep its security, and please read firebase document carefully before changing it.
+   We config the `settings` collection only can be read but can't be written, for other collections, they only can be read and written by users whose email matches your company's email format.
 
 1. Copy firebase configuration to `chrome_ext/src/js/firebase/firebase-config.json`
 
@@ -109,21 +117,23 @@ Because of the data privacy, I think you maybe don't want to store the data to o
 
 ### Build and install extension
 
-1. build
+1. Build
 
         $ cd chrome_ext
         $ npm install
         $ npm run build
 
-   the extension is generated in `dist` folder
+   the extension is generated in `dist` folder, send this folder to your colleagues.
 
-2. install
+2. Install
 
-   open `chrome://extensions` page, turn on "Developer mode", click "Load unpacked" button, choose the `chrome_ext/dist` folder.
+   open `chrome://extensions` page, turn on "Developer mode", click "Load unpacked" button, choose the `dist` folder just generated.
 
    ![](./art/extension-1.png)
 
-3. register and login following the instruction
+### Use extension
+
+1. Register and login following the instruction after clicking the extension icon
 
    ![](./art/extension-2.png)
 
@@ -131,7 +141,7 @@ Because of the data privacy, I think you maybe don't want to store the data to o
 
    ![](./art/extension-3.png)
 
-4. it will automatically work in the issue or merge request page
+2. It will automatically work in the issue or merge request page
 
    ![](./art/issue-report.gif)
 
@@ -141,12 +151,18 @@ Because of the data privacy, I think you maybe don't want to store the data to o
 
 ## Notes
 
-TODO:
+- [GitLab Time Report Chrome Extension Note](./notes/chrome-extension-react.md)
+  - Config multiple js entries by Webpack
+  - Use TypeScript
+  - Make it as a chrome extension
+  - Login/Signup with Firebase Auth
+  - Store/Access data in Firebase Firestore
 
-How to implement this extension step by step, includes:
+## Related projects
 
-- Config multiple js entries by Webpack
-- Use TypeScript
-- Make it as a chrome extension
-- Login/Signup with Firebase Auth
-- Store data to Firebase Firestore
+- [cf-firebase-demo](https://github.com/baurine/cf-firebase-demo)
+- [Gitlab Issue Time Tracker Chrome Extension](https://github.com/baurine/gitlab-issue-time-tracker-ext)
+
+## Thanks
+
+Thanks to my colleague @joey who designed the icon for the project.
