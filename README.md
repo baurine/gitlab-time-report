@@ -99,20 +99,20 @@ Because of the data privacy, I think you maybe don't want to store the data to o
 
    We config the `settings` collection only can be read but can't be written, for other collections, they only can be read and written by users whose email matches your company's email format.
 
-1. Copy firebase configuration to `chrome_ext/src/js/firebase/firebase-config.json`
+1. Copy firebase configuration to `chrome_ext/src/js/firebase/firebase-config.ts`
 
    ![](./art/firebase-6-1.png)
 
    ![](./art/firebase-6-2.png)
 
-        // firebase-config.json
-        {
-          "apiKey": "***",
-          "authDomain": "***",
-          "databaseURL": "***",
-          "projectId": "***",
-          "storageBucket": "***",
-          "messagingSenderId": "***"
+        // firebase-config.ts
+        export default {
+          apiKey: "***",
+          authDomain: "***",
+          databaseURL: "***",
+          projectId: "***",
+          storageBucket: "***",
+          messagingSenderId: "***"
         }
 
 ### Build and install extension

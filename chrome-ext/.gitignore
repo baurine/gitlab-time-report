@@ -1,6 +1,6 @@
 dist
 node_modules
-firebase-config.json
+firebase-config.ts
 auth-info.json
 ./src/**/*.js
 *.zip

@@ -226,11 +226,7 @@ export default class TotalReport extends React.Component<Props, State> {
     } else {
       query = query.limit(1000)
     }
-    if (dateTo !== '') {
-      query = query.where('latest_spent_date', '<=', dateTo)
-    } else {
-      query = query.where('latest_spent_date', '<=', DateUtil.getDateFormat(new Date()))
-    }
+    query = query.where('latest_spent_date', '<=', DateUtil.getDateFormat(new Date()))
     if (selectedProjectId !== 0) {
       query = query.where('project_id', '==', selectedProjectId)
     }

@@ -2,16 +2,16 @@ const firebase = require('firebase/app')
 require('firebase/auth')
 require('firebase/firestore')
 
-const firebaseConfig = require('./firebase-config')
+import firebaseConfig from './firebase-config'
 // console.log('firebaseConfig:', firebaseConfig)
-// firebase-config.json
-// {
-//   "apiKey": "***",
-//   "authDomain": "***",
-//   "databaseURL": "***",
-//   "projectId": "***",
-//   "storageBucket": "***",
-//   "messagingSenderId": "***"
+// firebase-config.ts
+// export default {
+//   apiKey: "***",
+//   authDomain: "***",
+//   databaseURL: "***m",
+//   projectId: "***",
+//   storageBucket: "***",
+//   messagingSenderId: "***"
 // }
 
 firebase.initializeApp(firebaseConfig)
