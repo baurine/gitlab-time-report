@@ -15,6 +15,8 @@ function main() {
 
   const issuePageChecker = new IssuePageChecker()
   if (issuePageChecker.checkAvailabeIssuePage()) {
+    renderTodaySpendTimeButton()
+
     const containerNode = createContainerNode()
     let curPageInfo: IIssuePageInfo
     renderMessage('loading...', containerNode)
@@ -22,7 +24,6 @@ function main() {
     issuePageChecker.parse()
       .then((pageInfo: IIssuePageInfo) => {
         curPageInfo = pageInfo
-        renderTodaySpendTimeButton()
       })
       .then(checkVersion)
       .then(() => renderIssuePage(curPageInfo, containerNode))
