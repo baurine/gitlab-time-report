@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 require('../../css/IssueReport.scss')
-import { firebaseDb, dbCollections } from '../firebase'
+import { firebaseDb, dbCollections } from '../firebase/config'
 import { IIssue,
          IParsedTimeNote,
          ITimeNote,

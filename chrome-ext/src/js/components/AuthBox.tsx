@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { firebaseAuth } from '../firebase'
+import { firebaseAuth } from '../firebase/config'
 
 require('../../css/AuthBox.scss')
 const logo = require('../../images/logo-64x64.png')

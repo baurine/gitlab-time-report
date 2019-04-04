@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom'
 
 import { CommonUtil, DateUtil } from './utils'
 import IssuePageChecker from './utils/issue-page-checker'
-import VersionChecker from './utils/version-checker'
+import SettingChecker from './firebase/setting-checker'
 import IssuePage from './pages/IssuePage'
 import MessagePage from './pages/MessagePage'
 
@@ -32,7 +32,7 @@ function main() {
 }
 
 function checkVersion() {
-  return new VersionChecker().checkVersion()
+  return SettingChecker.checkVersion()
 }
 
 function createContainerNode() {

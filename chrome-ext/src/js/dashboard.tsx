@@ -2,14 +2,14 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
 import { CommonUtil } from './utils'
-import VersionChecker from './utils/version-checker'
+import SettingChecker from './firebase/setting-checker'
 import DashboardPage from './pages/DashboardPage'
 import MessagePage from './pages/MessagePage'
 
 function main() {
   renderMessagePage('loading...')
 
-  new VersionChecker().checkVersion()
+  SettingChecker.checkVersion()
     .then(renderDashboardPage)
     .catch((err: Error) => renderMessagePage(CommonUtil.formatFirebaseError(err)))
 }
