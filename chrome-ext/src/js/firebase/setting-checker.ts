@@ -22,11 +22,10 @@ export default class SettingChecker {
       })
   }
 
-  static checkDomainEnabled = () => {
+  static checkDomainEnabled = (host: string) => {
     // host and hostname
     // host includes port number while hostname doesn't if the location has port number
     // https://stackoverflow.com/a/11379802/2998877
-    const host = document.location.host
     return firebaseDb.collection(dbCollections.SETTINGS)
       .doc('allowed_domains')
       .get()

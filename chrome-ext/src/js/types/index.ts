@@ -82,3 +82,7 @@ export interface IReportMeta {
   name: string,
   link: string,
 }
+
+///////////////////
+
+export const CHECK_DOMAIN_ACTION = 'check_domain'
