@@ -1,5 +1,6 @@
-import { IIssueRes, IIssue, IProject, IProfile, IIssuePageInfo, CHECK_DOMAIN_ACTION } from '../types'
+import { IIssueRes, IIssue, IProject, IProfile, IIssuePageInfo } from '../types'
 import { ApiUtil } from '../utils'
+import { checkDomain } from '../background-tasks/bg-tasks'
 
 export default class IssuePageChecker {
   private projectPath: string = ''
@@ -38,31 +39,19 @@ export default class IssuePageChecker {
   }
 
   parse = () => {
-    return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage({
-        action: CHECK_DOMAIN_ACTION,
-        payload: { host: document.location.host }
-      }, (res) => {
-        console.log(res)
-        if (res.err) {
-          reject(res.err)
-        } else {
-          resolve(res.body!)
+    return checkDomain()
+      .then((domainId) => this.curDomainDocId = domainId as string)
+      .then(() => Promise.all([this.fetchIssueDetail(), this.fetchProfile()]))
+      .then(() => {
+        const pageInfo: IIssuePageInfo = {
+          curDomainDocId: this.curDomainDocId,
+          curIssue: this.curIssue!,
+          curProject: this.curProject!,
+          curUser: this.curUser!
         }
+        console.log(pageInfo)
+        return pageInfo
       })
-    })
-    .then((domainId) => this.curDomainDocId = domainId as string)
-    .then(() => Promise.all([this.fetchIssueDetail(), this.fetchProfile()]))
-    .then(() => {
-      const pageInfo: IIssuePageInfo = {
-        curDomainDocId: this.curDomainDocId,
-        curIssue: this.curIssue!,
-        curProject: this.curProject!,
-        curUser: this.curUser!
-      }
-      console.log(pageInfo)
-      return pageInfo
-    })
   }
 
   fetchIssueDetail = () => {

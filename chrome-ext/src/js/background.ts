@@ -1,5 +1,5 @@
 import SettingChecker from "./firebase/setting-checker"
-import { CHECK_DOMAIN_ACTION } from "./types"
+import { CHECK_DOMAIN_ACTION, CHECK_VERSION_ACTION } from "./types"
 
 ///////////////
 // ref: https://adamfeuer.com/notes/2013/01/26/chrome-extension-making-browser-action-icon-open-options-page/
@@ -33,6 +33,13 @@ chrome.runtime.onMessage.addListener(
     if (request.action === CHECK_DOMAIN_ACTION) {
       SettingChecker.checkDomainEnabled(request.payload!.host)
         .then((domainId: string) => sendResponse({ body: domainId }))
+        .catch((err: Error) => sendResponse({ err: err.message }))
+      return true
+    }
+
+    if (request.action === CHECK_VERSION_ACTION) {
+      SettingChecker.checkVersion()
+        .then(() => sendResponse({ body: 'ok' }))
         .catch((err: Error) => sendResponse({ err: err.message }))
       return true
     }

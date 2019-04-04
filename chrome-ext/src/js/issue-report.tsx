@@ -3,12 +3,12 @@ import * as ReactDOM from 'react-dom'
 
 import { CommonUtil, DateUtil } from './utils'
 import IssuePageChecker from './utils/issue-page-checker'
-import SettingChecker from './firebase/setting-checker'
 import IssuePage from './pages/IssuePage'
 import MessagePage from './pages/MessagePage'
 
 import { IssuePageContext } from './contexts'
 import { IIssuePageInfo } from './types'
+import { checkVersion } from './background-tasks/bg-tasks'
 
 function main() {
   CommonUtil.log('load')
@@ -29,10 +29,6 @@ function main() {
       .then(() => renderIssuePage(curPageInfo, containerNode))
       .catch((err: Error) => renderMessage(CommonUtil.formatFirebaseError(err), containerNode))
   }
-}
-
-function checkVersion() {
-  return SettingChecker.checkVersion()
 }
 
 function createContainerNode() {
