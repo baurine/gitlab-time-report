@@ -27,5 +27,24 @@ declare namespace chrome {
       type Listener = (request: Request, sender: any, sendResponse: (res: Response) => void) => void
       function addListener(listener: Listener): void
     }
+
+    ////////
+
+    function connect(port: { name: string }): Port
+    namespace onConnect {
+      function addListener(listener: (port: Port) => void): void
+    }
+  }
+}
+
+interface Message {
+  action: string
+  payload?: any
+}
+interface Port {
+  name: string
+  postMessage: (msg: Message) => void
+  onMessage: {
+    addListener: (listener: (msg: Message) => void) => void
   }
 }

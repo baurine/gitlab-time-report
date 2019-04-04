@@ -1,5 +1,6 @@
 import SettingChecker from "./firebase/setting-checker"
-import { CHECK_DOMAIN_ACTION, CHECK_VERSION_ACTION } from "./types"
+import { CHECK_DOMAIN_ACTION, CHECK_VERSION_ACTION, OPEN_DASHBOARD_PAGE_ACTION } from "./types"
+import { firebaseAuth } from "./firebase/config"
 
 ///////////////
 // ref: https://adamfeuer.com/notes/2013/01/26/chrome-extension-making-browser-action-icon-open-options-page/
@@ -28,7 +29,7 @@ chrome.browserAction.onClicked.addListener(openOrFocusOptionsPage)
 // https://www.chromium.org/Home/chromium-security/extension-content-script-fetches
 
 chrome.runtime.onMessage.addListener(
-  function (request, sender, sendResponse) {
+  function (request, _sender, sendResponse) {
     console.log(request.action)
     if (request.action === CHECK_DOMAIN_ACTION) {
       SettingChecker.checkDomainEnabled(request.payload!.host)
@@ -45,3 +46,20 @@ chrome.runtime.onMessage.addListener(
     }
   }
 )
+
+///////////////
+
+chrome.runtime.onConnect.addListener(function (port) {
+  console.assert(port.name === "auth_state")
+
+  firebaseAuth.onAuthStateChanged((user: any) => {
+    port.postMessage({ action: '', payload: JSON.stringify(user) })
+  })
+
+  port.onMessage.addListener((msg) => {
+    console.log(msg)
+    if (msg.action === OPEN_DASHBOARD_PAGE_ACTION) {
+      openOrFocusOptionsPage()
+    }
+  })
+})

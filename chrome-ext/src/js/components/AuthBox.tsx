@@ -7,6 +7,11 @@ const logo = require('../../images/logo-64x64.png')
 import { CommonUtil } from '../utils'
 import FlashMessage from './FlashMessage'
 import TotalReport from './TotalReport'
+import { OPEN_DASHBOARD_PAGE_ACTION } from '../types'
+
+type Props = {
+  curPage: 'issue' | 'dashboard'
+}
 
 type State = {
   user: any,
@@ -24,16 +29,21 @@ const initialState: State = {
   message: 'logging in...'
 }
 
-export default class AuthBox extends React.Component<{}, State> {
+export default class AuthBox extends React.Component<Props, State> {
   readonly state = initialState
+  private port: null | Port = null
 
   componentDidMount() {
     this.loadAuthState()
   }
 
   loadAuthState() {
-    firebaseAuth.onAuthStateChanged((user: any) => {
-      this.setState({user, loading: false, message: ''})
+    this.port = chrome.runtime.connect({ name: 'auth_state' })
+    this.port.postMessage({ action: 'init' })
+    this.port.onMessage.addListener((msg: Message) => {
+      const user = JSON.parse(msg.payload)
+      console.log('user: ', user)
+      this.setState({ user, loading: false, message: '' })
     })
   }
 
@@ -53,6 +63,10 @@ export default class AuthBox extends React.Component<{}, State> {
     this.setState({loading: true, message: 'logging in...'})
     firebaseAuth.signInWithEmailAndPassword(email, password)
       .catch((err: Error) => this.setState({loading: false, message: CommonUtil.formatFirebaseError(err)}))
+  }
+
+  openDashboardPage = () => {
+    this.port!.postMessage({ action: OPEN_DASHBOARD_PAGE_ACTION })
   }
 
   register = () => {
@@ -120,6 +134,7 @@ export default class AuthBox extends React.Component<{}, State> {
   }
 
   renderHeader() {
+    const { curPage } = this.props
     const { user } = this.state
 
     return (
@@ -130,11 +145,15 @@ export default class AuthBox extends React.Component<{}, State> {
         </div>
         <div className='auth-header-right'>
           {
-            user &&
+            user && curPage === 'dashboard' &&
             <React.Fragment>
               <span className='login-status'>{user.email}</span>
               <button className='btn btn-default' onClick={this.signOut}>Sign Out</button>
             </React.Fragment>
+          }
+          {
+            !user && curPage === 'issue' &&
+            <button className='btn btn-default' onClick={this.openDashboardPage}>Log In</button>
           }
           <a href="https://github.com/baurine/gitlab-time-report" className="github-link" target="_blank">
             { this.renderGithubLogo() }
@@ -193,11 +212,15 @@ export default class AuthBox extends React.Component<{}, State> {
   }
 
   renderAuthInputs() {
+    const { curPage } = this.props
     const { loading, user } = this.state
     if (loading) {
       return null
     }
     if (!user) {
+      if (curPage === 'issue') {
+        return null
+      }
       return this.renderSignedOutStatus()
     }
     if (!user.emailVerified) {

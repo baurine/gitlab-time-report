@@ -6,7 +6,7 @@ import TotalReport from '../components/TotalReport'
 
 const DashboardPage = () =>
   <div className='dashboard-page gtr-container'>
-    <AuthBox>
+    <AuthBox curPage='dashboard'>
       <TotalReport curUserEmail=''/>
     </AuthBox>
   </div>

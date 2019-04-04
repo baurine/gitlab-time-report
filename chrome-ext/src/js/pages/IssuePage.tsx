@@ -6,7 +6,7 @@ import IssueReport from '../components/IssueReport'
 
 const IssuePage = () =>
   <div className='issue-page gtr-container'>
-    <AuthBox>
+    <AuthBox curPage='issue'>
       <IssueReport/>
     </AuthBox>
   </div>
