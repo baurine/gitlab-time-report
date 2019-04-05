@@ -6,7 +6,9 @@ import {
   CHECK_VERSION_ACTION,
   QUERY_ISSUE_ACTION,
   SYNC_TIME_NOTES_ACTION,
-  UPDATE_ISSUE_ACTION
+  UPDATE_ISSUE_ACTION,
+  CREATE_OR_UPDATE_PROJECT_ACTION,
+  CREATE_OR_UPDATE_USER_ACTION
 } from "./types"
 
 function sendMessagePromise(msg: Message) {
@@ -62,5 +64,19 @@ export function syncTimeNotesMsg(curDomainId: string,
       toDeleteNoteIds,
       toAddNotes
     }
+  })
+}
+
+export function createOrUpdateProjectMsg(issuePageInfo: IIssuePageInfo) {
+  return sendMessagePromise({
+    action: CREATE_OR_UPDATE_PROJECT_ACTION,
+    payload: issuePageInfo
+  })
+}
+
+export function createOrUpdateUserMsg(issuePageInfo: IIssuePageInfo) {
+  return sendMessagePromise({
+    action: CREATE_OR_UPDATE_USER_ACTION,
+    payload: issuePageInfo
   })
 }

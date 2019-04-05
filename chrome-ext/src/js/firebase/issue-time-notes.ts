@@ -67,4 +67,58 @@ export default class IssueTimeNote {
         .catch((err: any) => console.log(err))
     })
   }
+
+  static createOrUpdateProject = (issuePageInfo: IIssuePageInfo) => {
+    const { curDomainDocId, curProject } = issuePageInfo
+    const domainDocRef = firebaseDb
+      .collection(dbCollections.DOMAINS)
+      .doc(curDomainDocId)
+    const projectDocRef = domainDocRef
+      .collection(dbCollections.PROJECTS)
+      .doc(curProject.id.toString())
+    projectDocRef
+      .get()
+      .then((snapshot: any) => {
+        if (snapshot.exists) {
+          console.log('projet existed')
+          if (snapshot.data().name !== curProject.name) {
+            return projectDocRef
+              .update(curProject)
+              .then(() => console.log('project updated'))
+          }
+        } else {
+          return projectDocRef
+            .set(curProject)
+            .then(() => console.log('project added'))
+        }
+      })
+      .catch((err: any) => console.log(err))
+  }
+
+  static createOrUpdateUser = (issuePageInfo: IIssuePageInfo) => {
+    const { curDomainDocId, curUser } = issuePageInfo
+    const domainDocRef = firebaseDb
+      .collection(dbCollections.DOMAINS)
+      .doc(curDomainDocId)
+    const userDocRef = domainDocRef
+      .collection(dbCollections.USERS)
+      .doc(curUser.id.toString())
+    userDocRef
+      .get()
+      .then((snapshot: any) => {
+        if (snapshot.exists) {
+          console.log('user existed')
+          if (snapshot.data().name !== curUser.name) {
+            return userDocRef
+              .update(curUser)
+              .then(() => console.log('user updated'))
+          }
+        } else {
+          return userDocRef
+            .set(curUser)
+            .then(() => console.log('user added'))
+        }
+      })
+      .catch((err: any) => console.log(err))
+  }
 }

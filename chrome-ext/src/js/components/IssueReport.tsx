@@ -1,12 +1,19 @@
 import * as React from 'react'
 
 require('../../css/IssueReport.scss')
-import { firebaseDb, dbCollections } from '../firebase/config'
-import { queryIssueMsg, syncTimeNotesMsg, updateIssueMsg } from '../bg-messages'
-import { IIssuePageInfo,
-         IIssue,
-         IParsedTimeNote,
-         IAggreReport } from '../types'
+import {
+  queryIssueMsg,
+  syncTimeNotesMsg,
+  updateIssueMsg,
+  createOrUpdateProjectMsg,
+  createOrUpdateUserMsg
+} from '../bg-messages'
+import {
+  IIssuePageInfo,
+  IIssue,
+  IParsedTimeNote,
+  IAggreReport
+} from '../types'
 import { DateUtil } from '../utils'
 import ReportTable from './ReportTable'
 
@@ -33,10 +40,6 @@ class IssueReport extends React.Component<Props, State> {
   private curIssue: IIssue
   private issueDoc: IIssue | null = null
 
-  private issueDocRef: any
-  private projectDocRef: any
-  private userDocRef: any
-
   private mutationObserver: MutationObserver | null = null
   private parsedTimeNotes: IParsedTimeNote[] = []
   private removedTimeNoteId: number = 0
@@ -50,21 +53,8 @@ class IssueReport extends React.Component<Props, State> {
     }
 
     // the variables has no business with UI should store in component directly
-    const { curDomainDocId, curIssue, curProject, curUser } = props.issuePageInfo
+    const { curIssue } = props.issuePageInfo
     this.curIssue = Object.assign({}, curIssue)
-
-    const domainDocRef =
-      firebaseDb.collection(dbCollections.DOMAINS)
-                .doc(curDomainDocId)
-    this.issueDocRef = domainDocRef
-                .collection(dbCollections.ISSUES)
-                .doc(curIssue.doc_id)
-    this.projectDocRef = domainDocRef
-                .collection(dbCollections.PROJECTS)
-                .doc(curProject.id.toString())
-    this.userDocRef = domainDocRef
-                .collection(dbCollections.USERS)
-                .doc(curUser.id.toString())
   }
 
   componentDidMount() {
@@ -110,45 +100,11 @@ class IssueReport extends React.Component<Props, State> {
   }
 
   createOrUpdateProject = () => {
-    const { curProject } = this.props.issuePageInfo
-    this.projectDocRef
-      .get()
-      .then((snapshot: any) => {
-        if (snapshot.exists) {
-          console.log('projet existed')
-          if (snapshot.data().name !== curProject.name) {
-            return this.projectDocRef
-              .update(curProject)
-              .then(() => console.log('project updated'))
-          }
-        } else {
-          return this.projectDocRef
-            .set(curProject)
-            .then(() => console.log('project added'))
-        }
-      })
-      .catch((err: any) => console.log(err))
+    createOrUpdateProjectMsg(this.props.issuePageInfo)
   }
 
   createOrUpdateUser = () => {
-    const { curUser } = this.props.issuePageInfo
-    this.userDocRef
-      .get()
-      .then((snapshot: any) => {
-        if (snapshot.exists) {
-          console.log('user existed')
-          if (snapshot.data().name !== curUser.name) {
-            return this.userDocRef
-              .update(curUser)
-              .then(() => console.log('user updated'))
-          }
-        } else {
-          return this.userDocRef
-            .set(curUser)
-            .then(() => console.log('user added'))
-        }
-      })
-      .catch((err: any) => console.log(err))
+    createOrUpdateUserMsg(this.props.issuePageInfo)
   }
 
   parseNotesNode = () => {

@@ -7,7 +7,9 @@ import {
   OPEN_DASHBOARD_PAGE_ACTION,
   QUERY_ISSUE_ACTION, IIssue,
   SYNC_TIME_NOTES_ACTION,
-  UPDATE_ISSUE_ACTION
+  UPDATE_ISSUE_ACTION,
+  CREATE_OR_UPDATE_PROJECT_ACTION,
+  CREATE_OR_UPDATE_USER_ACTION
 } from "./types"
 
 ///////////////
@@ -67,6 +69,16 @@ chrome.runtime.onMessage.addListener(
       const { curDomainId, toDeleteNoteIds, toAddNotes } = request.payload
       IssueTimeNote.syncTimeNotes(curDomainId, toDeleteNoteIds, toAddNotes)
       sendResponse({ body: 'sync time notes ok' })
+    }
+
+    if (request.action === CREATE_OR_UPDATE_PROJECT_ACTION) {
+      IssueTimeNote.createOrUpdateProject(request.payload)
+      sendResponse({ body: 'create or update project ok' })
+    }
+
+    if (request.action === CREATE_OR_UPDATE_USER_ACTION) {
+      IssueTimeNote.createOrUpdateUser(request.payload)
+      sendResponse({ body: 'create or update user ok' })
     }
     return true
   }
