@@ -1,7 +1,11 @@
-import { CHECK_DOMAIN_ACTION,
-         CHECK_VERSION_ACTION,
-         QUERY_ISSUE_ACTION,
-         IIssuePageInfo } from "./types"
+import {
+  CHECK_DOMAIN_ACTION,
+  CHECK_VERSION_ACTION,
+  QUERY_ISSUE_ACTION,
+  IIssuePageInfo,
+  ITimeNote,
+  SYNC_TIME_NOTES_ACTION
+} from "./types"
 
 function sendMessagePromise(msg: Message) {
   return new Promise((resolve, reject) => {
@@ -33,5 +37,18 @@ export function queryIssueMsg(issuePageInfo: IIssuePageInfo) {
   return sendMessagePromise({
     action: QUERY_ISSUE_ACTION,
     payload: issuePageInfo
+  })
+}
+
+export function syncTimeNotesMsg(curDomainId: string,
+                                 toDeleteNoteIds: number[],
+                                 toAddNotes: ITimeNote[]) {
+  return sendMessagePromise({
+    action: SYNC_TIME_NOTES_ACTION,
+    payload: {
+      curDomainId,
+      toDeleteNoteIds,
+      toAddNotes
+    }
   })
 }

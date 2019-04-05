@@ -1,10 +1,13 @@
 import { firebaseAuth } from "./firebase/config"
 import SettingChecker from "./firebase/setting-checker"
 import IssueTimeNote from "./firebase/issue-time-notes"
-import { CHECK_DOMAIN_ACTION,
-         CHECK_VERSION_ACTION,
-         OPEN_DASHBOARD_PAGE_ACTION,
-         QUERY_ISSUE_ACTION, IIssue } from "./types"
+import {
+  CHECK_DOMAIN_ACTION,
+  CHECK_VERSION_ACTION,
+  OPEN_DASHBOARD_PAGE_ACTION,
+  QUERY_ISSUE_ACTION, IIssue,
+  SYNC_TIME_NOTES_ACTION
+} from "./types"
 
 ///////////////
 // ref: https://adamfeuer.com/notes/2013/01/26/chrome-extension-making-browser-action-icon-open-options-page/
@@ -51,6 +54,12 @@ chrome.runtime.onMessage.addListener(
       IssueTimeNote.findIssue(request.payload)
         .then((issue: IIssue) => sendResponse({ body: issue }))
         .catch((err: Error) => sendResponse({ err }))
+    }
+
+    if (request.action === SYNC_TIME_NOTES_ACTION) {
+      const { curDomainId, toDeleteNoteIds, toAddNotes } = request.payload
+      IssueTimeNote.syncTimeNotes(curDomainId, toDeleteNoteIds, toAddNotes)
+      sendResponse({ body: 'ok' })
     }
     return true
   }

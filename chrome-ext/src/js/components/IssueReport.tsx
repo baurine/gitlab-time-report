@@ -2,7 +2,7 @@ import * as React from 'react'
 
 require('../../css/IssueReport.scss')
 import { firebaseDb, dbCollections } from '../firebase/config'
-import { queryIssueMsg } from '../bg-messages'
+import { queryIssueMsg, syncTimeNotesMsg } from '../bg-messages'
 import { IIssuePageInfo,
          IIssue,
          IParsedTimeNote,
@@ -269,38 +269,30 @@ class IssueReport extends React.Component<Props, State> {
   }
 
   syncTimeNotes = () => {
-    // 2 steps
+    // steps
     // 1. delete old time logs before the first time note id
+    let toDeleteNoteIds: number[] = []
     if (this.curIssue.last_note_id < this.removedTimeNoteId) {
-      const toDeleteNoteIds = this.parsedTimeNotes
-        .filter(note => note.id < this.removedTimeNoteId)
-        .map(note => note.id)
-      toDeleteNoteIds.forEach(id => {
-        this.timeNotesCollectionRef.doc(id.toString())
-          .delete()
-          .then(() => console.log('time note deleted'))
-          .catch((err: any) => console.log(err))
-      })
+      toDeleteNoteIds = this.parsedTimeNotes
+                            .filter(note => note.id < this.removedTimeNoteId)
+                            .map(note => note.id)
       this.curIssue.last_note_id = this.removedTimeNoteId
     }
-
     // 2. add new time logs after the last note id
-    const toAddNotes = this.parsedTimeNotes.filter(note => note.id > this.curIssue.last_note_id)
+    const toAddNotes = this.parsedTimeNotes
+                           .filter(note => note.id > this.curIssue.last_note_id)
+                           .map(note => ({
+                             ...note,
+                             issue_doc_id: this.curIssue.doc_id,
+                             project_id: this.curIssue.project_id
+                           }))
     if (toAddNotes.length > 0) {
-      toAddNotes.forEach(note => {
-        const timeLog: ITimeNote = {
-          ...note,
-          issue_doc_id: this.curIssue.doc_id,
-          project_id: this.curIssue.project_id
-        }
-        this.timeNotesCollectionRef
-          .doc(note.id.toString())
-          .set(timeLog)
-          .then(() => console.log('new time note added'))
-          .catch((err: any) => console.log(err))
-        this.curIssue.last_note_id = note.id
-      })
+      this.curIssue.last_note_id = toAddNotes[toAddNotes.length - 1].id
     }
+
+    syncTimeNotesMsg(this.props.issuePageInfo.curDomainDocId,
+                     toDeleteNoteIds,
+                     toAddNotes)
   }
 
   observeNotesMutation = () => {
