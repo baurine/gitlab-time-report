@@ -94,7 +94,6 @@ chrome.runtime.onConnect.addListener(function (port) {
   })
 
   port.onMessage.addListener((msg) => {
-    console.log(msg)
     if (msg.action === OPEN_DASHBOARD_PAGE_ACTION) {
       openOrFocusOptionsPage()
     }

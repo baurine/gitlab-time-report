@@ -42,7 +42,6 @@ export default class AuthBox extends React.Component<Props, State> {
     this.port.postMessage({ action: 'init' })
     this.port.onMessage.addListener((msg: Message) => {
       const user = msg.payload
-      console.log('user: ', user)
       this.setState({ user, loading: false, message: '' })
     })
   }

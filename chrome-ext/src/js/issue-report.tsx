@@ -28,7 +28,6 @@ function main() {
       .then(checkVersionMsg)
       .then(() => renderIssuePage(curPageInfo, containerNode))
       .catch((err: Error) => {
-        console.log('=====', err)
         renderMessage(CommonUtil.formatFirebaseError(err), containerNode)
       })
   }
