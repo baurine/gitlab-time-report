@@ -88,3 +88,5 @@ export interface IReportMeta {
 export const CHECK_DOMAIN_ACTION = 'check_domain'
 export const CHECK_VERSION_ACTION = 'check_version'
 export const OPEN_DASHBOARD_PAGE_ACTION = 'open_dashboard_page'
+
+export const QUERY_ISSUE_ACTION = 'query_issue'

@@ -27,7 +27,10 @@ function main() {
       })
       .then(checkVersion)
       .then(() => renderIssuePage(curPageInfo, containerNode))
-      .catch((err: Error) => renderMessage(CommonUtil.formatFirebaseError(err), containerNode))
+      .catch((err: Error) => {
+        console.log('=====', err)
+        renderMessage(CommonUtil.formatFirebaseError(err), containerNode)
+      })
   }
 }
 

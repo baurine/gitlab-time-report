@@ -1,4 +1,7 @@
-import { CHECK_DOMAIN_ACTION, CHECK_VERSION_ACTION } from "../types"
+import { CHECK_DOMAIN_ACTION,
+         CHECK_VERSION_ACTION,
+         QUERY_ISSUE_ACTION,
+         IIssuePageInfo } from "../types"
 
 export function checkDomain() {
     return new Promise((resolve, reject) => {
@@ -8,7 +11,7 @@ export function checkDomain() {
       }, (res) => {
         console.log(res)
         if (res.err) {
-          reject(res.err)
+          reject(new Error(res.err))
         } else {
           resolve(res.body!)
         }
@@ -23,9 +26,27 @@ export function checkVersion() {
     }, (res) => {
       console.log(res)
       if (res.err) {
-        reject(res.err)
+        reject(new Error(res.err))
       } else {
         resolve()
+      }
+    })
+  })
+}
+
+////////////////////////////////
+
+export function queryIssue(issuePageInfo: IIssuePageInfo) {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({
+      action: QUERY_ISSUE_ACTION,
+      payload: issuePageInfo
+    }, (res) => {
+      console.log(res)
+      if (res.err) {
+        reject(new Error(res.err))
+      } else {
+        resolve(res.body!)
       }
     })
   })

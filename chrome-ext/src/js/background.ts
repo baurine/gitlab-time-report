@@ -1,6 +1,7 @@
 import SettingChecker from "./firebase/setting-checker"
-import { CHECK_DOMAIN_ACTION, CHECK_VERSION_ACTION, OPEN_DASHBOARD_PAGE_ACTION } from "./types"
+import { CHECK_DOMAIN_ACTION, CHECK_VERSION_ACTION, OPEN_DASHBOARD_PAGE_ACTION, QUERY_ISSUE_ACTION, IIssue } from "./types"
 import { firebaseAuth } from "./firebase/config"
+import IssueTimeNote from "./firebase/issue-time-notes"
 
 ///////////////
 // ref: https://adamfeuer.com/notes/2013/01/26/chrome-extension-making-browser-action-icon-open-options-page/
@@ -35,15 +36,20 @@ chrome.runtime.onMessage.addListener(
       SettingChecker.checkDomainEnabled(request.payload!.host)
         .then((domainId: string) => sendResponse({ body: domainId }))
         .catch((err: Error) => sendResponse({ err: err.message }))
-      return true
     }
 
     if (request.action === CHECK_VERSION_ACTION) {
       SettingChecker.checkVersion()
         .then(() => sendResponse({ body: 'ok' }))
         .catch((err: Error) => sendResponse({ err: err.message }))
-      return true
     }
+
+    if (request.action === QUERY_ISSUE_ACTION) {
+      IssueTimeNote.findIssue(request.payload)
+        .then((issue: IIssue) => sendResponse({ body: issue }))
+        .catch((err: Error) => sendResponse({ err: err.message }))
+    }
+    return true
   }
 )
 

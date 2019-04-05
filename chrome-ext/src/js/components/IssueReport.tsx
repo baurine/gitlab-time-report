@@ -78,10 +78,10 @@ class IssueReport extends React.Component<Props, State> {
   }
 
   initData = () => {
-    this.findIssue()
-      .then((issueDoc: IIssue) => {
-        this.issueDoc = Object.assign({}, issueDoc)
-        this.curIssue.last_note_id = this.issueDoc.last_note_id
+    queryIssue(this.props.issuePageInfo)
+      .then((issue: any) => {
+        this.issueDoc = Object.assign({}, issue)
+        this.curIssue.last_note_id = this.issueDoc!.last_note_id
         this.parseNotesNode()
         this.observeNotesMutation()
 
@@ -89,26 +89,6 @@ class IssueReport extends React.Component<Props, State> {
         this.createOrUpdateUser()
       })
       .catch((err: any) => console.log(err))
-  }
-
-  findIssue = () => {
-    return this.issueDocRef.get()
-      .then((snapshot: any) => {
-        if (snapshot.exists) {
-          console.log('issue existed')
-          return snapshot.data()
-        } else {
-          return this.createIssue()
-        }
-      })
-  }
-
-  createIssue = () => {
-    return this.issueDocRef.set(this.curIssue)
-      .then(() => {
-        console.log('issue added')
-        return this.curIssue
-      })
   }
 
   updateIssue = () => {
@@ -356,6 +336,7 @@ class IssueReport extends React.Component<Props, State> {
 
 import { IssuePageContext } from '../contexts'
 import { IIssuePageInfo } from '../types'
+import { queryIssue } from '../background-tasks/bg-tasks';
 
 const IssueReportWrapper = (props: {}) =>
   <IssuePageContext.Consumer>
