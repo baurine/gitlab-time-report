@@ -1,10 +1,12 @@
 import {
+  IIssuePageInfo,
+  ITimeNote,
+  IIssue,
   CHECK_DOMAIN_ACTION,
   CHECK_VERSION_ACTION,
   QUERY_ISSUE_ACTION,
-  IIssuePageInfo,
-  ITimeNote,
-  SYNC_TIME_NOTES_ACTION
+  SYNC_TIME_NOTES_ACTION,
+  UPDATE_ISSUE_ACTION
 } from "./types"
 
 function sendMessagePromise(msg: Message) {
@@ -37,6 +39,16 @@ export function queryIssueMsg(issuePageInfo: IIssuePageInfo) {
   return sendMessagePromise({
     action: QUERY_ISSUE_ACTION,
     payload: issuePageInfo
+  })
+}
+
+export function updateIssueMsg(issuePageInfo: IIssuePageInfo, issueDoc: IIssue) {
+  return sendMessagePromise({
+    action: UPDATE_ISSUE_ACTION,
+    payload: {
+      issuePageInfo,
+      issueDoc
+    }
   })
 }
 

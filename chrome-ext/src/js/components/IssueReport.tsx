@@ -2,11 +2,10 @@ import * as React from 'react'
 
 require('../../css/IssueReport.scss')
 import { firebaseDb, dbCollections } from '../firebase/config'
-import { queryIssueMsg, syncTimeNotesMsg } from '../bg-messages'
+import { queryIssueMsg, syncTimeNotesMsg, updateIssueMsg } from '../bg-messages'
 import { IIssuePageInfo,
          IIssue,
          IParsedTimeNote,
-         ITimeNote,
          IAggreReport } from '../types'
 import { DateUtil } from '../utils'
 import ReportTable from './ReportTable'
@@ -35,7 +34,6 @@ class IssueReport extends React.Component<Props, State> {
   private issueDoc: IIssue | null = null
 
   private issueDocRef: any
-  private timeNotesCollectionRef: any
   private projectDocRef: any
   private userDocRef: any
 
@@ -61,8 +59,6 @@ class IssueReport extends React.Component<Props, State> {
     this.issueDocRef = domainDocRef
                 .collection(dbCollections.ISSUES)
                 .doc(curIssue.doc_id)
-    this.timeNotesCollectionRef = domainDocRef
-                .collection(dbCollections.TIME_LOGS)
     this.projectDocRef = domainDocRef
                 .collection(dbCollections.PROJECTS)
                 .doc(curProject.id.toString())
@@ -108,10 +104,8 @@ class IssueReport extends React.Component<Props, State> {
       issueDoc.total_time_spent = curIssue.total_time_spent
       issueDoc.last_note_id = curIssue.last_note_id
       issueDoc.latest_spent_date = curIssue.latest_spent_date
-      this.issueDocRef
-        .set(issueDoc)
-        .then(() => console.log('issue updated'))
-        .catch((err: any) => console.log(err))
+
+      updateIssueMsg(this.props.issuePageInfo, issueDoc)
     }
   }
 

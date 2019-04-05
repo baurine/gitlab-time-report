@@ -6,7 +6,8 @@ import {
   CHECK_VERSION_ACTION,
   OPEN_DASHBOARD_PAGE_ACTION,
   QUERY_ISSUE_ACTION, IIssue,
-  SYNC_TIME_NOTES_ACTION
+  SYNC_TIME_NOTES_ACTION,
+  UPDATE_ISSUE_ACTION
 } from "./types"
 
 ///////////////
@@ -46,7 +47,7 @@ chrome.runtime.onMessage.addListener(
 
     if (request.action === CHECK_VERSION_ACTION) {
       SettingChecker.checkVersion()
-        .then(() => sendResponse({ body: 'ok' }))
+        .then(() => sendResponse({ body: 'check version ok' }))
         .catch((err: Error) => sendResponse({ err }))
     }
 
@@ -56,10 +57,16 @@ chrome.runtime.onMessage.addListener(
         .catch((err: Error) => sendResponse({ err }))
     }
 
+    if (request.action === UPDATE_ISSUE_ACTION) {
+      const { issuePageInfo, issueDoc } = request.payload
+      IssueTimeNote.updateIssue(issuePageInfo, issueDoc)
+      sendResponse({ body: 'update issue ok' })
+    }
+
     if (request.action === SYNC_TIME_NOTES_ACTION) {
       const { curDomainId, toDeleteNoteIds, toAddNotes } = request.payload
       IssueTimeNote.syncTimeNotes(curDomainId, toDeleteNoteIds, toAddNotes)
-      sendResponse({ body: 'ok' })
+      sendResponse({ body: 'sync time notes ok' })
     }
     return true
   }

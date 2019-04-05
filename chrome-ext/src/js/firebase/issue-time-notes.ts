@@ -1,4 +1,4 @@
-import { IIssuePageInfo, IIssue, IParsedTimeNote, ITimeNote } from "../types"
+import { IIssuePageInfo, IIssue, ITimeNote } from "../types"
 import { firebaseDb, dbCollections } from "./config"
 
 export default class IssueTimeNote {
@@ -26,6 +26,22 @@ export default class IssueTimeNote {
       console.log("issue added")
       return curIssue
     })
+  }
+
+  static updateIssue = (issuePageInfo: IIssuePageInfo, issueDoc: IIssue) => {
+    const { curDomainDocId, curIssue } = issuePageInfo
+
+    const domainDocRef = firebaseDb
+      .collection(dbCollections.DOMAINS)
+      .doc(curDomainDocId)
+    const issueDocRef = domainDocRef
+      .collection(dbCollections.ISSUES)
+      .doc(curIssue.doc_id)
+
+    issueDocRef
+      .set(issueDoc)
+      .then(() => console.log('issue updated'))
+      .catch((err: any) => console.log(err))
   }
 
   static syncTimeNotes = (curDomainDocId: string,

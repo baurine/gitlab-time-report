@@ -90,4 +90,5 @@ export const CHECK_VERSION_ACTION = 'check_version'
 export const OPEN_DASHBOARD_PAGE_ACTION = 'open_dashboard_page'
 
 export const QUERY_ISSUE_ACTION = 'query_issue'
+export const UPDATE_ISSUE_ACTION = 'update_issue'
 export const SYNC_TIME_NOTES_ACTION = 'sync_time_notes'
