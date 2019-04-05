@@ -5,6 +5,7 @@ How to implement this not simple extension by React and TypeScript without creat
 - Config multiple js entries by Webpack
 - Use TypeScript
 - Make it as a chrome extension
+- Message Passing
 - Login/Signup with Firebase Auth
 - Store/Access data in Firebase Firestore
 
@@ -233,6 +234,26 @@ TypeScript 的配置文件：
         ])
       ...
     }
+
+## Message Passing
+
+Refs:
+
+- [Cross-Origin Read Blocking (CORB)](https://www.chromestatus.com/feature/5629709824032768)
+- [Changes to Cross-Origin Requests in Chrome Extension Content Scripts](https://www.chromium.org/Home/chromium-security/extension-content-script-fetches)
+- [Message Passing](https://developer.chrome.com/extensions/messaging)
+
+从 Chrome 73 开始，不允许在 content script 中访问垮域请求，只允许访问当前网页域名，主要是出于安全考虑，担心 content script 被安全漏洞利用入侵后泄漏敏感数据。
+
+之前这个插件是在 content script 中直接访问 firebase 的 API 的，firebase 的 API 属于垮域请求，在 Chrome 73 之后 content script 中的一切跨域请求都会失败。
+
+解决办法是把 content script 中的所有跨域请求挪到 background script 中，两者之间通过 sendMessage 进行通信。
+
+主要的变动体现在以下几个文件：
+
+- bg-messages.ts
+- background.ts
+- firebase/issue-time-notes.ts
 
 ## Login/Signup with Firebase Auth
 

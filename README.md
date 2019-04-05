@@ -163,6 +163,14 @@ Because of the data privacy, I think you maybe don't want to store the data to o
 - [cf-firebase-demo](https://github.com/baurine/cf-firebase-demo)
 - [Gitlab Issue Time Tracker Chrome Extension](https://github.com/baurine/gitlab-issue-time-tracker-ext)
 
+## Release Notes
+
+1. 0.2.0
+
+   - Because Chrome prevents CROS request in content script from Chrome 73, so we changed our code much, separated all CORS requests from the content script to background script.
+   - [Cross-Origin Read Blocking (CORB)](https://www.chromestatus.com/feature/5629709824032768)
+   - [Changes to Cross-Origin Requests in Chrome Extension Content Scripts](https://www.chromium.org/Home/chromium-security/extension-content-script-fetches)
+
 ## Thanks
 
 Thanks to my colleague @joey who designed the icon for the project.

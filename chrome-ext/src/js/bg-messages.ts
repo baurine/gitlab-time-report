@@ -11,6 +11,9 @@ import {
   CREATE_OR_UPDATE_USER_ACTION
 } from "./types"
 
+////////////////////////////////
+// ref: https://developer.chrome.com/extensions/messaging
+
 function sendMessagePromise(msg: Message) {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage(msg, (res) => {
