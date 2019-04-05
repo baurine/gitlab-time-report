@@ -2,7 +2,9 @@ import * as React from 'react'
 
 require('../../css/IssueReport.scss')
 import { firebaseDb, dbCollections } from '../firebase/config'
-import { IIssue,
+import { queryIssueMsg } from '../bg-messages'
+import { IIssuePageInfo,
+         IIssue,
          IParsedTimeNote,
          ITimeNote,
          IAggreReport } from '../types'
@@ -78,7 +80,7 @@ class IssueReport extends React.Component<Props, State> {
   }
 
   initData = () => {
-    queryIssue(this.props.issuePageInfo)
+    queryIssueMsg(this.props.issuePageInfo)
       .then((issue: any) => {
         this.issueDoc = Object.assign({}, issue)
         this.curIssue.last_note_id = this.issueDoc!.last_note_id
@@ -335,8 +337,6 @@ class IssueReport extends React.Component<Props, State> {
 ////////////////////////////////
 
 import { IssuePageContext } from '../contexts'
-import { IIssuePageInfo } from '../types'
-import { queryIssue } from '../background-tasks/bg-tasks';
 
 const IssueReportWrapper = (props: {}) =>
   <IssuePageContext.Consumer>

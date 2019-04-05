@@ -1,6 +1,6 @@
 import { IIssueRes, IIssue, IProject, IProfile, IIssuePageInfo } from '../types'
 import { ApiUtil } from '../utils'
-import { checkDomain } from '../background-tasks/bg-tasks'
+import { checkDomainMsg } from '../bg-messages'
 
 export default class IssuePageChecker {
   private projectPath: string = ''
@@ -39,7 +39,7 @@ export default class IssuePageChecker {
   }
 
   parse = () => {
-    return checkDomain()
+    return checkDomainMsg()
       .then((domainId) => this.curDomainDocId = domainId as string)
       .then(() => Promise.all([this.fetchIssueDetail(), this.fetchProfile()]))
       .then(() => {

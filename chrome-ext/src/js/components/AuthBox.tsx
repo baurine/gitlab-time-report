@@ -41,7 +41,7 @@ export default class AuthBox extends React.Component<Props, State> {
     this.port = chrome.runtime.connect({ name: 'auth_state' })
     this.port.postMessage({ action: 'init' })
     this.port.onMessage.addListener((msg: Message) => {
-      const user = JSON.parse(msg.payload)
+      const user = msg.payload
       console.log('user: ', user)
       this.setState({ user, loading: false, message: '' })
     })

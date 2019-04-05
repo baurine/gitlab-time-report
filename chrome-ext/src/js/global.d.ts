@@ -17,14 +17,11 @@ declare namespace chrome {
   }
 
   namespace runtime {
-    type Request = { action: string, payload?: any }
-    type Response = { err?: string, body?: any }
-    type Callback = (response: Response) => void
-
-    function sendMessage(request: Request, callback: Callback): void
+    type Response = { err?: Error, body?: any }
+    function sendMessage(message: Message, callback: (response: Response) => void): void
 
     namespace onMessage {
-      type Listener = (request: Request, sender: any, sendResponse: (res: Response) => void) => void
+      type Listener = (message: Message, sender: any, sendResponse: (res: Response) => void) => void
       function addListener(listener: Listener): void
     }
 

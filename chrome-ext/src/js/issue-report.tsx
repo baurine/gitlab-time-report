@@ -8,7 +8,7 @@ import MessagePage from './pages/MessagePage'
 
 import { IssuePageContext } from './contexts'
 import { IIssuePageInfo } from './types'
-import { checkVersion } from './background-tasks/bg-tasks'
+import { checkVersionMsg } from './bg-messages'
 
 function main() {
   CommonUtil.log('load')
@@ -25,7 +25,7 @@ function main() {
       .then((pageInfo: IIssuePageInfo) => {
         curPageInfo = pageInfo
       })
-      .then(checkVersion)
+      .then(checkVersionMsg)
       .then(() => renderIssuePage(curPageInfo, containerNode))
       .catch((err: Error) => {
         console.log('=====', err)
