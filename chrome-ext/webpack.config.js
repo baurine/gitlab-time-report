@@ -7,6 +7,7 @@ module.exports = {
   entry: {
     dashboard: './src/js/dashboard.tsx',
     'issue-report': './src/js/issue-report.tsx',
+    'background': './src/js/background.ts'
   },
   output: {},
   resolve: {

@@ -3,12 +3,12 @@ import * as ReactDOM from 'react-dom'
 
 import { CommonUtil, DateUtil } from './utils'
 import IssuePageChecker from './utils/issue-page-checker'
-import VersionChecker from './utils/version-checker'
 import IssuePage from './pages/IssuePage'
 import MessagePage from './pages/MessagePage'
 
 import { IssuePageContext } from './contexts'
 import { IIssuePageInfo } from './types'
+import { checkVersionMsg } from './bg-messages'
 
 function main() {
   CommonUtil.log('load')
@@ -25,14 +25,12 @@ function main() {
       .then((pageInfo: IIssuePageInfo) => {
         curPageInfo = pageInfo
       })
-      .then(checkVersion)
+      .then(checkVersionMsg)
       .then(() => renderIssuePage(curPageInfo, containerNode))
-      .catch((err: Error) => renderMessage(CommonUtil.formatFirebaseError(err), containerNode))
+      .catch((err: Error) => {
+        renderMessage(CommonUtil.formatFirebaseError(err), containerNode)
+      })
   }
-}
-
-function checkVersion() {
-  return new VersionChecker().checkVersion()
 }
 
 function createContainerNode() {

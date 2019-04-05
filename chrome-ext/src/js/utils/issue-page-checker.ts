@@ -1,6 +1,6 @@
-import { firebaseDb, dbCollections } from '../firebase'
-import { IIssueRes, IIssue, IProject, IProfile, IIssuePageInfo, IDomain } from '../types'
+import { IIssueRes, IIssue, IProject, IProfile, IIssuePageInfo } from '../types'
 import { ApiUtil } from '../utils'
+import { checkDomainMsg } from '../bg-messages'
 
 export default class IssuePageChecker {
   private projectPath: string = ''
@@ -39,7 +39,8 @@ export default class IssuePageChecker {
   }
 
   parse = () => {
-    return this.checkDomainEnabled()
+    return checkDomainMsg()
+      .then((domainId) => this.curDomainDocId = domainId as string)
       .then(() => Promise.all([this.fetchIssueDetail(), this.fetchProfile()]))
       .then(() => {
         const pageInfo: IIssuePageInfo = {
@@ -50,27 +51,6 @@ export default class IssuePageChecker {
         }
         console.log(pageInfo)
         return pageInfo
-      })
-  }
-
-  checkDomainEnabled = () => {
-    // host and hostname
-    // host includes port number while hostname doesn't if the location has port number
-    // https://stackoverflow.com/a/11379802/2998877
-    const host = document.location.host
-    return firebaseDb.collection(dbCollections.SETTINGS)
-      .doc('allowed_domains')
-      .get()
-      .then((snapshot: any) => {
-        if (snapshot.exists) {
-          const curDomainDoc: IDomain = snapshot.data()[host] as IDomain
-          if (!curDomainDoc || !curDomainDoc.enabled) {
-            throw new Error('this domain is not enabled')
-          }
-          this.curDomainDocId = curDomainDoc.doc_id
-        } else {
-          throw new Error('there is no settings/allowed_domains doc in your database')
-        }
       })
   }
 

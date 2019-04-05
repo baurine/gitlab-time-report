@@ -1,11 +1,19 @@
 import * as React from 'react'
 
 require('../../css/IssueReport.scss')
-import { firebaseDb, dbCollections } from '../firebase'
-import { IIssue,
-         IParsedTimeNote,
-         ITimeNote,
-         IAggreReport } from '../types'
+import {
+  queryIssueMsg,
+  syncTimeNotesMsg,
+  updateIssueMsg,
+  createOrUpdateProjectMsg,
+  createOrUpdateUserMsg
+} from '../bg-messages'
+import {
+  IIssuePageInfo,
+  IIssue,
+  IParsedTimeNote,
+  IAggreReport
+} from '../types'
 import { DateUtil } from '../utils'
 import ReportTable from './ReportTable'
 
@@ -32,11 +40,6 @@ class IssueReport extends React.Component<Props, State> {
   private curIssue: IIssue
   private issueDoc: IIssue | null = null
 
-  private issueDocRef: any
-  private timeNotesCollectionRef: any
-  private projectDocRef: any
-  private userDocRef: any
-
   private mutationObserver: MutationObserver | null = null
   private parsedTimeNotes: IParsedTimeNote[] = []
   private removedTimeNoteId: number = 0
@@ -50,23 +53,8 @@ class IssueReport extends React.Component<Props, State> {
     }
 
     // the variables has no business with UI should store in component directly
-    const { curDomainDocId, curIssue, curProject, curUser } = props.issuePageInfo
+    const { curIssue } = props.issuePageInfo
     this.curIssue = Object.assign({}, curIssue)
-
-    const domainDocRef =
-      firebaseDb.collection(dbCollections.DOMAINS)
-                .doc(curDomainDocId)
-    this.issueDocRef = domainDocRef
-                .collection(dbCollections.ISSUES)
-                .doc(curIssue.doc_id)
-    this.timeNotesCollectionRef = domainDocRef
-                .collection(dbCollections.TIME_LOGS)
-    this.projectDocRef = domainDocRef
-                .collection(dbCollections.PROJECTS)
-                .doc(curProject.id.toString())
-    this.userDocRef = domainDocRef
-                .collection(dbCollections.USERS)
-                .doc(curUser.id.toString())
   }
 
   componentDidMount() {
@@ -78,10 +66,10 @@ class IssueReport extends React.Component<Props, State> {
   }
 
   initData = () => {
-    this.findIssue()
-      .then((issueDoc: IIssue) => {
-        this.issueDoc = Object.assign({}, issueDoc)
-        this.curIssue.last_note_id = this.issueDoc.last_note_id
+    queryIssueMsg(this.props.issuePageInfo)
+      .then((issue: any) => {
+        this.issueDoc = Object.assign({}, issue)
+        this.curIssue.last_note_id = this.issueDoc!.last_note_id
         this.parseNotesNode()
         this.observeNotesMutation()
 
@@ -89,26 +77,6 @@ class IssueReport extends React.Component<Props, State> {
         this.createOrUpdateUser()
       })
       .catch((err: any) => console.log(err))
-  }
-
-  findIssue = () => {
-    return this.issueDocRef.get()
-      .then((snapshot: any) => {
-        if (snapshot.exists) {
-          console.log('issue existed')
-          return snapshot.data()
-        } else {
-          return this.createIssue()
-        }
-      })
-  }
-
-  createIssue = () => {
-    return this.issueDocRef.set(this.curIssue)
-      .then(() => {
-        console.log('issue added')
-        return this.curIssue
-      })
   }
 
   updateIssue = () => {
@@ -126,53 +94,17 @@ class IssueReport extends React.Component<Props, State> {
       issueDoc.total_time_spent = curIssue.total_time_spent
       issueDoc.last_note_id = curIssue.last_note_id
       issueDoc.latest_spent_date = curIssue.latest_spent_date
-      this.issueDocRef
-        .set(issueDoc)
-        .then(() => console.log('issue updated'))
-        .catch((err: any) => console.log(err))
+
+      updateIssueMsg(this.props.issuePageInfo, issueDoc)
     }
   }
 
   createOrUpdateProject = () => {
-    const { curProject } = this.props.issuePageInfo
-    this.projectDocRef
-      .get()
-      .then((snapshot: any) => {
-        if (snapshot.exists) {
-          console.log('projet existed')
-          if (snapshot.data().name !== curProject.name) {
-            return this.projectDocRef
-              .update(curProject)
-              .then(() => console.log('project updated'))
-          }
-        } else {
-          return this.projectDocRef
-            .set(curProject)
-            .then(() => console.log('project added'))
-        }
-      })
-      .catch((err: any) => console.log(err))
+    createOrUpdateProjectMsg(this.props.issuePageInfo)
   }
 
   createOrUpdateUser = () => {
-    const { curUser } = this.props.issuePageInfo
-    this.userDocRef
-      .get()
-      .then((snapshot: any) => {
-        if (snapshot.exists) {
-          console.log('user existed')
-          if (snapshot.data().name !== curUser.name) {
-            return this.userDocRef
-              .update(curUser)
-              .then(() => console.log('user updated'))
-          }
-        } else {
-          return this.userDocRef
-            .set(curUser)
-            .then(() => console.log('user added'))
-        }
-      })
-      .catch((err: any) => console.log(err))
+    createOrUpdateUserMsg(this.props.issuePageInfo)
   }
 
   parseNotesNode = () => {
@@ -287,38 +219,30 @@ class IssueReport extends React.Component<Props, State> {
   }
 
   syncTimeNotes = () => {
-    // 2 steps
+    // steps
     // 1. delete old time logs before the first time note id
+    let toDeleteNoteIds: number[] = []
     if (this.curIssue.last_note_id < this.removedTimeNoteId) {
-      const toDeleteNoteIds = this.parsedTimeNotes
-        .filter(note => note.id < this.removedTimeNoteId)
-        .map(note => note.id)
-      toDeleteNoteIds.forEach(id => {
-        this.timeNotesCollectionRef.doc(id.toString())
-          .delete()
-          .then(() => console.log('time note deleted'))
-          .catch((err: any) => console.log(err))
-      })
+      toDeleteNoteIds = this.parsedTimeNotes
+                            .filter(note => note.id < this.removedTimeNoteId)
+                            .map(note => note.id)
       this.curIssue.last_note_id = this.removedTimeNoteId
     }
-
     // 2. add new time logs after the last note id
-    const toAddNotes = this.parsedTimeNotes.filter(note => note.id > this.curIssue.last_note_id)
+    const toAddNotes = this.parsedTimeNotes
+                           .filter(note => note.id > this.curIssue.last_note_id)
+                           .map(note => ({
+                             ...note,
+                             issue_doc_id: this.curIssue.doc_id,
+                             project_id: this.curIssue.project_id
+                           }))
     if (toAddNotes.length > 0) {
-      toAddNotes.forEach(note => {
-        const timeLog: ITimeNote = {
-          ...note,
-          issue_doc_id: this.curIssue.doc_id,
-          project_id: this.curIssue.project_id
-        }
-        this.timeNotesCollectionRef
-          .doc(note.id.toString())
-          .set(timeLog)
-          .then(() => console.log('new time note added'))
-          .catch((err: any) => console.log(err))
-        this.curIssue.last_note_id = note.id
-      })
+      this.curIssue.last_note_id = toAddNotes[toAddNotes.length - 1].id
     }
+
+    syncTimeNotesMsg(this.props.issuePageInfo.curDomainDocId,
+                     toDeleteNoteIds,
+                     toAddNotes)
   }
 
   observeNotesMutation = () => {
@@ -355,7 +279,6 @@ class IssueReport extends React.Component<Props, State> {
 ////////////////////////////////
 
 import { IssuePageContext } from '../contexts'
-import { IIssuePageInfo } from '../types'
 
 const IssueReportWrapper = (props: {}) =>
   <IssuePageContext.Consumer>
