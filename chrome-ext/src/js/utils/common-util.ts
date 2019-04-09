@@ -16,9 +16,9 @@ export default class CommonUtil {
     if (err.code === 'permission-denied') {
       message = 'You have no permission to access any data, please contact with your admin.'
     } else if (err.code === 'unavailable') {
-      message = err.message + " Please make sure you can access firebase then refresh this page."
+      message = err.name + " Please make sure you can access firebase then refresh this page."
     } else {
-      message = err.message
+      message = err.message || err.name || ''
     }
     return message
   }
