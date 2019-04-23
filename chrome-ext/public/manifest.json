@@ -1,7 +1,7 @@
 {
   "name": "GitLab Time Report",
-  "version": "0.2.1",
-  "version_code": 21,
+  "version": "0.2.2",
+  "version_code": 22,
   "manifest_version": 2,
   "description": "report your gitlab spent time",
   "author": "baurine",
