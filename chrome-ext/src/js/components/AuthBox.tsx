@@ -38,12 +38,22 @@ export default class AuthBox extends React.Component<Props, State> {
   }
 
   loadAuthState() {
-    this.port = chrome.runtime.connect({ name: 'auth_state' })
-    this.port.postMessage({ action: 'init' })
-    this.port.onMessage.addListener((msg: Message) => {
-      const user = msg.payload
-      this.setState({ user, loading: false, message: '' })
-    })
+    const { curPage } = this.props
+
+    if (curPage === 'issue') {
+      this.port = chrome.runtime.connect({ name: 'auth_state' })
+      this.port.postMessage({ action: 'init' })
+      this.port.onMessage.addListener((msg: Message) => {
+        const user = msg.payload
+        // this user will become a plain object
+        this.setState({ user, loading: false, message: '' })
+      })
+    } else {
+      firebaseAuth.onAuthStateChanged((user: any) => {
+        // this user is not a plain object, it can run method, likes: user.sendEmailVerification()
+        this.setState({ user, loading: false, message: '' })
+      })
+    }
   }
 
   signOut = () => {
@@ -202,12 +212,19 @@ export default class AuthBox extends React.Component<Props, State> {
   }
 
   renderVerifyEmailStatus() {
-    return (
-      <div className='verify-container'>
-        <span className='login-status'>Your email isn't verified yet, click the button to send the verification email.</span>
-        <button className='btn btn-default' onClick={this.verifyEmail}>Verify Email</button>
-      </div>
-    )
+    const { curPage } = this.props
+    if (curPage === 'dashboard') {
+      return (
+        <div className='verify-container'>
+          <span className='login-status'>Your email isn't verified yet, click the button to send the verification email.</span>
+          <button className='btn btn-default' onClick={this.verifyEmail}>Verify Email</button>
+        </div>
+      )
+    } else {
+      return (
+        <button className='btn btn-default' onClick={this.openDashboardPage}>Verify Email</button>
+      )
+    }
   }
 
   renderAuthInputs() {
